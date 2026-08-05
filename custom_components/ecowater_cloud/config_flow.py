@@ -131,7 +131,10 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
             else:
                 return self.async_update_reload_and_abort(
                     reauth_entry,
-                    data={**reauth_entry.data, CONF_PASSWORD: user_input[CONF_PASSWORD]},
+                    data={
+                        **reauth_entry.data,
+                        CONF_PASSWORD: user_input[CONF_PASSWORD],
+                    },
                 )
 
         return self.async_show_form(
@@ -171,9 +174,9 @@ class EcoWaterCloudOptionsFlow(OptionsFlow):
 
         schema = vol.Schema(
             {
-                vol.Required(
-                    CONF_POLLING_INTERVAL, default=default_polling
-                ): vol.All(vol.Coerce(int), vol.Clamp(min=min_polling, max=max_polling)),
+                vol.Required(CONF_POLLING_INTERVAL, default=default_polling): vol.All(
+                    vol.Coerce(int), vol.Clamp(min=min_polling, max=max_polling)
+                ),
             }
         )
 

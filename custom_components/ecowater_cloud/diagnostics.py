@@ -46,16 +46,24 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
     }
 
     freshness_dict = {
-        "received_at": data.freshness.received_at.isoformat() if data.freshness.received_at else None,
-        "oldest_data_at": data.freshness.oldest_data_at.isoformat() if data.freshness.oldest_data_at else None,
-        "newest_data_at": data.freshness.newest_data_at.isoformat() if data.freshness.newest_data_at else None,
+        "received_at": data.freshness.received_at.isoformat()
+        if data.freshness.received_at
+        else None,
+        "oldest_data_at": data.freshness.oldest_data_at.isoformat()
+        if data.freshness.oldest_data_at
+        else None,
+        "newest_data_at": data.freshness.newest_data_at.isoformat()
+        if data.freshness.newest_data_at
+        else None,
     }
 
     regeneration_dict = {
         "status": data.regeneration.status,
         "is_enabled": data.regeneration.is_enabled,
         "days_since_last": data.regeneration.days_since_last,
-        "estimated_last_date": data.regeneration.estimated_last_date.isoformat() if data.regeneration.estimated_last_date else None,
+        "estimated_last_date": data.regeneration.estimated_last_date.isoformat()
+        if data.regeneration.estimated_last_date
+        else None,
     }
 
     return {
@@ -71,7 +79,9 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "salt_level_raw": data.salt_level_raw,
         "salt_level_percent": data.salt_level_percent,
         "days_until_out_of_salt": data.days_until_out_of_salt,
-        "estimated_out_of_salt_date": data.estimated_out_of_salt_date.isoformat() if data.estimated_out_of_salt_date else None,
+        "estimated_out_of_salt_date": data.estimated_out_of_salt_date.isoformat()
+        if data.estimated_out_of_salt_date
+        else None,
         "salt_type": data.salt_type,
         "rock_removed_lbs": data.rock_removed_lbs,
         "rock_removed_daily_avg_lbs": data.rock_removed_daily_avg_lbs,
@@ -95,7 +105,9 @@ async def async_get_config_entry_diagnostics(
         "polling_interval": str(coordinator.update_interval),
         "coordinator": {
             "last_update_success": coordinator.last_update_success,
-            "last_exception": str(coordinator.last_exception) if coordinator.last_exception else None,
+            "last_exception": str(coordinator.last_exception)
+            if coordinator.last_exception
+            else None,
             "devices_count": len(devices),
             "devices": devices,
         },

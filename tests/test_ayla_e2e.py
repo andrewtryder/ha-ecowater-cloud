@@ -38,14 +38,7 @@ async def test_ayla_backend_e2e_successful_update(hass, aioclient_mock):
     # 3. Mock get_device_properties (Ayla wraps properties in {"property": {...}})
     aioclient_mock.get(
         f"{ADS_URL}/apiv1/dsns/AC0001/properties.json",
-        json=[
-            {
-                "property": {
-                    "name": "current_water_flow_gpm",
-                    "value": 50
-                }
-            }
-        ],
+        json=[{"property": {"name": "current_water_flow_gpm", "value": 50}}],
         status=200,
     )
 
@@ -62,7 +55,6 @@ async def test_ayla_backend_e2e_successful_update(hass, aioclient_mock):
     # Verify normalization worked all the way from the raw HTTP response
     assert device_data.descriptor.serial_number == "AC0001"
     assert device_data.descriptor.model == "EWS123"
-    
+
     # 50 gpm from API, divided by 10 as per EcoWater normalization rules -> 5.0
     assert device_data.current_flow_gpm == 5.0
-

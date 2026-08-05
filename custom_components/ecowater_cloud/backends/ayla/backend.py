@@ -57,7 +57,9 @@ class AylaBackend(BackendAdapter):
                     serial_number=dev.get("dsn", ""),
                     name=dev.get("product_name", "EcoWater Device"),
                     model=dev.get("oem_model", "Unknown Model"),
-                    is_online=(dev.get("connection_status") == "Online") if "connection_status" in dev else None,
+                    is_online=(dev.get("connection_status") == "Online")
+                    if "connection_status" in dev
+                    else None,
                 )
             )
         return descriptors
@@ -78,17 +80,21 @@ class AylaBackend(BackendAdapter):
                 break
 
         if not target_dev:
-            # Note: Ayla api handles unknown devices by 404, but here we can't find the metadata
-            # We construct a synthetic minimal metadata if not found
+            # Note: Ayla api handles unknown devices by 404, but here we can't
+            # find the metadata. We construct a synthetic minimal metadata if not found
             target_dev = {"dsn": serial_number}
 
         raw_props = await self._api.async_get_device_properties(serial_number)
 
         # Unwrap the property wrappers
-        unwrapped_props: list[AylaPropertyData] = [cast(AylaPropertyData, p) for p in raw_props]
+        unwrapped_props: list[AylaPropertyData] = [
+            cast(AylaPropertyData, p) for p in raw_props
+        ]
 
         received_at = datetime.datetime.now(datetime.UTC)
-        return normalize_device(cast(AylaDeviceData, target_dev), unwrapped_props, received_at)
+        return normalize_device(
+            cast(AylaDeviceData, target_dev), unwrapped_props, received_at
+        )
 
     async def async_get_all_device_data(self) -> AccountInfo:
         """Fetch all supported devices and their current telemetry."""
@@ -110,7 +116,9 @@ class AylaBackend(BackendAdapter):
                 continue
 
             raw_props = await self._api.async_get_device_properties(dsn)
-            unwrapped_props: list[AylaPropertyData] = [cast(AylaPropertyData, p) for p in raw_props]
+            unwrapped_props: list[AylaPropertyData] = [
+                cast(AylaPropertyData, p) for p in raw_props
+            ]
 
             devices_data[dsn] = normalize_device(dev, unwrapped_props, received_at)
 

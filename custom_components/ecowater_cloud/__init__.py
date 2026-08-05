@@ -33,7 +33,9 @@ class EcoWaterCloudData:
     coordinator: AccountCoordinator
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: EcoWaterCloudConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: EcoWaterCloudConfigEntry
+) -> bool:
     """Set up EcoWater Cloud from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
@@ -67,12 +69,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: EcoWaterCloudConfigEntry
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: EcoWaterCloudConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant, entry: EcoWaterCloudConfigEntry
+) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: EcoWaterCloudConfigEntry) -> None:
+async def async_reload_entry(
+    hass: HomeAssistant, entry: EcoWaterCloudConfigEntry
+) -> None:
     """Reload config entry when options change."""
     await hass.config_entries.async_reload(entry.entry_id)
 

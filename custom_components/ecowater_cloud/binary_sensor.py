@@ -71,7 +71,9 @@ async def async_setup_entry(
         for serial_number, device_data in coordinator.data.items():
             for description in BINARY_SENSORS:
                 entity_key = (serial_number, description.key)
-                if entity_key not in added_entities and description.supported_fn(device_data):
+                if entity_key not in added_entities and description.supported_fn(
+                    device_data
+                ):
                     added_entities.add(entity_key)
                     new_entities.append(
                         EcoWaterBinarySensor(coordinator, serial_number, description)

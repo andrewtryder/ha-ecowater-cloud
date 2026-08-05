@@ -38,7 +38,9 @@ async def test_diagnostics_redaction(hass: HomeAssistant, mock_ayla_backend) -> 
         await hass.async_block_till_done()
 
     # The setup transforms it to EcoWaterCloudConfigEntry via type alias
-    typed_entry: EcoWaterCloudConfigEntry = hass.config_entries.async_get_entry(entry.entry_id)
+    typed_entry: EcoWaterCloudConfigEntry = hass.config_entries.async_get_entry(
+        entry.entry_id
+    )
     assert typed_entry is not None
 
     diagnostics = await async_get_config_entry_diagnostics(hass, typed_entry)

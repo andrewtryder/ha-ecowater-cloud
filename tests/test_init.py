@@ -17,7 +17,10 @@ async def test_setup_and_unload_entry(hass: HomeAssistant, mock_ayla_backend) ->
 
     # Mock the backend creation in __init__
     with (
-        patch("custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend),
+        patch(
+            "custom_components.ecowater_cloud.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
         patch("custom_components.ecowater_cloud.PLATFORMS", []),
     ):
         entry = MockConfigEntry(
@@ -90,4 +93,5 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
     # Run the setup which triggers migration internally
     # For now migration just logs success and returns True
     from custom_components.ecowater_cloud import async_migrate_entry
+
     assert await async_migrate_entry(hass, entry)

@@ -65,8 +65,11 @@ async def test_all_sensors(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert state is not None
     assert state.state == "0.0"
 
+
 @pytest.mark.asyncio
-async def test_sensor_missing_capability(hass: HomeAssistant, mock_ayla_backend) -> None:
+async def test_sensor_missing_capability(
+    hass: HomeAssistant, mock_ayla_backend
+) -> None:
     """Test sensors are not created if capability is missing."""
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -75,7 +78,10 @@ async def test_sensor_missing_capability(hass: HomeAssistant, mock_ayla_backend)
     device = account_info.devices.get("ABC123456789")
     if device:
         from dataclasses import replace
-        new_device = replace(device, capabilities=replace(device.capabilities, has_water_usage=False))
+
+        new_device = replace(
+            device, capabilities=replace(device.capabilities, has_water_usage=False)
+        )
         account_info.devices["ABC123456789"] = new_device
 
     with patch(

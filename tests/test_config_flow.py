@@ -4,13 +4,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant.config_entries import SOURCE_REAUTH, SOURCE_USER
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ecowater_cloud.const import (
     BACKEND_AYLA,
-    CONF_BACKEND,
     CONF_POLLING_INTERVAL,
     DOMAIN,
 )
@@ -33,13 +31,16 @@ async def test_form_user(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {}
 
-    with patch(
-        "custom_components.ecowater_cloud.config_flow.AylaBackend",
-        return_value=mock_ayla_backend,
-    ), patch(
-        "custom_components.ecowater_cloud.async_setup_entry",
-        return_value=True,
-    ) as mock_setup_entry:
+    with (
+        patch(
+            "custom_components.ecowater_cloud.config_flow.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
+        patch(
+            "custom_components.ecowater_cloud.async_setup_entry",
+            return_value=True,
+        ) as mock_setup_entry,
+    ):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
             {
@@ -132,7 +133,11 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
-        data={"backend": BACKEND_AYLA, "username": MOCK_USERNAME, "password": MOCK_PASSWORD},
+        data={
+            "backend": BACKEND_AYLA,
+            "username": MOCK_USERNAME,
+            "password": MOCK_PASSWORD,
+        },
         source="user",
         options={},
         unique_id=MOCK_USERNAME,
@@ -170,7 +175,11 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
-        data={"backend": BACKEND_AYLA, "username": MOCK_USERNAME, "password": MOCK_PASSWORD},
+        data={
+            "backend": BACKEND_AYLA,
+            "username": MOCK_USERNAME,
+            "password": MOCK_PASSWORD,
+        },
         source="user",
         options={},
         unique_id=MOCK_USERNAME,
@@ -190,12 +199,15 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "reauth_confirm"
 
-    with patch(
-        "custom_components.ecowater_cloud.config_flow.AylaBackend",
-        return_value=mock_ayla_backend,
-    ), patch(
-        "custom_components.ecowater_cloud.async_setup_entry",
-        return_value=True,
+    with (
+        patch(
+            "custom_components.ecowater_cloud.config_flow.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
+        patch(
+            "custom_components.ecowater_cloud.async_setup_entry",
+            return_value=True,
+        ),
     ):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
@@ -218,7 +230,11 @@ async def test_options_flow(hass: HomeAssistant) -> None:
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
-        data={"backend": BACKEND_AYLA, "username": MOCK_USERNAME, "password": MOCK_PASSWORD},
+        data={
+            "backend": BACKEND_AYLA,
+            "username": MOCK_USERNAME,
+            "password": MOCK_PASSWORD,
+        },
         source="user",
         options={},
         unique_id=MOCK_USERNAME,

@@ -16,24 +16,22 @@ def mock_ayla_api(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     api.async_clear_authentication = AsyncMock()
 
     # Return some raw data matching the synthetic device
-    api.async_list_devices = AsyncMock(return_value=[
-        {
-            "dsn": "AC0001",
-            "oem_model": "EWS123",
-            "connection_status": "Online"
-        },
-        {
-            "dsn": "IGNORE_ME",
-            "oem_model": "OTHER_BRAND"
-        }
-    ])
+    api.async_list_devices = AsyncMock(
+        return_value=[
+            {"dsn": "AC0001", "oem_model": "EWS123", "connection_status": "Online"},
+            {"dsn": "IGNORE_ME", "oem_model": "OTHER_BRAND"},
+        ]
+    )
 
-    api.async_get_device_properties = AsyncMock(return_value=[
-        {"name": "current_water_flow_gpm", "value": 50}
-    ])
+    api.async_get_device_properties = AsyncMock(
+        return_value=[{"name": "current_water_flow_gpm", "value": 50}]
+    )
 
     # Patch AylaBackend to use this API
-    monkeypatch.setattr("custom_components.ecowater_cloud.backends.ayla.backend.AylaApi", lambda session: api)
+    monkeypatch.setattr(
+        "custom_components.ecowater_cloud.backends.ayla.backend.AylaApi",
+        lambda session: api,
+    )
     return api
 
 
@@ -72,7 +70,9 @@ async def test_ayla_backend_get_device_data_found(mock_ayla_api: MagicMock) -> N
 
 
 @pytest.mark.asyncio
-async def test_ayla_backend_get_device_data_not_found_in_list(mock_ayla_api: MagicMock) -> None:
+async def test_ayla_backend_get_device_data_not_found_in_list(
+    mock_ayla_api: MagicMock,
+) -> None:
     backend = AylaBackend(MagicMock(), "user", "pass")
     data = await backend.async_get_device_data("UNKNOWN")
 

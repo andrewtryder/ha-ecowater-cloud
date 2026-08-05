@@ -79,6 +79,7 @@ async def test_dynamic_binary_sensor_addition(
         account_info = await mock_ayla_backend.async_get_all_device_data()
 
         from dataclasses import replace
+
         first_device = next(iter(account_info.devices.values()))
         new_device = replace(
             first_device,

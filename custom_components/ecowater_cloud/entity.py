@@ -60,5 +60,6 @@ class EcoWaterEntity(CoordinatorEntity[AccountCoordinator]):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        # Consider available if coordinator poll succeeded AND we have data for this serial.
+        # Consider available if coordinator poll succeeded AND we have data
+        # for this serial.
         return super().available and self.device_data is not None

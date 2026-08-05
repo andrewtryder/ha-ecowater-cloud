@@ -59,7 +59,9 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
         freshness=DataFreshness(
             received_at=datetime.datetime(2026, 8, 5, 14, 0, 0, tzinfo=datetime.UTC),
             oldest_data_at=datetime.datetime(2026, 8, 5, 13, 0, 0, tzinfo=datetime.UTC),
-            newest_data_at=datetime.datetime(2026, 8, 5, 13, 59, 0, tzinfo=datetime.UTC),
+            newest_data_at=datetime.datetime(
+                2026, 8, 5, 13, 59, 0, tzinfo=datetime.UTC
+            ),
         ),
         regeneration=RegenerationState(
             status="Standby",
@@ -97,6 +99,7 @@ def mock_ayla_backend() -> MagicMock:
     )
     backend.async_list_devices = AsyncMock(return_value=[MOCK_SERIAL])
     return backend
+
 
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):

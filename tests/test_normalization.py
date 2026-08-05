@@ -64,8 +64,12 @@ def test_normalize_synthetic_device():
 
     # Freshness
     assert normalized.freshness.received_at == received_at
-    assert normalized.freshness.oldest_data_at == datetime.datetime(2026, 8, 5, 10, 0, tzinfo=datetime.UTC)
-    assert normalized.freshness.newest_data_at == datetime.datetime(2026, 8, 5, 12, 6, tzinfo=datetime.UTC)
+    assert normalized.freshness.oldest_data_at == datetime.datetime(
+        2026, 8, 5, 10, 0, tzinfo=datetime.UTC
+    )
+    assert normalized.freshness.newest_data_at == datetime.datetime(
+        2026, 8, 5, 12, 6, tzinfo=datetime.UTC
+    )
 
     # Capabilities
     assert normalized.capabilities.has_water_usage is True
@@ -81,10 +85,30 @@ def test_normalize_edge_cases():
         # Missing model and status
     }
     props: list[AylaPropertyData] = [
-        {"name": "gallons_used_today", "value": None, "data_updated_at": "2026-08-05T12:00:00Z", "type": "integer"},
-        {"name": "current_water_flow_gpm", "value": "invalid", "data_updated_at": "invalid-time", "type": "integer"},
-        {"name": "salt_level_tenths", "value": "40.5", "data_updated_at": "2026-08-05T12:00:00Z", "type": "string"},
-        {"name": "model_id", "value": "99999", "data_updated_at": "2026-08-05T12:00:00Z", "type": "string"},
+        {
+            "name": "gallons_used_today",
+            "value": None,
+            "data_updated_at": "2026-08-05T12:00:00Z",
+            "type": "integer",
+        },
+        {
+            "name": "current_water_flow_gpm",
+            "value": "invalid",
+            "data_updated_at": "invalid-time",
+            "type": "integer",
+        },
+        {
+            "name": "salt_level_tenths",
+            "value": "40.5",
+            "data_updated_at": "2026-08-05T12:00:00Z",
+            "type": "string",
+        },
+        {
+            "name": "model_id",
+            "value": "99999",
+            "data_updated_at": "2026-08-05T12:00:00Z",
+            "type": "string",
+        },
     ]
     received_at = datetime.datetime(2026, 8, 5, 12, 10, tzinfo=datetime.UTC)
 
@@ -107,7 +131,9 @@ def test_normalize_edge_cases():
     assert normalized.salt_level_percent is None
 
     # Timestamps skipping invalid
-    assert normalized.freshness.oldest_data_at == datetime.datetime(2026, 8, 5, 12, 0, tzinfo=datetime.UTC)
+    assert normalized.freshness.oldest_data_at == datetime.datetime(
+        2026, 8, 5, 12, 0, tzinfo=datetime.UTC
+    )
 
     # Capabilities
     assert normalized.capabilities.has_water_usage is True

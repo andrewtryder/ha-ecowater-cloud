@@ -67,7 +67,9 @@ class TestEcoWaterDeviceDataValidation:
                     model="Test Model",
                 ),
                 capabilities=DeviceCapabilities(True, True, True, True),
-                freshness=DataFreshness(received_at=datetime.datetime.now(datetime.UTC)),
+                freshness=DataFreshness(
+                    received_at=datetime.datetime.now(datetime.UTC)
+                ),
                 regeneration=RegenerationState(status="None"),
                 salt_level_percent=101.0,
             )
@@ -83,7 +85,9 @@ class TestEcoWaterDeviceDataValidation:
                     model="Test Model",
                 ),
                 capabilities=DeviceCapabilities(True, True, True, True),
-                freshness=DataFreshness(received_at=datetime.datetime.now(datetime.UTC)),
+                freshness=DataFreshness(
+                    received_at=datetime.datetime.now(datetime.UTC)
+                ),
                 regeneration=RegenerationState(status="None"),
                 salt_level_percent=-1.0,
             )
@@ -99,7 +103,9 @@ class TestEcoWaterDeviceDataValidation:
                     model="Test Model",
                 ),
                 capabilities=DeviceCapabilities(True, True, True, True),
-                freshness=DataFreshness(received_at=datetime.datetime.now(datetime.UTC)),
+                freshness=DataFreshness(
+                    received_at=datetime.datetime.now(datetime.UTC)
+                ),
                 regeneration=RegenerationState(status="None"),
                 salt_level_percent=val,
             )

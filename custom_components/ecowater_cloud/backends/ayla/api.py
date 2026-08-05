@@ -1,6 +1,7 @@
 """Ayla API client.
 
-Low-level client for the Ayla Networks API used by legacy EcoWater Wi-Fi connected softeners.
+Low-level client for the Ayla Networks API used by legacy EcoWater Wi-Fi
+connected softeners.
 This module does not import Home Assistant and is strictly for protocol interaction.
 """
 
@@ -21,7 +22,7 @@ from .exceptions import (
 _LOGGER = logging.getLogger(__name__)
 
 AYLA_APP_ID = "ecowater-mobile-id"
-AYLA_APP_SECRET = "ecowater-mobile-9026832"
+AYLA_APP_SECRET = "ecowater-mobile-9026832"  # noqa: S105
 
 REGION_US = "us"
 REGION_EU = "eu"
@@ -58,7 +59,9 @@ class AylaApi:
     def _auth_headers(self) -> dict[str, str]:
         """Headers required for authenticated requests."""
         if not self._access_token:
-            raise AylaAuthenticationError("Not authenticated; no access token available")
+            raise AylaAuthenticationError(
+                "Not authenticated; no access token available"
+            )
         return {"Authorization": f"auth_token {self._access_token}"}
 
     async def _async_request(
@@ -74,12 +77,18 @@ class AylaApi:
             kwargs["timeout"] = DEFAULT_TIMEOUT
 
         try:
-            async with self._session.request(method, url, headers=headers, **kwargs) as response:
+            async with self._session.request(
+                method, url, headers=headers, **kwargs
+            ) as response:
                 if response.status == 401:
-                    raise AylaAuthenticationError("Authentication rejected by Ayla API (HTTP 401)")
+                    raise AylaAuthenticationError(
+                        "Authentication rejected by Ayla API (HTTP 401)"
+                    )
                 if response.status == 404:
                     if url.endswith("sign_in.json"):
-                        raise AylaAuthenticationError("Authentication rejected by Ayla API (HTTP 404)")
+                        raise AylaAuthenticationError(
+                            "Authentication rejected by Ayla API (HTTP 404)"
+                        )
                     raise AylaProtocolError("HTTP error 404: Resource not found")
 
                 if response.status == 429:
@@ -93,6 +102,7 @@ class AylaApi:
 
                 try:
                     from typing import cast
+
                     return cast("dict[str, Any] | list[Any]", await response.json())
                 except ValueError as ex:
                     raise AylaProtocolError(f"Malformed JSON response: {ex}") from ex
@@ -122,7 +132,9 @@ class AylaApi:
             }
         }
 
-        response = await self._async_request("POST", url, authenticate=False, json=payload)
+        response = await self._async_request(
+            "POST", url, authenticate=False, json=payload
+        )
 
         if not isinstance(response, dict) or "access_token" not in response:
             raise AylaProtocolError("Invalid authentication response format")
@@ -183,7 +195,12 @@ class AylaApi:
         try:
             # We don't care if sign-out fails on the server, we just want to attempt it.
             await self._async_request("POST", url, json=payload)
-        except (AylaConnectivityError, AylaProtocolError, AylaAuthenticationError, AylaRateLimitError) as ex:
+        except (
+            AylaConnectivityError,
+            AylaProtocolError,
+            AylaAuthenticationError,
+            AylaRateLimitError,
+        ) as ex:
             _LOGGER.debug("Sign out request failed, ignoring: %s", ex)
         finally:
             self._access_token = None

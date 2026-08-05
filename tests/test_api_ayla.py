@@ -1,6 +1,5 @@
 """Tests for the Ayla API client."""
 
-
 import pytest
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -20,7 +19,11 @@ async def test_successful_authentication(hass, aioclient_mock):
     """Test successful login flow."""
     aioclient_mock.post(
         f"{USER_URL}/users/sign_in.json",
-        json={"access_token": "mocked_access", "refresh_token": "mocked_refresh", "expires_in": 3600},
+        json={
+            "access_token": "mocked_access",
+            "refresh_token": "mocked_refresh",
+            "expires_in": 3600,
+        },
         status=200,
     )
 
@@ -35,9 +38,7 @@ async def test_successful_authentication(hass, aioclient_mock):
 async def test_authentication_failure(hass, aioclient_mock):
     """Test login failure (HTTP 401)."""
     aioclient_mock.post(
-        f"{USER_URL}/users/sign_in.json",
-        status=401,
-        json={"error": "Unauthorized"}
+        f"{USER_URL}/users/sign_in.json", status=401, json={"error": "Unauthorized"}
     )
 
     session = async_get_clientsession(hass)
@@ -117,8 +118,7 @@ async def test_get_device_properties(hass, aioclient_mock):
 async def test_sign_out(hass, aioclient_mock):
     """Test sign out clears token."""
     aioclient_mock.post(
-        f"{USER_URL}/users/sign_in.json",
-        json={"access_token": "mocked_access"}
+        f"{USER_URL}/users/sign_in.json", json={"access_token": "mocked_access"}
     )
     aioclient_mock.post(f"{USER_URL}/users/sign_out.json", status=204)
 
@@ -134,10 +134,11 @@ async def test_sign_out(hass, aioclient_mock):
 async def test_protocol_error_malformed_json(hass, aioclient_mock):
     """Test catching invalid JSON from Ayla."""
     aioclient_mock.post(
-        f"{USER_URL}/users/sign_in.json",
-        json={"access_token": "mocked_access"}
+        f"{USER_URL}/users/sign_in.json", json={"access_token": "mocked_access"}
     )
-    aioclient_mock.get(f"{ADS_URL}/apiv1/devices.json", text="not valid json", status=200)
+    aioclient_mock.get(
+        f"{ADS_URL}/apiv1/devices.json", text="not valid json", status=200
+    )
 
     session = async_get_clientsession(hass)
     api = AylaApi(session)

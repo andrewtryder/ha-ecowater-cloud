@@ -33,7 +33,10 @@ from .models import EcoWaterDeviceData
 class EcoWaterSensorEntityDescription(SensorEntityDescription):
     """Describes an EcoWater sensor entity."""
 
-    value_fn: Callable[[EcoWaterDeviceData], float | int | str | datetime.date | datetime.datetime | None]
+    value_fn: Callable[
+        [EcoWaterDeviceData],
+        float | int | str | datetime.date | datetime.datetime | None,
+    ]
     supported_fn: Callable[[EcoWaterDeviceData], bool] = lambda _: True
 
 
@@ -114,7 +117,9 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="salt_type",
         device_class=SensorDeviceClass.ENUM,
         supported_fn=lambda d: d.capabilities.has_salt_sensor,
-        value_fn=lambda d: d.salt_type.lower().replace(" ", "_") if d.salt_type else None,
+        value_fn=lambda d: (
+            d.salt_type.lower().replace(" ", "_") if d.salt_type else None
+        ),
         options=["sodium_chloride", "potassium_chloride", "solar_crystals"],
     ),
     # --- Regeneration ---
@@ -123,7 +128,9 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="regeneration_status",
         device_class=SensorDeviceClass.ENUM,
         options=["standby", "regenerating", "scheduled"],
-        value_fn=lambda d: d.regeneration.status.lower() if d.regeneration.status else None,
+        value_fn=lambda d: (
+            d.regeneration.status.lower() if d.regeneration.status else None
+        ),
     ),
     EcoWaterSensorEntityDescription(
         key="days_since_last_regeneration",
@@ -210,7 +217,9 @@ async def async_setup_entry(
         for serial_number, device_data in coordinator.data.items():
             for description in SENSORS:
                 entity_key = (serial_number, description.key)
-                if entity_key not in added_entities and description.supported_fn(device_data):
+                if entity_key not in added_entities and description.supported_fn(
+                    device_data
+                ):
                     added_entities.add(entity_key)
                     new_entities.append(
                         EcoWaterSensor(coordinator, serial_number, description)

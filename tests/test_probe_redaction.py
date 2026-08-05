@@ -36,7 +36,7 @@ def test_redact_data_sensitive_keys():
         "wifi_password": "supersecretpassword",
         "dealer_name": "Bob's Plumbing",
         "customer_address": "123 Main St",
-        "normal_key": "normal value"
+        "normal_key": "normal value",
     }
     redacted = redact_data(data)
     assert redacted["access_token"] == "***REDACTED***"
@@ -53,10 +53,7 @@ def test_redact_data_recursive():
             {
                 "dsn": "AC000W000",
                 "lan_ip": "10.0.0.5",
-                "properties": {
-                    "token": "abc",
-                    "value": 123
-                }
+                "properties": {"token": "abc", "value": 123},
             }
         ]
     }
