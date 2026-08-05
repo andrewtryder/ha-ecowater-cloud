@@ -88,7 +88,8 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         if data.estimated_out_of_salt_date
         else None,
         "salt_type": data.salt_type,
-        "rock_removed_lbs": data.rock_removed_lbs,
+        "rock_removed_since_regeneration_lbs": data.rock_removed_since_regeneration_lbs,
+        "total_rock_removed_lbs": data.total_rock_removed_lbs,
         "rock_removed_daily_avg_lbs": data.rock_removed_daily_avg_lbs,
     }
 

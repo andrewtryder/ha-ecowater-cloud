@@ -55,7 +55,8 @@ def test_normalize_synthetic_device():
     assert normalized.estimated_out_of_salt_date == datetime.date(2026, 9, 4)
 
     # Rock (scaling)
-    assert normalized.rock_removed_lbs == 105.0  # 1050 / 10
+    assert normalized.rock_removed_since_regeneration_lbs == 2.5  # 250 / 100
+    assert normalized.total_rock_removed_lbs == 105.0  # 1050 / 10
     assert normalized.rock_removed_daily_avg_lbs == 2.5  # 25000 / 10000
 
     # Regeneration

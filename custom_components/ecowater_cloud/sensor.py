@@ -153,7 +153,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfMass.POUNDS,
         state_class=SensorStateClass.MEASUREMENT,
         supported_fn=lambda d: d.capabilities.has_rock_sensor,
-        value_fn=lambda d: d.rock_removed_lbs,
+        value_fn=lambda d: d.rock_removed_since_regeneration_lbs,
     ),
     EcoWaterSensorEntityDescription(
         key="average_rock_removal",

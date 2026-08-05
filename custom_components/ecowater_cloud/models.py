@@ -93,7 +93,8 @@ class EcoWaterDeviceData:
     days_until_out_of_salt: int | None = field(default=None)
     estimated_out_of_salt_date: datetime.date | None = field(default=None)
     salt_type: str | None = field(default=None)
-    rock_removed_lbs: float | None = field(default=None)
+    rock_removed_since_regeneration_lbs: float | None = field(default=None)
+    total_rock_removed_lbs: float | None = field(default=None)
     rock_removed_daily_avg_lbs: float | None = field(default=None)
 
     def __post_init__(self) -> None:

@@ -84,7 +84,8 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
         days_until_out_of_salt=42,
         estimated_out_of_salt_date=datetime.date(2026, 9, 16),
         salt_type="Solar Crystals",
-        rock_removed_lbs=1500.0,
+        rock_removed_since_regeneration_lbs=1500.0,
+        total_rock_removed_lbs=20000.0,
         rock_removed_daily_avg_lbs=3.2,
     )
 
