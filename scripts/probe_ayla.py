@@ -29,66 +29,141 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 _LOGGER = logging.getLogger(__name__)
 
 
-def redact_data(data: Any, is_key: bool = False) -> Any:
+# ---------------------------------------------------------------------------
+# Sensitive dict-key substrings (checked on parent key, not property name)
+# ---------------------------------------------------------------------------
+_SENSITIVE_KEYS: frozenset[str] = frozenset(
+    {
+        "email",
+        "password",
+        "token",
+        "cookie",
+        "ip",
+        "mac",
+        "dealer",
+        "customer",
+        "address",
+        "phone",
+        "zip",
+        "lat",
+        "lng",
+        "ssid",
+        "wifi",
+        "auth",
+        # Identifiers that must be redacted before public upload
+        "dsn",
+        "serial",
+        "device_id",
+        "uuid",
+        "key",
+        "name",
+    }
+)
+
+# ---------------------------------------------------------------------------
+# Ayla property names whose *value* is sensitive (SSID, bearer, IP, etc.)
+# These are matched when the enclosing dict has the shape {"name": ..., "value": ...}
+# ---------------------------------------------------------------------------
+_SENSITIVE_PROPERTY_NAMES: frozenset[str] = frozenset(
+    {
+        "wifi_ssid",
+        "wifi_password",
+        "wifi_bssid",
+        "lan_ip",
+        "wan_ip",
+        "gateway",
+        "dns",
+        "access_token",
+        "refresh_token",
+        "dsn",
+        "serial_number",
+        "device_name",
+        "user_defined_name",
+        "dealer_name",
+        "dealer_code",
+        "installer_name",
+    }
+)
+
+# Long-string detection: strings longer than this that look like tokens get scrubbed
+_TOKEN_MIN_LEN = 24
+# Characters common in tokens / JWTs / hex IDs
+_TOKEN_CHARS = re.compile(r"^[A-Za-z0-9+/=._\-]+$")
+
+
+def _is_token_like(value: str) -> bool:
+    """Return True if *value* looks like an opaque bearer token or ID."""
+    return len(value) >= _TOKEN_MIN_LEN and bool(_TOKEN_CHARS.match(value))
+
+
+def redact_data(
+    data: Any,
+    _parent_key: str | None = None,
+    _property_name: str | None = None,
+) -> Any:
     """Recursively scrub sensitive information from data.
 
-    This removes emails, IPs, macs, tokens, passwords, dealer info.
+    Three layers of protection:
+
+    1. **Key-based**: if the enclosing dict key matches a sensitive keyword
+       the entire string value is replaced with ``***REDACTED***``.
+    2. **Property-name-based**: Ayla API responses wrap each sensor as
+       ``{"name": "wifi_ssid", "value": "My Network"}``.  When a dict of
+       that shape is detected the *value* field is checked against
+       :data:`_SENSITIVE_PROPERTY_NAMES` and redacted if it matches.
+    3. **Pattern-based**: email addresses, IPv4, MAC addresses, and long
+       token-like strings are scrubbed from every remaining string.
     """
     if isinstance(data, dict):
-        return {k: redact_data(v, is_key=k) for k, v in data.items()}
+        # Detect Ayla property dict: {"name": str, "value": ...}
+        prop_name: str | None = None
+        if "name" in data and "value" in data and isinstance(data.get("name"), str):
+            prop_name = str(data["name"]).lower()
+
+        result: dict[str, Any] = {}
+        for k, v in data.items():
+            effective_prop_name = prop_name if k == "value" else None
+            result[k] = redact_data(
+                v, _parent_key=k, _property_name=effective_prop_name
+            )
+        return result
+
     elif isinstance(data, list):
-        return [redact_data(v) for v in data]
+        return [redact_data(item) for item in data]
+
     elif isinstance(data, str):
-        if is_key:
-            # Check if the key itself suggests it's sensitive
-            key_lower = str(is_key).lower()
-            if any(
-                x in key_lower
-                for x in [
-                    "email",
-                    "password",
-                    "token",
-                    "cookie",
-                    "ip",
-                    "mac",
-                    "dealer",
-                    "customer",
-                    "address",
-                    "phone",
-                    "zip",
-                    "lat",
-                    "lng",
-                    "ssid",
-                    "wifi",
-                    "auth",
-                ]
-            ):
+        # --- Layer 1: key-based redaction ---
+        if _parent_key is not None:
+            key_lower = _parent_key.lower()
+            if any(x in key_lower for x in _SENSITIVE_KEYS):
                 return "***REDACTED***"
 
-        # Scrub email addresses
-        if "@" in data and "." in data:
+        # --- Layer 2: property-name-based redaction ---
+        if _property_name is not None and _property_name in _SENSITIVE_PROPERTY_NAMES:
+            return "***REDACTED***"
+
+        # --- Layer 3: pattern-based redaction ---
+        # Email
+        if "@" in data:
             data = re.sub(
                 r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+",
                 "***REDACTED_EMAIL***",
                 data,
             )
-        # Scrub IPv4 addresses (simple regex)
+        # IPv4
         data = re.sub(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", "***REDACTED_IP***", data)
-        # Scrub MAC addresses (00:00:00:00:00:00 or 00-00-00-00-00-00)
+        # MAC
         data = re.sub(
             r"\b([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})\b",
             "***REDACTED_MAC***",
             data,
         )
-        # Scrub Tokens / Auth
-        if len(data) > 30 and ("." in data or data.isalnum() or "-" in data):
-            # This is a bit aggressive but catches long tokens.
-            # We'll only apply this if it looks like a JWT or long hex string.
-            # However, DSNs are also strings. DSNs look like AC000W000...
-            # We don't strictly scrub DSNs entirely but we probably should.
-            pass
+        # Long token-like strings (bearer tokens, UUIDs, opaque IDs)
+        if _is_token_like(data):
+            return "***REDACTED_TOKEN***"
 
         return data
+
     else:
         return data
 
@@ -100,7 +175,19 @@ async def async_main() -> int:
     parser.add_argument(
         "--list-properties",
         action="store_true",
-        help="Print property values in terminal",
+        help=(
+            "Print redacted property names and values to the terminal. "
+            "Sensitive values (SSIDs, IPs, tokens) are masked. "
+            "To see raw values for local debugging only, use --raw-properties instead."
+        ),
+    )
+    parser.add_argument(
+        "--raw-properties",
+        action="store_true",
+        help=(
+            "[DEVELOPMENT ONLY] Print raw, unredacted property values to the terminal. "
+            "NEVER share this output publicly."
+        ),
     )
     parser.add_argument(
         "--write-fixture",
@@ -156,17 +243,30 @@ async def async_main() -> int:
 
                 props = await api.async_get_device_properties(dsn)
 
-                if args.list_properties:
-                    _LOGGER.info(f"Properties for {safe_dsn}:")
-                    for p in props:
-                        name = p.get("name")
-                        val = p.get("value")
-                        typ = type(val).__name__
-                        ts = p.get("data_updated_at")
-                        _LOGGER.info(f"  - {name}: {val} ({typ}) updated at {ts}")
+                if args.list_properties or args.raw_properties:
+                    _LOGGER.info("Properties for %s:", safe_dsn)
+                    redacted_props = redact_data(props)
+                    for raw_p, red_p in zip(props, redacted_props, strict=True):
+                        prop_name_str = raw_p.get("name", "?")
+                        if args.raw_properties:
+                            val: Any = raw_p.get("value")
+                            _LOGGER.warning(
+                                "  [RAW] %s: %s (%s) updated at %s",
+                                prop_name_str,
+                                val,
+                                type(val).__name__,
+                                raw_p.get("data_updated_at"),
+                            )
+                        else:
+                            safe_val = red_p.get("value")
+                            _LOGGER.info(
+                                "  - %s: %s updated at %s",
+                                prop_name_str,
+                                safe_val,
+                                raw_p.get("data_updated_at"),
+                            )
                 else:
-                    prop_names = [p.get("name") for p in props]
-                    _LOGGER.info(f"  Available properties: {len(prop_names)}")
+                    _LOGGER.info("  Available properties: %d", len(props))
 
                 fixture_data["devices"].append({"device": dev, "properties": props})
 
