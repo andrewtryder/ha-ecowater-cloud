@@ -86,8 +86,8 @@ async def async_get_config_entry_diagnostics(
     backend_id = entry.data.get(CONF_BACKEND, "ayla")
 
     devices = {}
-    for _serial_number, device_data in coordinator.data.items():
-        devices["***REDACTED***"] = _redact_device_data(device_data)
+    for index, device_data in enumerate(coordinator.data.values(), start=1):
+        devices[f"device_{index}"] = _redact_device_data(device_data)
 
     return {
         "entry": async_redact_data(entry.as_dict(), TO_REDACT),

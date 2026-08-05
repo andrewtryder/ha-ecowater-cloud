@@ -53,9 +53,9 @@ async def test_diagnostics_redaction(hass: HomeAssistant, mock_ayla_backend) -> 
     assert "devices" in diagnostics["coordinator"]
     devices = diagnostics["coordinator"]["devices"]
     assert len(devices) == 1
-    assert "***REDACTED***" in devices
+    assert "device_1" in devices
 
-    device_data = devices["***REDACTED***"]
+    device_data = devices["device_1"]
     assert device_data["descriptor"]["serial_number"] == "***REDACTED***"
     assert device_data["descriptor"]["backend_id"] == "***REDACTED***"
 
