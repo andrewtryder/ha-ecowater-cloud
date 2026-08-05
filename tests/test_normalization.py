@@ -74,6 +74,8 @@ def test_normalize_synthetic_device():
     # Capabilities
     assert normalized.capabilities.has_water_usage_today is True
     assert normalized.capabilities.has_water_usage_daily_avg is True
+    assert normalized.capabilities.has_water_available is True
+    assert normalized.capabilities.has_total_water_used is True
     assert normalized.capabilities.has_flow_sensor is True
     assert normalized.capabilities.has_salt_sensor is True
     assert normalized.capabilities.has_rock_sensor is True
@@ -138,6 +140,9 @@ def test_normalize_edge_cases():
 
     # Capabilities
     assert normalized.capabilities.has_water_usage_today is True
+    assert normalized.capabilities.has_water_usage_daily_avg is False
+    assert normalized.capabilities.has_water_available is False
+    assert normalized.capabilities.has_total_water_used is False
     assert normalized.capabilities.has_flow_sensor is True
     assert normalized.capabilities.has_salt_sensor is True
     assert normalized.capabilities.has_rock_sensor is False

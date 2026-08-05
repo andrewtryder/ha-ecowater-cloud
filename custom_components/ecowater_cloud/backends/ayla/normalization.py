@@ -962,8 +962,8 @@ def normalize_device(
     # Capabilities
     has_water_usage_today = "gallons_used_today" in props
     has_water_usage_daily_avg = "avg_daily_use_gals" in props
-    has_water_available = "treated_water_available" in props
-    has_total_water_used = "total_gallons" in props
+    has_water_available = "treated_water_avail_gals" in props
+    has_total_water_used = "total_water_used_gals" in props
     has_flow_sensor = "current_water_flow_gpm" in props
     has_salt_sensor = "salt_level_tenths" in props
     has_rock_sensor = "total_rock_removed_lbs" in props
