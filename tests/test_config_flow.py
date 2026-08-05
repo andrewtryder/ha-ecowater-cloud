@@ -1,18 +1,17 @@
-"""Tests for the EcoWater Cloud config flow."""
+"""Test the EcoWater Cloud config flow."""
 
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant.config_entries import SOURCE_REAUTH, SOURCE_USER
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ecowater_cloud.const import (
     BACKEND_AYLA,
-    BACKEND_HYDROLINK,
     CONF_BACKEND,
     CONF_POLLING_INTERVAL,
-    CONF_REGION,
     DOMAIN,
 )
 from custom_components.ecowater_cloud.exceptions import (
@@ -20,39 +19,31 @@ from custom_components.ecowater_cloud.exceptions import (
     ConnectivityError,
     RateLimitError,
 )
-from tests.conftest import MOCK_PASSWORD, MOCK_USERNAME
+
+MOCK_USERNAME = "test@example.com"
+MOCK_PASSWORD = "test-password"
 
 
 @pytest.mark.asyncio
-async def test_form_user_ayla(hass: HomeAssistant, mock_ayla_backend) -> None:
-    """Test we get the form and create an entry via Ayla."""
+async def test_form_user(hass: HomeAssistant, mock_ayla_backend) -> None:
+    """Test we get the form and create an entry."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
     assert result["type"] is FlowResultType.FORM
-    assert result["step_id"] == "user"
+    assert result["errors"] == {}
 
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {CONF_BACKEND: BACKEND_AYLA},
-    )
-    assert result["type"] is FlowResultType.FORM
-    assert result["step_id"] == "ayla"
-
-    with (
-        patch(
-            "custom_components.ecowater_cloud.config_flow.AylaBackend",
-            return_value=mock_ayla_backend,
-        ),
-        patch(
-            "custom_components.ecowater_cloud.async_setup_entry",
-            return_value=True,
-        ) as mock_setup_entry,
-    ):
+    with patch(
+        "custom_components.ecowater_cloud.config_flow.AylaBackend",
+        return_value=mock_ayla_backend,
+    ), patch(
+        "custom_components.ecowater_cloud.async_setup_entry",
+        return_value=True,
+    ) as mock_setup_entry:
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
             {
-                "username": " Test@Example.com ",
+                "username": MOCK_USERNAME,
                 "password": MOCK_PASSWORD,
             },
         )
@@ -62,39 +53,10 @@ async def test_form_user_ayla(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert result2["title"] == "EcoWater Cloud"
     assert result2["data"] == {
         "backend": BACKEND_AYLA,
-        "username": "test@example.com",  # Should be normalized
+        "username": "test@example.com",
         "password": MOCK_PASSWORD,
     }
     mock_setup_entry.assert_awaited_once()
-
-
-@pytest.mark.asyncio
-async def test_form_user_hydrolink_not_implemented(hass: HomeAssistant) -> None:
-    """Test we get the form and handle HydroLink not implemented error."""
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": SOURCE_USER}
-    )
-    assert result["type"] is FlowResultType.FORM
-
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {CONF_BACKEND: BACKEND_HYDROLINK},
-    )
-    assert result["type"] is FlowResultType.FORM
-    assert result["step_id"] == "hydrolink"
-
-    # HydroLinkBackend throws NotImplementedError on authenticate
-    result2 = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {
-            "username": MOCK_USERNAME,
-            "password": MOCK_PASSWORD,
-            CONF_REGION: "eu",
-        },
-    )
-
-    assert result2["type"] is FlowResultType.FORM
-    assert result2["errors"] == {"base": "not_implemented"}
 
 
 @pytest.mark.asyncio
@@ -113,10 +75,6 @@ async def test_form_user_errors(
     """Test we handle errors during user step."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
-    )
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {CONF_BACKEND: BACKEND_AYLA},
     )
 
     with patch(
@@ -142,10 +100,6 @@ async def test_form_user_no_devices(hass: HomeAssistant) -> None:
     """Test handling of an account with no supported devices."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
-    )
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {CONF_BACKEND: BACKEND_AYLA},
     )
 
     with patch(
@@ -174,7 +128,7 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
 
     # Pre-create entry
     entry = MockConfigEntry(
-        version=2,
+        version=1,
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
@@ -188,10 +142,6 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
 
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
-    )
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {CONF_BACKEND: BACKEND_AYLA},
     )
 
     with patch(
@@ -216,7 +166,7 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
-        version=2,
+        version=1,
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
@@ -264,7 +214,7 @@ async def test_options_flow(hass: HomeAssistant) -> None:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
-        version=2,
+        version=1,
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
@@ -287,28 +237,3 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
     assert result2["type"] is FlowResultType.CREATE_ENTRY
     assert result2["data"] == {CONF_POLLING_INTERVAL: 15}
-
-
-@pytest.mark.asyncio
-async def test_migration(hass: HomeAssistant) -> None:
-    """Test migration from version 1 to version 2."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
-
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        title="EcoWater Cloud",
-        data={"username": MOCK_USERNAME, "password": MOCK_PASSWORD},
-        version=1,
-        minor_version=1,
-    )
-    entry.add_to_hass(hass)
-
-    with patch(
-        "custom_components.ecowater_cloud.async_setup_entry",
-        return_value=True,
-    ):
-        await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
-
-    assert entry.version == 2
-    assert entry.data["backend"] == "ayla"

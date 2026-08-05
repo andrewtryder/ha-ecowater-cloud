@@ -18,13 +18,10 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .backends.ayla import AylaBackend
-from .backends.hydrolink import HydroLinkBackend
 from .const import (
     BACKEND_AYLA,
-    BACKEND_HYDROLINK,
     CONF_BACKEND,
     CONF_POLLING_INTERVAL,
-    CONF_REGION,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MIN_SCAN_INTERVAL,
@@ -35,53 +32,19 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_BACKEND, default=BACKEND_AYLA): vol.In(
-            {
-                BACKEND_AYLA: "Legacy EcoWater Wi-Fi",
-                BACKEND_HYDROLINK: "HydroLink Home",
-            }
-        ),
-    }
-)
-
-STEP_AYLA_DATA_SCHEMA = vol.Schema(
-    {
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
     }
 )
 
-STEP_HYDROLINK_DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_USERNAME): str,
-        vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_REGION, default="us"): vol.In(
-            {
-                "us": "United States",
-                "eu": "Europe",
-            }
-        ),
-    }
-)
 
-
-async def validate_input(hass: HomeAssistant, backend_type: str, data: dict[str, Any]) -> dict[str, Any]:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    from .backends import BackendAdapter
     session = async_get_clientsession(hass)
-
-    backend: BackendAdapter
-    if backend_type == BACKEND_AYLA:
-        backend = AylaBackend(session, data[CONF_USERNAME], data[CONF_PASSWORD])
-    elif backend_type == BACKEND_HYDROLINK:
-        backend = HydroLinkBackend(
-            session, data[CONF_USERNAME], data[CONF_PASSWORD], data[CONF_REGION]
-        )
-    else:
-        raise ValueError(f"Unknown backend type: {backend_type}")
+    backend = AylaBackend(session, data[CONF_USERNAME], data[CONF_PASSWORD])
 
     await backend.async_authenticate()
 
@@ -97,32 +60,13 @@ async def validate_input(hass: HomeAssistant, backend_type: str, data: dict[str,
 class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for EcoWater Cloud."""
 
-    VERSION = 2
+    VERSION = 1
     MINOR_VERSION = 1
-
-    def __init__(self) -> None:
-        """Initialize the flow."""
-        self._backend: str | None = None
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle the initial step."""
-        if user_input is not None:
-            self._backend = user_input[CONF_BACKEND]
-            if self._backend == BACKEND_AYLA:
-                return await self.async_step_ayla()
-            if self._backend == BACKEND_HYDROLINK:
-                return await self.async_step_hydrolink()
-
-        return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_DATA_SCHEMA
-        )
-
-    async def async_step_ayla(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Handle Ayla credentials."""
         errors: dict[str, str] = {}
         if user_input is not None:
             normalized_email = user_input[CONF_USERNAME].lower().strip()
@@ -130,7 +74,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             try:
-                info = await validate_input(self.hass, BACKEND_AYLA, user_input)
+                info = await validate_input(self.hass, user_input)
             except AuthenticationError:
                 errors["base"] = "invalid_auth"
             except ConnectivityError:
@@ -139,8 +83,6 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "rate_limit"
             except NoDevicesError:
                 errors["base"] = "no_devices"
-            except NotImplementedError:
-                errors["base"] = "not_implemented"
             except Exception:
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
@@ -153,45 +95,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title=info["title"], data=data)
 
         return self.async_show_form(
-            step_id="ayla", data_schema=STEP_AYLA_DATA_SCHEMA, errors=errors
-        )
-
-    async def async_step_hydrolink(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Handle HydroLink credentials."""
-        errors: dict[str, str] = {}
-        if user_input is not None:
-            normalized_email = user_input[CONF_USERNAME].lower().strip()
-            await self.async_set_unique_id(normalized_email)
-            self._abort_if_unique_id_configured()
-
-            try:
-                info = await validate_input(self.hass, BACKEND_HYDROLINK, user_input)
-            except AuthenticationError:
-                errors["base"] = "invalid_auth"
-            except ConnectivityError:
-                errors["base"] = "cannot_connect"
-            except RateLimitError:
-                errors["base"] = "rate_limit"
-            except NoDevicesError:
-                errors["base"] = "no_devices"
-            except NotImplementedError:
-                errors["base"] = "not_implemented"
-            except Exception:
-                _LOGGER.exception("Unexpected exception")
-                errors["base"] = "unknown"
-            else:
-                data = {
-                    CONF_BACKEND: BACKEND_HYDROLINK,
-                    CONF_USERNAME: normalized_email,
-                    CONF_PASSWORD: user_input[CONF_PASSWORD],
-                    CONF_REGION: user_input[CONF_REGION],
-                }
-                return self.async_create_entry(title=info["title"], data=data)
-
-        return self.async_show_form(
-            step_id="hydrolink", data_schema=STEP_HYDROLINK_DATA_SCHEMA, errors=errors
+            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
     async def async_step_reauth(
@@ -205,9 +109,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Dialog that informs the user that reauth is required."""
         errors: dict[str, str] = {}
-
         reauth_entry = self._get_reauth_entry()
-        backend_type = reauth_entry.data.get(CONF_BACKEND, BACKEND_AYLA)
 
         if user_input is not None:
             try:
@@ -215,18 +117,13 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_USERNAME: reauth_entry.data[CONF_USERNAME],
                     CONF_PASSWORD: user_input[CONF_PASSWORD],
                 }
-                if CONF_REGION in reauth_entry.data:
-                    test_data[CONF_REGION] = reauth_entry.data[CONF_REGION]
-
-                await validate_input(self.hass, backend_type, test_data)
+                await validate_input(self.hass, test_data)
             except AuthenticationError:
                 errors["base"] = "invalid_auth"
             except ConnectivityError:
                 errors["base"] = "cannot_connect"
             except RateLimitError:
                 errors["base"] = "rate_limit"
-            except NotImplementedError:
-                errors["base"] = "not_implemented"
             except Exception:
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
