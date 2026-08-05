@@ -1,0 +1,37 @@
+{
+    "name": "EcoWater Cloud Development",
+    "image": "ghcr.io/home-assistant/devcontainer:2026.3",
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.14"
+        }
+    },
+    "postCreateCommand": "pip install -e '.[dev]'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.mypy-type-checker",
+                "charliermarsh.ruff",
+                "esbenp.prettier-vscode"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "editor.formatOnSave": true,
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": "explicit",
+                        "source.organizeImports.ruff": "explicit"
+                    }
+                }
+            }
+        }
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder}/custom_components,target=/workspaces/core/config/custom_components,type=bind"
+    ],
+    "remoteEnv": {
+        "PYTHONPATH": "/workspaces/core"
+    }
+}

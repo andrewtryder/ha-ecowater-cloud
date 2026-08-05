@@ -1,0 +1,121 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "[%key:common::config_flow::title::connect%]",
+        "description": "Enter your EcoWater cloud account email and password.",
+        "data": {
+          "username": "[%key:common::config_flow::data::email%]",
+          "password": "[%key:common::config_flow::data::password%]"
+        }
+      },
+      "reauth_confirm": {
+        "title": "[%key:common::config_flow::title::reauth%]",
+        "description": "The password for {username} is invalid or has expired. Please enter your current password.",
+        "data": {
+          "password": "[%key:common::config_flow::data::password%]"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "rate_limit": "Too many requests to the cloud. Please try again later.",
+      "no_devices": "No supported devices found on this account.",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
+      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure EcoWater Cloud Options",
+        "data": {
+          "polling_interval_minutes": "Polling interval (minutes)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "water_used_today": {
+        "name": "Water used today"
+      },
+      "average_daily_water_use": {
+        "name": "Average daily water use"
+      },
+      "treated_water_available": {
+        "name": "Treated water available"
+      },
+      "total_water_used": {
+        "name": "Total water used"
+      },
+      "current_water_flow": {
+        "name": "Current water flow"
+      },
+      "salt_level": {
+        "name": "Salt level"
+      },
+      "days_until_out_of_salt": {
+        "name": "Days until out of salt"
+      },
+      "estimated_out_of_salt_date": {
+        "name": "Estimated out of salt date"
+      },
+      "salt_type": {
+        "name": "Salt type",
+        "state": {
+          "sodium_chloride": "Sodium Chloride",
+          "potassium_chloride": "Potassium Chloride",
+          "solar_crystals": "Solar Crystals"
+        }
+      },
+      "regeneration_status": {
+        "name": "Regeneration status",
+        "state": {
+          "standby": "Standby",
+          "regenerating": "Regenerating",
+          "scheduled": "Scheduled"
+        }
+      },
+      "days_since_last_regeneration": {
+        "name": "Days since last regeneration"
+      },
+      "estimated_last_regeneration_date": {
+        "name": "Estimated last regeneration date"
+      },
+      "rock_removed_since_regeneration": {
+        "name": "Rock removed since regeneration"
+      },
+      "average_rock_removal": {
+        "name": "Average rock removal"
+      },
+      "integration_last_successful_update": {
+        "name": "Integration last successful update"
+      },
+      "source_last_updated": {
+        "name": "Source last updated"
+      },
+      "source_oldest_data": {
+        "name": "Source oldest data"
+      },
+      "wifi_signal_strength": {
+        "name": "Wi-Fi signal strength"
+      }
+    },
+    "binary_sensor": {
+      "device_reported_online": {
+        "name": "Device reported online"
+      },
+      "regenerating": {
+        "name": "Regenerating"
+      },
+      "recharge_enabled": {
+        "name": "Recharge enabled"
+      }
+    }
+  }
+}

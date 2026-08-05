@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ha-ecowater-cloud"
+version = "0.1.0"
+description = "Home Assistant custom integration for EcoWater Cloud"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.14.2"
+authors = [{ name = "Andrew Tryder" }]
+
+# Runtime dependencies are declared in manifest.json (installed by HA).
+# Nothing here — keep the runtime footprint inside HA's own environment.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "homeassistant>=2026.3.0",
+    "pytest>=8.3",
+    "pytest-homeassistant-custom-component>=0.13",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.9",
+    "mypy>=1.14",
+    "freezegun>=1.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["custom_components"]
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "ANN", # flake8-annotations (subset)
+    "S",   # flake8-bandit (security)
+    "RUF", # ruff-specific
+]
+ignore = [
+    "ANN401", # Dynamically typed expressions (Any) allowed
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "ANN",    # no annotation requirements in tests
+    "S101",   # use of assert is expected in tests
+    "S105",   # hardcoded passwords in test fixtures
+    "E501",   # long lines in test data
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["custom_components.ecowater_cloud"]
+
+# ---------------------------------------------------------------------------
+# Mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_any_generics = false
+exclude = ["tests/"]
+
+[[tool.mypy.overrides]]
+module = "homeassistant.*"
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+    # HA internals occasionally emit ResourceWarning in tests
+    "ignore::ResourceWarning",
+]
+
+[dependency-groups]
+dev = []
