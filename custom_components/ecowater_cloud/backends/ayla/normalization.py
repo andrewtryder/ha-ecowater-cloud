@@ -919,12 +919,12 @@ def normalize_device(
 
     # Regeneration State
     regen_enum = _safe_int(props.get("regen_status_enum"))
-    regen_status = "unknown"
+    regen_status: str | None = None
     if regen_enum == 0:
         regen_status = "standby"
     elif regen_enum == 1:
         regen_status = "scheduled"
-    elif regen_enum is not None:
+    elif regen_enum == 2:
         regen_status = "regenerating"
 
     days_since_regen = _safe_int(props.get("days_since_last_regen"))
@@ -960,13 +960,19 @@ def normalize_device(
     out_of_salt_days = _safe_int(props.get("out_of_salt_estimate_days"))
 
     # Capabilities
-    has_water_usage = "gallons_used_today" in props or "avg_daily_use_gals" in props
+    has_water_usage_today = "gallons_used_today" in props
+    has_water_usage_daily_avg = "avg_daily_use_gals" in props
+    has_water_available = "treated_water_available" in props
+    has_total_water_used = "total_gallons" in props
     has_flow_sensor = "current_water_flow_gpm" in props
     has_salt_sensor = "salt_level_tenths" in props
     has_rock_sensor = "total_rock_removed_lbs" in props
 
     capabilities = DeviceCapabilities(
-        has_water_usage=has_water_usage,
+        has_water_usage_today=has_water_usage_today,
+        has_water_usage_daily_avg=has_water_usage_daily_avg,
+        has_water_available=has_water_available,
+        has_total_water_used=has_total_water_used,
         has_flow_sensor=has_flow_sensor,
         has_salt_sensor=has_salt_sensor,
         has_rock_sensor=has_rock_sensor,

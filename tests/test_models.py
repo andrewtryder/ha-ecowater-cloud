@@ -51,7 +51,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(True, True, True, True),
+                capabilities=DeviceCapabilities(
+                    True, True, True, True, True, True, True
+                ),
                 freshness=DataFreshness(received_at=naive_dt),
                 regeneration=RegenerationState(status="None"),
             )
@@ -66,7 +68,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(True, True, True, True),
+                capabilities=DeviceCapabilities(
+                    True, True, True, True, True, True, True
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),
@@ -84,7 +88,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(True, True, True, True),
+                capabilities=DeviceCapabilities(
+                    True, True, True, True, True, True, True
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),
@@ -102,7 +108,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(True, True, True, True),
+                capabilities=DeviceCapabilities(
+                    True, True, True, True, True, True, True
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),

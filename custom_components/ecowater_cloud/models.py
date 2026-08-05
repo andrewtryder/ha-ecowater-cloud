@@ -41,7 +41,10 @@ class DeviceDescriptor:
 class DeviceCapabilities:
     """Flags indicating which features are present on this specific device."""
 
-    has_water_usage: bool
+    has_water_usage_today: bool
+    has_water_usage_daily_avg: bool
+    has_water_available: bool
+    has_total_water_used: bool
     has_flow_sensor: bool
     has_salt_sensor: bool
     has_rock_sensor: bool
@@ -60,7 +63,7 @@ class DataFreshness:
 class RegenerationState:
     """Telemetry related to device regeneration/recharge cycles."""
 
-    status: str
+    status: str | None
     is_enabled: bool | None = field(default=None)
     days_since_last: int | None = field(default=None)
     estimated_last_date: datetime.date | None = field(default=None)

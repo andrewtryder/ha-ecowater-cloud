@@ -42,7 +42,9 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="regenerating",
         device_class=BinarySensorDeviceClass.RUNNING,
         supported_fn=lambda d: d.regeneration.status is not None,
-        is_on_fn=lambda d: d.regeneration.status.lower() == "regenerating",
+        is_on_fn=lambda d: bool(
+            d.regeneration.status and d.regeneration.status.lower() == "regenerating"
+        ),
     ),
     EcoWaterBinarySensorEntityDescription(
         key="recharge_enabled",

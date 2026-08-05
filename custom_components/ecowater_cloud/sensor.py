@@ -48,7 +48,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.WATER,
         native_unit_of_measurement=UnitOfVolume.GALLONS,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        supported_fn=lambda d: d.capabilities.has_water_usage,
+        supported_fn=lambda d: d.capabilities.has_water_usage_today,
         value_fn=lambda d: d.water_used_today_gallons,
     ),
     EcoWaterSensorEntityDescription(
@@ -57,7 +57,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.VOLUME,
         native_unit_of_measurement=UnitOfVolume.GALLONS,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_water_usage,
+        supported_fn=lambda d: d.capabilities.has_water_usage_daily_avg,
         value_fn=lambda d: d.water_used_daily_avg_gallons,
     ),
     EcoWaterSensorEntityDescription(
@@ -66,7 +66,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.VOLUME,
         native_unit_of_measurement=UnitOfVolume.GALLONS,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_water_usage,
+        supported_fn=lambda d: d.capabilities.has_water_available,
         value_fn=lambda d: d.water_available_gallons,
     ),
     EcoWaterSensorEntityDescription(
@@ -75,7 +75,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.WATER,
         native_unit_of_measurement=UnitOfVolume.GALLONS,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        supported_fn=lambda d: d.capabilities.has_water_usage,
+        supported_fn=lambda d: d.capabilities.has_total_water_used,
         value_fn=lambda d: d.total_water_used_gallons,
     ),
     EcoWaterSensorEntityDescription(

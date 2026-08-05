@@ -64,4 +64,7 @@ async def test_diagnostics_redaction(hass: HomeAssistant, mock_ayla_backend) -> 
     # Safe fields should be exposed
     assert device_data["descriptor"]["model"] == "EcoWater ERR3700R"
     assert device_data["total_water_used_gallons"] == 15000.0
-    assert device_data["capabilities"]["has_water_usage"] is True
+    assert device_data["capabilities"]["has_water_usage_today"] is True
+    assert device_data["capabilities"]["has_water_usage_daily_avg"] is True
+    assert device_data["capabilities"]["has_water_available"] is True
+    assert device_data["capabilities"]["has_total_water_used"] is True

@@ -51,7 +51,10 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             wifi_signal_strength_dbm=-65,
         ),
         capabilities=DeviceCapabilities(
-            has_water_usage=True,
+            has_water_usage_today=True,
+            has_water_usage_daily_avg=True,
+            has_water_available=True,
+            has_total_water_used=True,
             has_flow_sensor=True,
             has_salt_sensor=True,
             has_rock_sensor=True,

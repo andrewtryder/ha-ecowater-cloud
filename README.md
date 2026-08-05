@@ -14,7 +14,7 @@ A modern, async, standalone Home Assistant integration for EcoWater Cloud connec
 ## Features & Limitations
 
 - **Backend Support**: 
-  - **Ayla Wi-Fi Backend**: Experimental Ayla support (Read-Only). (Full support pending live account verification).
+  - **Ayla Wi-Fi Backend**: Experimental Ayla support (Read-Only). (Full support pending live account verification). For the first alpha, only US Ayla accounts are documented/supported unless live testing confirms the US endpoint works globally.
   - **HydroLink Home Backend**: Not supported in this repository. For HydroLink devices, please use [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink).
 - **Read-Only**: This integration is currently read-only. No control capabilities (like triggering a regeneration) are implemented yet.
 - **Standalone Architecture**: This integration uses a fully standalone, async API client built directly into the component. It does **not** rely on the old `ecowater-softener` Python package or any third-party unmaintained libraries.

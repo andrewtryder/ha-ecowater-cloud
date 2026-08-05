@@ -98,7 +98,8 @@ async def test_backend_full_http_chain(hass: HomeAssistant, aioclient_mock) -> N
     assert device.days_until_out_of_salt == 30
     assert device.regeneration.status == "standby"
     assert device.salt_type == "sodium_chloride"
-    assert device.capabilities.has_water_usage is True
+    assert device.capabilities.has_water_usage_today is True
+    assert device.capabilities.has_water_usage_daily_avg is True
     assert device.capabilities.has_salt_sensor is True
 
 

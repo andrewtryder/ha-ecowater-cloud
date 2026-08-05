@@ -80,7 +80,14 @@ async def test_sensor_missing_capability(
         from dataclasses import replace
 
         new_device = replace(
-            device, capabilities=replace(device.capabilities, has_water_usage=False)
+            device,
+            capabilities=replace(
+                device.capabilities,
+                has_water_usage_today=False,
+                has_water_usage_daily_avg=False,
+                has_water_available=False,
+                has_total_water_used=False,
+            ),
         )
         account_info.devices["ABC123456789"] = new_device
 

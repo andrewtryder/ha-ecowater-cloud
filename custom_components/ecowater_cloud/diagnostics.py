@@ -29,7 +29,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "backend": data.descriptor.backend,
         "backend_id": "***REDACTED***",
         "serial_number": "***REDACTED***",
-        "name": data.descriptor.name,
+        "name": "***REDACTED***",
         "model": data.descriptor.model,
         "model_id": data.descriptor.model_id,
         "firmware_version": data.descriptor.firmware_version,
@@ -39,7 +39,10 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
 
     # Include capabilities and freshness for debugging polling issues
     capabilities_dict = {
-        "has_water_usage": data.capabilities.has_water_usage,
+        "has_water_usage_today": data.capabilities.has_water_usage_today,
+        "has_water_usage_daily_avg": data.capabilities.has_water_usage_daily_avg,
+        "has_water_available": data.capabilities.has_water_available,
+        "has_total_water_used": data.capabilities.has_total_water_used,
         "has_flow_sensor": data.capabilities.has_flow_sensor,
         "has_salt_sensor": data.capabilities.has_salt_sensor,
         "has_rock_sensor": data.capabilities.has_rock_sensor,
@@ -105,7 +108,7 @@ async def async_get_config_entry_diagnostics(
         "polling_interval": str(coordinator.update_interval),
         "coordinator": {
             "last_update_success": coordinator.last_update_success,
-            "last_exception": str(coordinator.last_exception)
+            "last_exception": type(coordinator.last_exception).__name__
             if coordinator.last_exception
             else None,
             "devices_count": len(devices),
