@@ -17,6 +17,13 @@
     },
     {
       "property": {
+        "name": "model_description",
+        "value": "EWS ECR3700R30",
+        "data_updated_at": "2026-08-05T10:00:00Z"
+      }
+    },
+    {
+      "property": {
         "name": "base_software_version",
         "value": "V1.02",
         "data_updated_at": "2026-08-05T10:00:00Z"

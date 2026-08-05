@@ -31,6 +31,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "serial_number": "***REDACTED***",
         "name": "***REDACTED***",
         "model": data.descriptor.model,
+        "oem_model": data.descriptor.oem_model,
         "model_id": data.descriptor.model_id,
         "firmware_version": data.descriptor.firmware_version,
         "is_online": data.descriptor.is_online,

@@ -925,7 +925,12 @@ def normalize_device(
         backend_id=device_raw.get("dsn", ""),
         serial_number=device_raw.get("dsn", ""),
         name=device_raw.get("product_name", "EcoWater Device"),
-        model=device_raw.get("oem_model", "Unknown Model"),
+        model=(
+            _safe_str(props.get("model_description"))
+            or device_raw.get("oem_model")
+            or "Unknown Model"
+        ),
+        oem_model=device_raw.get("oem_model"),
         model_id=model_id_val,
         firmware_version=_safe_str(props.get("base_software_version")),
         is_online=(device_raw.get("connection_status") == "Online")

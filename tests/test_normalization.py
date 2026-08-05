@@ -29,7 +29,8 @@ def test_normalize_synthetic_device():
     normalized = normalize_device(dev, props, received_at)
 
     assert normalized.descriptor.serial_number == "AC000W000123456"
-    assert normalized.descriptor.model == "EWS3500"
+    assert normalized.descriptor.model == "EWS ECR3700R30"
+    assert normalized.descriptor.oem_model == "EWS3500"
     assert normalized.descriptor.model_id == "46904"
     assert normalized.descriptor.firmware_version == "V1.02"
     assert normalized.descriptor.is_online is True
@@ -119,6 +120,7 @@ def test_normalize_edge_cases():
 
     # Missing string fields fallback gracefully
     assert normalized.descriptor.model == "Unknown Model"
+    assert normalized.descriptor.oem_model is None
     assert normalized.descriptor.is_online is None
 
     # Missing / Null values

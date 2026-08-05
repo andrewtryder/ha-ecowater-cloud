@@ -45,6 +45,7 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             serial_number=MOCK_SERIAL,
             name="EcoWater Softener",
             model="EcoWater ERR3700R",
+            oem_model="EWS3700",
             model_id="46904",
             firmware_version="1.2.3",
             is_online=True,

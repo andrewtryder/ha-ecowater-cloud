@@ -30,7 +30,8 @@ class DeviceDescriptor:
     backend_id: str
     serial_number: str
     name: str
-    model: str
+    model: str | None = field(default=None)
+    oem_model: str | None = field(default=None)
     model_id: str | None = field(default=None)
     firmware_version: str | None = field(default=None)
     is_online: bool | None = field(default=None)
