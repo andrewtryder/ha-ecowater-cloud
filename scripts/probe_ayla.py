@@ -116,16 +116,29 @@ def redact_data(
     """
     if isinstance(data, dict):
         # Detect Ayla property dict: {"name": str, "value": ...}
-        prop_name: str | None = None
-        if "name" in data and "value" in data and isinstance(data.get("name"), str):
-            prop_name = str(data["name"]).lower()
+        if (
+            "name" in data
+            and "value" in data
+            and isinstance(data["name"], str)
+        ):
+            property_name = data["name"]
+
+            result = {
+                key: redact_data(value, _parent_key=key)
+                for key, value in data.items()
+                if key not in {"name", "value"}
+            }
+            result["name"] = property_name
+            result["value"] = redact_data(
+                data["value"],
+                _parent_key="value",
+                _property_name=property_name.lower(),
+            )
+            return result
 
         result: dict[str, Any] = {}
         for k, v in data.items():
-            effective_prop_name = prop_name if k == "value" else None
-            result[k] = redact_data(
-                v, _parent_key=k, _property_name=effective_prop_name
-            )
+            result[k] = redact_data(v, _parent_key=k)
         return result
 
     elif isinstance(data, list):
