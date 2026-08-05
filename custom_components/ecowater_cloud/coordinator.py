@@ -10,7 +10,13 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
-from .exceptions import AuthenticationError, ConnectivityError, ReauthenticationRequired
+from .exceptions import (
+    AuthenticationError,
+    ConnectivityError,
+    ProtocolError,
+    RateLimitError,
+    ReauthenticationRequired,
+)
 from .models import EcoWaterDeviceData
 
 if TYPE_CHECKING:
@@ -81,3 +87,7 @@ class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
             raise ConfigEntryAuthFailed(str(err)) from err
         except ConnectivityError as err:
             raise UpdateFailed(str(err)) from err
+        except RateLimitError as err:
+            raise UpdateFailed("EcoWater rate limit reached") from err
+        except ProtocolError as err:
+            raise UpdateFailed("Unexpected EcoWater response") from err

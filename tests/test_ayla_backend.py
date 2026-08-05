@@ -18,22 +18,18 @@ def mock_ayla_api(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     # Return some raw data matching the synthetic device
     api.async_list_devices = AsyncMock(return_value=[
         {
-            "device": {
-                "dsn": "AC0001",
-                "oem_model": "EWS123",
-                "connection_status": "Online"
-            }
+            "dsn": "AC0001",
+            "oem_model": "EWS123",
+            "connection_status": "Online"
         },
         {
-            "device": {
-                "dsn": "IGNORE_ME",
-                "oem_model": "OTHER_BRAND"
-            }
+            "dsn": "IGNORE_ME",
+            "oem_model": "OTHER_BRAND"
         }
     ])
 
     api.async_get_device_properties = AsyncMock(return_value=[
-        {"property": {"name": "current_water_flow_gpm", "value": 50}}
+        {"name": "current_water_flow_gpm", "value": 50}
     ])
 
     # Patch AylaBackend to use this API

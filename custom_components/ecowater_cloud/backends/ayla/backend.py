@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from custom_components.ecowater_cloud.backends import BackendAdapter
 from custom_components.ecowater_cloud.models import (
@@ -46,8 +46,7 @@ class AylaBackend(BackendAdapter):
         """Fetch basic descriptors for all supported devices."""
         raw_devices = await self._api.async_list_devices()
         descriptors = []
-        for d in raw_devices:
-            dev = d.get("device", {})
+        for dev in raw_devices:
             # Fast-fail unsupported devices if needed.
             # But the requirement is to return descriptors for supported ones.
             # Here we just parse the basic info out.
@@ -73,9 +72,9 @@ class AylaBackend(BackendAdapter):
         """
         raw_devices = await self._api.async_list_devices()
         target_dev = None
-        for d in raw_devices:
-            if d.get("device", {}).get("dsn") == serial_number:
-                target_dev = d.get("device", {})
+        for dev in raw_devices:
+            if dev.get("dsn") == serial_number:
+                target_dev = dev
                 break
 
         if not target_dev:
@@ -86,14 +85,9 @@ class AylaBackend(BackendAdapter):
         raw_props = await self._api.async_get_device_properties(serial_number)
 
         # Unwrap the property wrappers
-        unwrapped_props: list[AylaPropertyData] = []
-        for p in raw_props:
-            prop = p.get("property")
-            if prop:
-                unwrapped_props.append(prop)
+        unwrapped_props: list[AylaPropertyData] = [cast(AylaPropertyData, p) for p in raw_props]
 
         received_at = datetime.datetime.now(datetime.UTC)
-        from typing import cast
         return normalize_device(cast(AylaDeviceData, target_dev), unwrapped_props, received_at)
 
     async def async_get_all_device_data(self) -> AccountInfo:
@@ -103,9 +97,8 @@ class AylaBackend(BackendAdapter):
         devices_data = {}
         received_at = datetime.datetime.now(datetime.UTC)
 
-        from typing import cast
         for d in raw_devices:
-            dev = cast(AylaDeviceData, d.get("device", {}))
+            dev = cast(AylaDeviceData, d)
             dsn = dev.get("dsn")
             if not dsn:
                 continue
@@ -117,12 +110,7 @@ class AylaBackend(BackendAdapter):
                 continue
 
             raw_props = await self._api.async_get_device_properties(dsn)
-
-            unwrapped_props: list[AylaPropertyData] = []
-            for p in raw_props:
-                prop = p.get("property")
-                if prop:
-                    unwrapped_props.append(prop)
+            unwrapped_props: list[AylaPropertyData] = [cast(AylaPropertyData, p) for p in raw_props]
 
             devices_data[dsn] = normalize_device(dev, unwrapped_props, received_at)
 

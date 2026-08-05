@@ -75,11 +75,13 @@ class AylaApi:
 
         try:
             async with self._session.request(method, url, headers=headers, **kwargs) as response:
-                if response.status == 401 or response.status == 404:
-                    # 404 during sign_in is an Ayla quirk (app id / secret mismatch or bad user)
-                    raise AylaAuthenticationError(
-                        f"Authentication rejected by Ayla API (HTTP {response.status})"
-                    )
+                if response.status == 401:
+                    raise AylaAuthenticationError("Authentication rejected by Ayla API (HTTP 401)")
+                if response.status == 404:
+                    if url.endswith("sign_in.json"):
+                        raise AylaAuthenticationError("Authentication rejected by Ayla API (HTTP 404)")
+                    raise AylaProtocolError("HTTP error 404: Resource not found")
+
                 if response.status == 429:
                     raise AylaRateLimitError("Ayla API rate limit exceeded")
 
