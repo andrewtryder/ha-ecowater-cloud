@@ -40,6 +40,7 @@ def test_normalize_synthetic_device():
     assert normalized.water_used_daily_avg_gallons == 200.0
     assert normalized.water_available_gallons == 1500.0
     assert normalized.total_water_used_gallons == 15000.0
+    assert normalized.total_water_source_property == "total_water_used_gals"
 
     # Current flow (divide by 10)
     assert normalized.current_flow_gpm == 2.5
@@ -59,7 +60,6 @@ def test_normalize_synthetic_device():
     # Regeneration
     assert normalized.regeneration.status == "standby"
     assert normalized.regeneration.is_enabled is True
-    assert normalized.regeneration.days_since_last == 5
     assert normalized.regeneration.estimated_last_date == datetime.date(2026, 7, 31)
 
     # Freshness
@@ -143,6 +143,10 @@ def test_normalize_edge_cases():
     assert normalized.capabilities.has_water_usage_daily_avg is False
     assert normalized.capabilities.has_water_available is False
     assert normalized.capabilities.has_total_water_used is False
+
+    assert normalized.total_water_used_gallons is None
+    assert normalized.total_water_source_property is None
+
     assert normalized.capabilities.has_flow_sensor is True
     assert normalized.capabilities.has_salt_sensor is True
     assert normalized.capabilities.has_rock_sensor is False

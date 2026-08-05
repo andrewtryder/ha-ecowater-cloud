@@ -83,6 +83,7 @@ class EcoWaterDeviceData:
     water_used_daily_avg_gallons: float | None = field(default=None)
     water_available_gallons: float | None = field(default=None)
     total_water_used_gallons: float | None = field(default=None)
+    total_water_source_property: str | None = field(default=None)
     current_flow_gpm: float | None = field(default=None)
 
     # --- Salt & Rock ---

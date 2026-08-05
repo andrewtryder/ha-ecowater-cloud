@@ -20,6 +20,23 @@ from .models import AylaDeviceData, AylaPropertyData
 
 _LOGGER = logging.getLogger(__name__)
 
+TOTAL_WATER_USED_PROPERTIES: tuple[str, ...] = (
+    "total_water_used_gals",
+    "total_outlet_water_gals",
+)
+
+
+def _first_present_property(
+    props: dict[str, Any],
+    names: tuple[str, ...],
+) -> tuple[str | None, Any]:
+    """Find the first property from a sequence of alternatives."""
+    for name in names:
+        if name in props:
+            return name, props[name]
+    return None, None
+
+
 # Known salt capacity maximums (in tenths) for EcoWater models.
 # Values sourced from reference implementation.
 SALT_TENTHS_MAX: dict[str, int] = {
@@ -963,7 +980,13 @@ def normalize_device(
     has_water_usage_today = "gallons_used_today" in props
     has_water_usage_daily_avg = "avg_daily_use_gals" in props
     has_water_available = "treated_water_avail_gals" in props
-    has_total_water_used = "total_water_used_gals" in props
+
+    total_water_property, total_water_value = _first_present_property(
+        props,
+        TOTAL_WATER_USED_PROPERTIES,
+    )
+    has_total_water_used = total_water_property is not None
+
     has_flow_sensor = "current_water_flow_gpm" in props
     has_salt_sensor = "salt_level_tenths" in props
     has_rock_sensor = "total_rock_removed_lbs" in props
@@ -990,7 +1013,8 @@ def normalize_device(
         water_used_today_gallons=_safe_float(props.get("gallons_used_today")),
         water_used_daily_avg_gallons=_safe_float(props.get("avg_daily_use_gals")),
         water_available_gallons=_safe_float(props.get("treated_water_avail_gals")),
-        total_water_used_gallons=_safe_float(props.get("total_water_used_gals")),
+        total_water_used_gallons=_safe_float(total_water_value),
+        total_water_source_property=total_water_property,
         current_flow_gpm=_safe_float(props.get("current_water_flow_gpm"), scale=10.0),
         salt_level_raw=_safe_float(salt_level_tenths, scale=1.0)
         if salt_level_tenths is not None

@@ -68,3 +68,7 @@ async def test_diagnostics_redaction(hass: HomeAssistant, mock_ayla_backend) -> 
     assert device_data["capabilities"]["has_water_usage_daily_avg"] is True
     assert device_data["capabilities"]["has_water_available"] is True
     assert device_data["capabilities"]["has_total_water_used"] is True
+    assert (
+        device_data["capabilities"]["total_water_source_property"]
+        == "total_water_used_gals"
+    )

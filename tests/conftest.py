@@ -76,6 +76,7 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
         water_used_daily_avg_gallons=38.7,
         water_available_gallons=1234.5,
         total_water_used_gallons=15000.0,
+        total_water_source_property="total_water_used_gals",
         current_flow_gpm=0.0,
         salt_level_raw=60.0,
         salt_level_percent=75.0,

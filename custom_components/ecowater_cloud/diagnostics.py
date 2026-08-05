@@ -46,6 +46,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_flow_sensor": data.capabilities.has_flow_sensor,
         "has_salt_sensor": data.capabilities.has_salt_sensor,
         "has_rock_sensor": data.capabilities.has_rock_sensor,
+        "total_water_source_property": data.total_water_source_property,
     }
 
     freshness_dict = {
