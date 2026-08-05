@@ -13,6 +13,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
+    PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
     UnitOfMass,
@@ -87,8 +88,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
     EcoWaterSensorEntityDescription(
         key="salt_level",
         translation_key="salt_level",
-        device_class=SensorDeviceClass.BATTERY,  # Or None? Wait, percentage is typically not battery if it's salt. Let's omit device class or use None.
-        native_unit_of_measurement="%",
+        native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         supported_fn=lambda d: d.capabilities.has_salt_sensor,
         value_fn=lambda d: d.salt_level_percent,
