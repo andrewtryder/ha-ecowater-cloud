@@ -24,6 +24,7 @@ from .const import (
     CONF_POLLING_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
 )
 from .exceptions import AuthenticationError, ConnectivityError, RateLimitError
@@ -166,12 +167,13 @@ class EcoWaterCloudOptionsFlow(OptionsFlow):
             CONF_POLLING_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds() / 60)
         )
         min_polling = int(MIN_SCAN_INTERVAL.total_seconds() / 60)
+        max_polling = int(MAX_SCAN_INTERVAL.total_seconds() / 60)
 
         schema = vol.Schema(
             {
                 vol.Required(
                     CONF_POLLING_INTERVAL, default=default_polling
-                ): vol.All(vol.Coerce(int), vol.Clamp(min=min_polling)),
+                ): vol.All(vol.Coerce(int), vol.Clamp(min=min_polling, max=max_polling)),
             }
         )
 

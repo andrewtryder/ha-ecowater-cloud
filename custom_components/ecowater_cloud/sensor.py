@@ -201,20 +201,20 @@ async def async_setup_entry(
     """Set up the EcoWater sensor platform."""
     coordinator = entry.runtime_data.coordinator
 
-    added_devices: set[str] = set()
+    added_entities: set[tuple[str, str]] = set()
 
     @callback
     def _async_add_new_devices() -> None:
         """Add sensors for new devices discovered."""
         new_entities: list[EcoWaterSensor] = []
         for serial_number, device_data in coordinator.data.items():
-            if serial_number not in added_devices:
-                added_devices.add(serial_number)
-                for description in SENSORS:
-                    if description.supported_fn(device_data):
-                        new_entities.append(
-                            EcoWaterSensor(coordinator, serial_number, description)
-                        )
+            for description in SENSORS:
+                entity_key = (serial_number, description.key)
+                if entity_key not in added_entities and description.supported_fn(device_data):
+                    added_entities.add(entity_key)
+                    new_entities.append(
+                        EcoWaterSensor(coordinator, serial_number, description)
+                    )
         if new_entities:
             async_add_entities(new_entities)
 

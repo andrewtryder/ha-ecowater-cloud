@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sensors**: Comprehensive capability-driven sensors for water usage (today, average, treated available, total used, current flow), salt levels, days until empty, and regeneration status.
 - **Binary Sensors**: Status indicators for device connectivity, regeneration state, and recharge enablement.
 - **Diagnostics**: Specialized diagnostic entities (`source_last_updated`, `wifi_signal_strength`) to help identify and trace the conservative telemetry polling behavior of EcoWater devices.
-- **Robust Architecture**: Centralized `AccountCoordinator` handles polling for all devices on an account in a single request, preventing rate limiting.
+- **Robust Architecture**: Centralized `AccountCoordinator` handles polling for all devices on an account via one coordinated account poll, preventing rate limiting.
 - **Reauthentication**: Added support for changing passwords via standard HA re-auth flows.
 - **Community Standards**: Implemented issue templates, bug report forms, and fully configured a HACS compliant custom repository structure.
 - **Sanitization Tools**: Included `scripts/probe_ayla.py` to allow users to securely generate redacted API fixtures for reporting missing features without leaking PII.

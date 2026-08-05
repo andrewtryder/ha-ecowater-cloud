@@ -23,3 +23,4 @@ SUPPORTED_BACKENDS: Final = [BACKEND_AYLA]
 # Polling defaults
 DEFAULT_SCAN_INTERVAL: Final = timedelta(minutes=30)
 MIN_SCAN_INTERVAL: Final = timedelta(minutes=5)
+MAX_SCAN_INTERVAL: Final = timedelta(hours=24)
