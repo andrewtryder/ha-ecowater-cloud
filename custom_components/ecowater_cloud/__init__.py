@@ -35,25 +35,12 @@ class EcoWaterCloudData:
 
 async def async_setup_entry(hass: HomeAssistant, entry: EcoWaterCloudConfigEntry) -> bool:
     """Set up EcoWater Cloud from a config entry."""
-    from .backends import BackendAdapter
-    from .backends.hydrolink import HydroLinkBackend
-    from .const import BACKEND_HYDROLINK, CONF_REGION
-
-    backend_id = entry.data.get(CONF_BACKEND, BACKEND_AYLA)
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
     session = async_get_clientsession(hass)
 
-    backend: BackendAdapter
-    if backend_id == BACKEND_AYLA:
-        backend = AylaBackend(session, username, password)
-    elif backend_id == BACKEND_HYDROLINK:
-        region = entry.data.get(CONF_REGION, "us")
-        backend = HydroLinkBackend(session, username, password, region)
-    else:
-        _LOGGER.error("Unsupported backend: %s", backend_id)
-        return False
+    backend = AylaBackend(session, username, password)
 
     polling_mins = entry.options.get(CONF_POLLING_INTERVAL)
     if polling_mins is not None:
