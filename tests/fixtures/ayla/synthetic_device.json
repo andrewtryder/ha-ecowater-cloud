@@ -1,0 +1,124 @@
+{
+  "device": {
+    "dsn": "AC000W000123456",
+    "product_name": "EcoWater Softener",
+    "oem_model": "EWS3500",
+    "mac": "00:11:22:33:44:55",
+    "lan_ip": "192.168.1.50",
+    "connection_status": "Online"
+  },
+  "properties": [
+    {
+      "property": {
+        "name": "model_id",
+        "value": "46904",
+        "data_updated_at": "2026-08-05T10:00:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "base_software_version",
+        "value": "V1.02",
+        "data_updated_at": "2026-08-05T10:00:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "rf_signal_strength_dbm",
+        "value": -65,
+        "data_updated_at": "2026-08-05T12:00:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "gallons_used_today",
+        "value": 150,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "avg_daily_use_gals",
+        "value": 200,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "treated_water_avail_gals",
+        "value": 1500,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "total_water_used_gals",
+        "value": 15000,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "current_water_flow_gpm",
+        "value": 25,
+        "data_updated_at": "2026-08-05T12:06:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "salt_level_tenths",
+        "value": 40,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "out_of_salt_estimate_days",
+        "value": 30,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "salt_type_enum",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "total_rock_removed_lbs",
+        "value": 1050,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "daily_avg_rock_removed_lbs",
+        "value": 25000,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "regen_status_enum",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "regen_enable_enum",
+        "value": 1,
+        "data_updated_at": "2026-08-05T10:00:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "days_since_last_regen",
+        "value": 5,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    }
+  ]
+}

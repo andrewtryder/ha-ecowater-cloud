@@ -1,0 +1,14 @@
+{
+  "domain": "ecowater_cloud",
+  "name": "EcoWater Cloud",
+  "version": "0.1.0-alpha.1",
+  "config_flow": true,
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "codeowners": ["@andrewtryder"],
+  "documentation": "https://github.com/andrewtryder/ha-ecowater-cloud",
+  "issue_tracker": "https://github.com/andrewtryder/ha-ecowater-cloud/issues",
+  "requirements": [],
+  "dependencies": [],
+  "after_dependencies": []
+}
