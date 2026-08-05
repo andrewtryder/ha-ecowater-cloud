@@ -235,13 +235,13 @@ def normalize_device(
 
     # Regeneration State
     regen_enum = _safe_int(props.get("regen_status_enum"))
-    regen_status = "Unknown"
+    regen_status = "unknown"
     if regen_enum == 0:
-        regen_status = "None"
+        regen_status = "standby"
     elif regen_enum == 1:
-        regen_status = "Scheduled"
+        regen_status = "scheduled"
     elif regen_enum is not None:
-        regen_status = "Recharging"
+        regen_status = "regenerating"
 
     days_since_regen = _safe_int(props.get("days_since_last_regen"))
     regen_enabled_enum = _safe_int(props.get("regen_enable_enum"))
@@ -257,9 +257,9 @@ def normalize_device(
     salt_type_enum = _safe_int(props.get("salt_type_enum"))
     salt_type_str = None
     if salt_type_enum == 0:
-        salt_type_str = "NaCl"
+        salt_type_str = "sodium_chloride"
     elif salt_type_enum is not None:
-        salt_type_str = "KCl"
+        salt_type_str = "potassium_chloride"
 
     salt_level_tenths = _safe_float(props.get("salt_level_tenths"))
     salt_percent: float | None = None

@@ -45,7 +45,7 @@ def test_normalize_synthetic_device():
     assert normalized.current_flow_gpm == 2.5
 
     # Salt
-    assert normalized.salt_type == "NaCl"
+    assert normalized.salt_type == "sodium_chloride"
     assert normalized.salt_level_raw == 40.0
     # Model 46904 max tenths is 80. (40 * 100) / 80 = 50.0%
     assert normalized.salt_level_percent == 50.0
@@ -57,7 +57,7 @@ def test_normalize_synthetic_device():
     assert normalized.rock_removed_daily_avg_lbs == 2.5  # 25000 / 10000
 
     # Regeneration
-    assert normalized.regeneration.status == "None"
+    assert normalized.regeneration.status == "standby"
     assert normalized.regeneration.is_enabled is True
     assert normalized.regeneration.days_since_last == 5
     assert normalized.regeneration.estimated_last_date == datetime.date(2026, 7, 31)
