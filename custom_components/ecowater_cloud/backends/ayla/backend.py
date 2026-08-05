@@ -43,20 +43,28 @@ class AylaBackend(BackendAdapter):
         await self._api.async_clear_authentication()
 
     async def async_list_devices(self) -> list[DeviceDescriptor]:
-        """Fetch basic descriptors for all supported devices."""
+        """Fetch basic descriptors for supported EcoWater devices only.
+
+        Only devices whose OEM model starts with ``EWS`` are considered
+        supported. Unsupported models are silently skipped, matching the
+        behaviour of :meth:`async_get_all_device_data`.
+        """
         raw_devices = await self._api.async_list_devices()
         descriptors = []
         for dev in raw_devices:
-            # Fast-fail unsupported devices if needed.
-            # But the requirement is to return descriptors for supported ones.
-            # Here we just parse the basic info out.
+            oem_model = dev.get("oem_model", "")
+            if not oem_model.startswith("EWS"):
+                _LOGGER.debug(
+                    "async_list_devices: skipping unsupported model '%s'", oem_model
+                )
+                continue
             descriptors.append(
                 DeviceDescriptor(
                     backend="ayla",
                     backend_id=dev.get("dsn", ""),
                     serial_number=dev.get("dsn", ""),
                     name=dev.get("product_name", "EcoWater Device"),
-                    model=dev.get("oem_model", "Unknown Model"),
+                    model=oem_model,
                     is_online=(dev.get("connection_status") == "Online")
                     if "connection_status" in dev
                     else None,

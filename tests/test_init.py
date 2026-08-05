@@ -24,7 +24,7 @@ async def test_setup_and_unload_entry(hass: HomeAssistant, mock_ayla_backend) ->
         patch("custom_components.ecowater_cloud.PLATFORMS", []),
     ):
         entry = MockConfigEntry(
-            version=1,
+            version=2,
             minor_version=1,
             domain=DOMAIN,
             title="EcoWater Cloud",
@@ -57,7 +57,7 @@ async def test_setup_unsupported_backend(hass: HomeAssistant) -> None:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
-        version=1,
+        version=2,
         minor_version=1,
         domain=DOMAIN,
         title="EcoWater Cloud",
@@ -69,7 +69,7 @@ async def test_setup_unsupported_backend(hass: HomeAssistant) -> None:
     )
     entry.add_to_hass(hass)
 
-    # setup should return False
+    # ConfigEntryError is raised → HA marks entry as SETUP_ERROR
     assert not await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
@@ -94,8 +94,12 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
     )
     entry.add_to_hass(hass)
 
-    # Run the setup which triggers migration internally
-    # For now migration just logs success and returns True
     from custom_components.ecowater_cloud import async_migrate_entry
+    from custom_components.ecowater_cloud.const import BACKEND_AYLA, CONF_BACKEND
 
     assert await async_migrate_entry(hass, entry)
+
+    # Migration must bump version to 2.1 and stamp backend
+    assert entry.version == 2
+    assert entry.minor_version == 1
+    assert entry.data[CONF_BACKEND] == BACKEND_AYLA

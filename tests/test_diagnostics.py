@@ -23,8 +23,8 @@ async def test_diagnostics_redaction(hass: HomeAssistant, mock_ayla_backend) -> 
         "custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend
     ):
         entry = MockConfigEntry(
-            version=1,
-            minor_version=1,
+            version=2,
+            minor_version=2,
             domain=DOMAIN,
             title="EcoWater Cloud",
             data=MOCK_ENTRY_DATA,

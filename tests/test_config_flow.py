@@ -129,8 +129,8 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
 
     # Pre-create entry
     entry = MockConfigEntry(
-        version=1,
-        minor_version=1,
+        version=2,
+        minor_version=2,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
@@ -171,8 +171,8 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
-        version=1,
-        minor_version=1,
+        version=2,
+        minor_version=2,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
@@ -226,8 +226,8 @@ async def test_options_flow(hass: HomeAssistant) -> None:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
-        version=1,
-        minor_version=1,
+        version=2,
+        minor_version=2,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={

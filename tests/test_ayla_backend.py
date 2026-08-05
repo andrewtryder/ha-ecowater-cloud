@@ -54,7 +54,7 @@ async def test_ayla_backend_list_devices(mock_ayla_api: MagicMock) -> None:
     backend = AylaBackend(MagicMock(), "user", "pass")
     devices = await backend.async_list_devices()
 
-    assert len(devices) == 2
+    assert len(devices) == 1  # OTHER_BRAND is filtered out
     assert devices[0].serial_number == "AC0001"
     assert devices[0].model == "EWS123"
 

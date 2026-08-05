@@ -59,9 +59,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for EcoWater Cloud."""
+    """Handle the EcoWater Cloud config flow."""
 
-    VERSION = 1
+    VERSION = 2
     MINOR_VERSION = 1
 
     async def async_step_user(

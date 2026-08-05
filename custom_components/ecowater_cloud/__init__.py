@@ -9,6 +9,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .backends.ayla import AylaBackend
@@ -39,12 +40,11 @@ async def async_setup_entry(
     """Set up EcoWater Cloud from a config entry."""
     backend_id = entry.data.get(CONF_BACKEND, BACKEND_AYLA)
 
-    if backend_id not in (BACKEND_AYLA,):
-        _LOGGER.error(
-            "Unsupported backend '%s' in config entry; aborting setup",
-            backend_id,
+    if backend_id != BACKEND_AYLA:
+        raise ConfigEntryError(
+            f"Unsupported EcoWater backend: '{backend_id}'. "
+            "Remove this entry and re-add with a supported backend."
         )
-        return False
 
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]

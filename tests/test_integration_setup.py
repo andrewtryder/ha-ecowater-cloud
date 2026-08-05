@@ -138,8 +138,8 @@ async def test_setup_entry_via_real_backend_http(
         return_value=real_backend,
     ):
         entry = MockConfigEntry(
-            version=1,
-            minor_version=1,
+            version=2,
+            minor_version=2,
             domain=DOMAIN,
             title="EcoWater Cloud",
             data=MOCK_ENTRY_DATA,

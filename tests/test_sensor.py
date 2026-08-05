@@ -19,8 +19,8 @@ async def test_all_sensors(hass: HomeAssistant, mock_ayla_backend) -> None:
         "custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend
     ):
         entry = MockConfigEntry(
-            version=1,
-            minor_version=1,
+            version=2,
+            minor_version=2,
             domain=DOMAIN,
             title="EcoWater Cloud",
             data=MOCK_ENTRY_DATA,
@@ -88,8 +88,8 @@ async def test_sensor_missing_capability(
         "custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend
     ):
         entry = MockConfigEntry(
-            version=1,
-            minor_version=1,
+            version=2,
+            minor_version=2,
             domain=DOMAIN,
             title="EcoWater Cloud",
             data=MOCK_ENTRY_DATA,
