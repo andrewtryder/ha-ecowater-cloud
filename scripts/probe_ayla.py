@@ -116,11 +116,7 @@ def redact_data(
     """
     if isinstance(data, dict):
         # Detect Ayla property dict: {"name": str, "value": ...}
-        if (
-            "name" in data
-            and "value" in data
-            and isinstance(data["name"], str)
-        ):
+        if "name" in data and "value" in data and isinstance(data["name"], str):
             property_name = data["name"]
 
             result = {

@@ -58,7 +58,9 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             has_total_water_used=True,
             has_flow_sensor=True,
             has_salt_sensor=True,
-            has_rock_sensor=True,
+            has_rock_removed_daily_avg=True,
+            has_rock_removed_since_regeneration=True,
+            has_total_rock_removed=True,
         ),
         freshness=DataFreshness(
             received_at=datetime.datetime(2026, 8, 5, 14, 0, 0, tzinfo=datetime.UTC),

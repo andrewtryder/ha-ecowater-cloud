@@ -95,21 +95,21 @@
     {
       "property": {
         "name": "total_rock_removed_lbs",
-        "value": 1050,
+        "value": 10544,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },
     {
       "property": {
         "name": "rock_removed_since_rech_lbs",
-        "value": 250,
+        "value": 6634,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },
     {
       "property": {
         "name": "daily_avg_rock_removed_lbs",
-        "value": 25000,
+        "value": 8000,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },

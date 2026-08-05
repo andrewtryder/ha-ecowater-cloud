@@ -4,6 +4,8 @@ import datetime
 import json
 from pathlib import Path
 
+import pytest
+
 from custom_components.ecowater_cloud.backends.ayla.models import (
     AylaDeviceData,
     AylaPropertyData,
@@ -55,9 +57,9 @@ def test_normalize_synthetic_device():
     assert normalized.estimated_out_of_salt_date == datetime.date(2026, 9, 4)
 
     # Rock (scaling)
-    assert normalized.rock_removed_since_regeneration_lbs == 2.5  # 250 / 100
-    assert normalized.total_rock_removed_lbs == 105.0  # 1050 / 10
-    assert normalized.rock_removed_daily_avg_lbs == 2.5  # 25000 / 10000
+    assert normalized.rock_removed_since_regeneration_lbs == pytest.approx(0.6634)
+    assert normalized.total_rock_removed_lbs == pytest.approx(1054.4)
+    assert normalized.rock_removed_daily_avg_lbs == pytest.approx(0.8)
 
     # Regeneration
     assert normalized.regeneration.status == "standby"
@@ -80,7 +82,9 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_total_water_used is True
     assert normalized.capabilities.has_flow_sensor is True
     assert normalized.capabilities.has_salt_sensor is True
-    assert normalized.capabilities.has_rock_sensor is True
+    assert normalized.capabilities.has_rock_removed_daily_avg is True
+    assert normalized.capabilities.has_rock_removed_since_regeneration is True
+    assert normalized.capabilities.has_total_rock_removed is True
 
 
 def test_normalize_edge_cases():
@@ -152,7 +156,9 @@ def test_normalize_edge_cases():
 
     assert normalized.capabilities.has_flow_sensor is True
     assert normalized.capabilities.has_salt_sensor is True
-    assert normalized.capabilities.has_rock_sensor is False
+    assert normalized.capabilities.has_rock_removed_daily_avg is False
+    assert normalized.capabilities.has_rock_removed_since_regeneration is False
+    assert normalized.capabilities.has_total_rock_removed is False
 
 
 def test_missing_property_name():

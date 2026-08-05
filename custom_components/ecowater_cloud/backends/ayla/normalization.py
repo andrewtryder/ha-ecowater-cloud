@@ -994,9 +994,9 @@ def normalize_device(
 
     has_flow_sensor = "current_water_flow_gpm" in props
     has_salt_sensor = "salt_level_tenths" in props
-    has_rock_sensor = (
-        "total_rock_removed_lbs" in props or "rock_removed_since_rech_lbs" in props
-    )
+    has_rock_removed_daily_avg = "daily_avg_rock_removed_lbs" in props
+    has_rock_removed_since_regeneration = "rock_removed_since_rech_lbs" in props
+    has_total_rock_removed = "total_rock_removed_lbs" in props
 
     capabilities = DeviceCapabilities(
         has_water_usage_today=has_water_usage_today,
@@ -1005,7 +1005,9 @@ def normalize_device(
         has_total_water_used=has_total_water_used,
         has_flow_sensor=has_flow_sensor,
         has_salt_sensor=has_salt_sensor,
-        has_rock_sensor=has_rock_sensor,
+        has_rock_removed_daily_avg=has_rock_removed_daily_avg,
+        has_rock_removed_since_regeneration=has_rock_removed_since_regeneration,
+        has_total_rock_removed=has_total_rock_removed,
     )
 
     return EcoWaterDeviceData(
@@ -1033,7 +1035,7 @@ def normalize_device(
         ),
         salt_type=salt_type_str,
         rock_removed_since_regeneration_lbs=_safe_float(
-            props.get("rock_removed_since_rech_lbs"), scale=100.0
+            props.get("rock_removed_since_rech_lbs"), scale=10000.0
         ),
         total_rock_removed_lbs=_safe_float(
             props.get("total_rock_removed_lbs"), scale=10.0

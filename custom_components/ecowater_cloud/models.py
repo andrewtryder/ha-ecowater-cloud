@@ -48,7 +48,9 @@ class DeviceCapabilities:
     has_total_water_used: bool
     has_flow_sensor: bool
     has_salt_sensor: bool
-    has_rock_sensor: bool
+    has_rock_removed_daily_avg: bool
+    has_rock_removed_since_regeneration: bool
+    has_total_rock_removed: bool
 
 
 @dataclass(frozen=True, slots=True)

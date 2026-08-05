@@ -115,8 +115,8 @@ def test_redact_property_dict_ssid():
     }
     redacted = redact_data(data)
     assert redacted["value"] == "***REDACTED***"
-    # The property name key itself ('name') is also redacted
-    assert redacted["name"] == "***REDACTED***"
+    # The property name key itself ('name') is NO LONGER redacted
+    assert redacted["name"] == "wifi_ssid"
 
 
 def test_redact_property_dict_ip():
@@ -228,7 +228,7 @@ def test_redact_full_fixture_structure():
     assert dev["mac"] == "***REDACTED***"
 
     ssid_prop = next(
-        p for p in props if p["name"] == "***REDACTED***" and props.index(p) == 0
+        p for p in props if p["name"] == "wifi_ssid" and props.index(p) == 0
     )
     assert ssid_prop["value"] == "***REDACTED***"
 
