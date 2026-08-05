@@ -41,6 +41,10 @@ async def test_setup_and_unload_entry(hass: HomeAssistant, mock_ayla_backend) ->
         assert entry.state is ConfigEntryState.LOADED
         assert entry.runtime_data.coordinator is not None
 
+        # Verify the full call chain: authenticate → get_all_device_data
+        mock_ayla_backend.async_authenticate.assert_awaited_once()
+        mock_ayla_backend.async_get_all_device_data.assert_awaited_once()
+
         # Unload
         assert await hass.config_entries.async_unload(entry.entry_id)
         await hass.async_block_till_done()

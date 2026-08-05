@@ -60,6 +60,25 @@ class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
         )
         self._backend = backend
 
+    async def _async_setup(self) -> None:
+        """Authenticate before the first account refresh.
+
+        ``DataUpdateCoordinator._async_setup`` is called automatically by
+        ``async_config_entry_first_refresh()`` before the first data fetch.
+        Raising here prevents setup from completing and lets HA surface the
+        correct error (auth failure vs. connectivity failure).
+        """
+        try:
+            await self._backend.async_authenticate()
+        except AuthenticationError as err:
+            raise ConfigEntryAuthFailed from err
+        except ConnectivityError as err:
+            raise UpdateFailed("Unable to connect to EcoWater") from err
+        except RateLimitError as err:
+            raise UpdateFailed("EcoWater rate limit reached") from err
+        except ProtocolError as err:
+            raise UpdateFailed("Unexpected EcoWater authentication response") from err
+
     async def _async_update_data(self) -> dict[str, EcoWaterDeviceData]:
         """Fetch the latest snapshots for all account devices.
 

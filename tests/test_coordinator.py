@@ -77,6 +77,66 @@ class TestCoordinatorUpdate:
             await coordinator._async_update_data()
 
 
+class TestCoordinatorSetup:
+    """Tests for _async_setup (authentication before first refresh)."""
+
+    async def test_setup_authenticates_backend(
+        self, hass: HomeAssistant, mock_ayla_backend: MagicMock
+    ) -> None:
+        """_async_setup must call async_authenticate on the backend."""
+        coordinator = _make_coordinator(hass, mock_ayla_backend)
+        await coordinator._async_setup()
+        mock_ayla_backend.async_authenticate.assert_awaited_once()
+
+    async def test_setup_auth_error_raises_config_entry_auth_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        backend = MagicMock()
+        backend.async_authenticate = AsyncMock(
+            side_effect=AuthenticationError("bad credentials")
+        )
+        coordinator = _make_coordinator(hass, backend)
+        with pytest.raises(ConfigEntryAuthFailed):
+            await coordinator._async_setup()
+
+    async def test_setup_connectivity_error_raises_update_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        from custom_components.ecowater_cloud.exceptions import ConnectivityError
+
+        backend = MagicMock()
+        backend.async_authenticate = AsyncMock(
+            side_effect=ConnectivityError("no network")
+        )
+        coordinator = _make_coordinator(hass, backend)
+        with pytest.raises(UpdateFailed, match="Unable to connect"):
+            await coordinator._async_setup()
+
+    async def test_setup_rate_limit_raises_update_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        from custom_components.ecowater_cloud.exceptions import RateLimitError
+
+        backend = MagicMock()
+        backend.async_authenticate = AsyncMock(side_effect=RateLimitError("slow down"))
+        coordinator = _make_coordinator(hass, backend)
+        with pytest.raises(UpdateFailed, match="rate limit"):
+            await coordinator._async_setup()
+
+    async def test_setup_protocol_error_raises_update_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        from custom_components.ecowater_cloud.exceptions import ProtocolError
+
+        backend = MagicMock()
+        backend.async_authenticate = AsyncMock(
+            side_effect=ProtocolError("unexpected response")
+        )
+        coordinator = _make_coordinator(hass, backend)
+        with pytest.raises(UpdateFailed, match="authentication response"):
+            await coordinator._async_setup()
+
+
 class TestCoordinatorConfiguration:
     def test_default_scan_interval_is_30_minutes(
         self, hass: HomeAssistant, mock_ayla_backend: MagicMock

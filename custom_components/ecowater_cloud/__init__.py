@@ -37,6 +37,15 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: EcoWaterCloudConfigEntry
 ) -> bool:
     """Set up EcoWater Cloud from a config entry."""
+    backend_id = entry.data.get(CONF_BACKEND, BACKEND_AYLA)
+
+    if backend_id not in (BACKEND_AYLA,):
+        _LOGGER.error(
+            "Unsupported backend '%s' in config entry; aborting setup",
+            backend_id,
+        )
+        return False
+
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
