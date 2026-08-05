@@ -11,7 +11,7 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
-    OptionsFlow,
+    OptionsFlowWithReload,
 )
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, callback
@@ -149,15 +149,11 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
         config_entry: ConfigEntry,
     ) -> EcoWaterCloudOptionsFlow:
         """Create the options flow."""
-        return EcoWaterCloudOptionsFlow(config_entry)
+        return EcoWaterCloudOptionsFlow()
 
 
-class EcoWaterCloudOptionsFlow(OptionsFlow):
+class EcoWaterCloudOptionsFlow(OptionsFlowWithReload):
     """Handle options for EcoWater Cloud."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        pass
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
