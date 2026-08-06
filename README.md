@@ -50,6 +50,13 @@ This integration has been developed and tested against a **single EcoWater model
 
 ### HACS (Recommended)
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=andrewtryder&repository=ha-ecowater-cloud&category=integration)
+
+1. Click the button above to open HACS on your Home Assistant instance.
+2. Click **Download** on the repository page.
+3. **Restart Home Assistant.**
+
+*(If the button doesn't work)*
 1. Open **HACS** in your Home Assistant instance.
 2. Tap the **⋮** menu (top-right) → **Custom repositories**.
 3. Paste the repository URL: `https://github.com/andrewtryder/ha-ecowater-cloud`
@@ -71,12 +78,12 @@ This integration has been developed and tested against a **single EcoWater model
 4. Enter your EcoWater account email and password.
 5. Your devices will be discovered and added automatically.
 
-## Upgrading & Removing
+## Upgrading & Uninstalling
 
 | Action | Steps |
 |---|---|
 | **Upgrade** | Open HACS → download the latest version → restart Home Assistant. |
-| **Remove** | Delete the integration from Settings → Devices & Services, remove the custom repository from HACS, and restart. |
+| **Uninstall** | 1. Delete the integration from Settings → Devices & Services.<br>2. Open HACS → find EcoWater Cloud → click **⋮** → **Remove**.<br>3. Remove the custom repository from HACS.<br>4. Restart Home Assistant. |
 
 ## How Polling Works
 
