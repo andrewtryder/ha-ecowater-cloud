@@ -42,6 +42,7 @@ def _first_present_property(
 SALT_TENTHS_MAX: dict[str, int] = {
     "1601": 80,
     "37801": 80,
+    "104703": 80,
     "37802": 80,
     "37803": 80,
     "37804": 80,
