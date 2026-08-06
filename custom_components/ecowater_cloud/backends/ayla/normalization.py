@@ -50,7 +50,6 @@ def _first_present_property(
 SALT_TENTHS_MAX: dict[str, int] = {
     "1601": 80,
     "37801": 80,
-    "104703": 80,
     "37802": 80,
     "37803": 80,
     "37804": 80,
@@ -875,6 +874,10 @@ def _safe_str(value: Any) -> str | None:
     return str(value)
 
 
+TRUE_VALUES = {"1", "true", "yes", "on", "active"}
+FALSE_VALUES = {"0", "false", "no", "off", "inactive"}
+
+
 def _safe_bool(value: Any) -> bool | None:
     """Safely convert a value to a boolean."""
     if value is None:
@@ -884,7 +887,12 @@ def _safe_bool(value: Any) -> bool | None:
     if isinstance(value, (int, float)):
         return value != 0
     if isinstance(value, str):
-        return value.lower() in ("1", "true", "yes")
+        normalized = value.lower()
+        if normalized in TRUE_VALUES:
+            return True
+        if normalized in FALSE_VALUES:
+            return False
+        return None
     return bool(value)
 
 
