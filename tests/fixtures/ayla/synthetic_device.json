@@ -206,6 +206,35 @@
     },
     {
       "property": {
+        "name": "depletion_alert",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "excessive_water_use_alert",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "flow_monitor_alert",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "service_reminder_alert",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+
+    {
+      "property": {
         "name": "error_code_alert",
         "value": 0,
         "data_updated_at": "2026-08-05T12:05:00Z"
