@@ -1033,23 +1033,6 @@ def normalize_device(
     has_capacity_remaining = "capacity_remaining_percent" in props
     has_regen_time_remaining = "regen_time_rem_secs" in props
     has_valve_position = "current_valve_position_enum" in props
-    has_regeneration_stats = (
-        "avg_days_between_regens" in props or "avg_salt_per_regen_lbs" in props
-    )
-    has_total_regens = "total_regens" in props
-    has_total_salt_used = "total_salt_use_lbs" in props
-
-    has_alerts = any(
-        alert in props
-        for alert in (
-            "low_salt_alert",
-            "depletion_alert",
-            "excessive_water_use_alert",
-            "flow_monitor_alert",
-            "service_reminder_alert",
-            "error_code_alert",
-        )
-    )
 
     capabilities = DeviceCapabilities(
         has_water_usage_today=has_water_usage_today,
@@ -1065,10 +1048,17 @@ def normalize_device(
         has_capacity_remaining=has_capacity_remaining,
         has_regen_time_remaining=has_regen_time_remaining,
         has_valve_position=has_valve_position,
-        has_regeneration_stats=has_regeneration_stats,
-        has_total_regens=has_total_regens,
-        has_total_salt_used=has_total_salt_used,
-        has_alerts=has_alerts,
+        has_avg_days_between_regens="avg_days_between_regens" in props,
+        has_avg_salt_per_regen="avg_salt_per_regen_lbs" in props,
+        has_total_regens="total_regens" in props,
+        has_total_salt_used="total_salt_use_lbs" in props,
+        has_low_salt_alert="low_salt_alert" in props,
+        has_depletion_alert="depletion_alert" in props,
+        has_excessive_water_use_alert="excessive_water_use_alert" in props,
+        has_flow_monitor_alert="flow_monitor_alert" in props,
+        has_service_reminder_alert="service_reminder_alert" in props,
+        has_error_code_alert="error_code_alert" in props,
+        has_error_code="error_code" in props,
     )
 
     return EcoWaterDeviceData(

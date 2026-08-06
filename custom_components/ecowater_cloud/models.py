@@ -55,10 +55,17 @@ class DeviceCapabilities:
     has_capacity_remaining: bool
     has_regen_time_remaining: bool
     has_valve_position: bool
-    has_regeneration_stats: bool
+    has_avg_days_between_regens: bool
+    has_avg_salt_per_regen: bool
     has_total_regens: bool
     has_total_salt_used: bool
-    has_alerts: bool
+    has_low_salt_alert: bool
+    has_depletion_alert: bool
+    has_excessive_water_use_alert: bool
+    has_flow_monitor_alert: bool
+    has_service_reminder_alert: bool
+    has_error_code_alert: bool
+    has_error_code: bool
 
 
 @dataclass(frozen=True, slots=True)

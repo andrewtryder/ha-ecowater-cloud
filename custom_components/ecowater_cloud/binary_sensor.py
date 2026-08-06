@@ -59,7 +59,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="low_salt_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_low_salt_alert,
         is_on_fn=lambda d: d.low_salt_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -67,7 +67,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="depletion_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_depletion_alert,
         is_on_fn=lambda d: d.depletion_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -75,7 +75,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="excessive_water_use_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_excessive_water_use_alert,
         is_on_fn=lambda d: d.excessive_water_use_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -83,7 +83,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="flow_monitor_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_flow_monitor_alert,
         is_on_fn=lambda d: d.flow_monitor_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -91,7 +91,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="service_reminder_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_service_reminder_alert,
         is_on_fn=lambda d: d.service_reminder_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -99,7 +99,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="error_code_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_error_code_alert,
         is_on_fn=lambda d: d.error_code_alert,
     ),
 )

@@ -190,7 +190,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_regeneration_stats,
+        supported_fn=lambda d: d.capabilities.has_avg_days_between_regens,
         value_fn=lambda d: d.avg_days_between_regens,
     ),
     EcoWaterSensorEntityDescription(
@@ -199,7 +199,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.WEIGHT,
         native_unit_of_measurement=UnitOfMass.POUNDS,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_regeneration_stats,
+        supported_fn=lambda d: d.capabilities.has_avg_salt_per_regen,
         value_fn=lambda d: d.avg_salt_per_regen_lbs,
     ),
     EcoWaterSensorEntityDescription(
@@ -258,7 +258,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         key="error_code",
         translation_key="error_code",
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_error_code,
         value_fn=lambda d: d.error_code,
     ),
     EcoWaterSensorEntityDescription(
