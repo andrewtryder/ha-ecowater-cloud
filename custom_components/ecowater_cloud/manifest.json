@@ -1,7 +1,7 @@
 {
   "domain": "ecowater_cloud",
   "name": "EcoWater Cloud",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "config_flow": true,
   "integration_type": "hub",
   "iot_class": "cloud_polling",
