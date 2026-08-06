@@ -109,6 +109,14 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.config_entries.async_update_entry(
             entry, data=new_data, version=2, minor_version=2
         )
+    if entry.version == 2 and entry.minor_version < 3:
+        new_data = {**entry.data}
+        region = new_data.setdefault(CONF_REGION, REGION_US)
+        username = new_data.get(CONF_USERNAME, "").lower().strip()
+        new_unique_id = f"{BACKEND_AYLA}:{region}:{username}"
+        hass.config_entries.async_update_entry(
+            entry, data=new_data, unique_id=new_unique_id, version=2, minor_version=3
+        )
 
     _LOGGER.info("Migration to version %s successful", entry.version)
     return True

@@ -109,3 +109,32 @@ async def test_sensor_missing_capability(
     # Sensor should not be created
     state = hass.states.get("sensor.ecowater_softener_total_water_used")
     assert state is None
+
+@pytest.mark.asyncio
+async def test_water_dashboard_eligibility(
+    hass: HomeAssistant, mock_ayla_backend
+) -> None:
+    """Test that water usage sensors have the correct state class for energy dashboard."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+
+    with patch(
+        "custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend
+    ):
+        entry = MockConfigEntry(
+            version=2,
+            minor_version=2,
+            domain=DOMAIN,
+            title="EcoWater Cloud",
+            data=MOCK_ENTRY_DATA,
+            source="user",
+        )
+        entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    # Total water used
+    state = hass.states.get("sensor.ecowater_softener_total_water_used")
+    assert state is not None
+    assert state.attributes.get("device_class") == SensorDeviceClass.WATER
+    assert state.attributes.get("state_class") == SensorStateClass.TOTAL_INCREASING

@@ -34,7 +34,7 @@ jobs:
         run: uv run mypy custom_components/ecowater_cloud
 
       - name: Pytest
-        run: uv run pytest tests/ -v --tb=short
+        run: uv run pytest --cov=custom_components/ecowater_cloud --cov-branch --cov-report=term-missing --cov-fail-under=90 tests/
 
   validate-hacs:
     name: Validate HACS

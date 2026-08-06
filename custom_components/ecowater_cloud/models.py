@@ -66,7 +66,7 @@ class DeviceCapabilities:
     has_service_reminder_alert: bool
     has_error_code_alert: bool
     has_error_code: bool
-    has_unmapped_model: bool
+    has_unmapped_salt_model: bool
 
     # --- New Diagnostic Capabilities ---
     has_power_outage_count: bool
@@ -104,16 +104,11 @@ class DataFreshness:
     newest_data_at: datetime.datetime | None = field(default=None)
 
     @property
-    def age(self) -> datetime.timedelta:
-        """The age of the data based on newest timestamp or received_at."""
-        target = self.newest_data_at or self.received_at
-        return self.received_at - target
-
-    @property
-    def is_stale(self) -> bool:
-        """Return True if the data is older than 24 hours."""
-        return self.age > datetime.timedelta(hours=24)
-
+    def age(self) -> datetime.timedelta | None:
+        """The age of the data based on newest timestamp. Returns None if absent."""
+        if self.newest_data_at is None:
+            return None
+        return self.received_at - self.newest_data_at
 
 @dataclass(frozen=True, slots=True)
 class RegenerationState:

@@ -132,17 +132,18 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
     # Pre-create entry
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -174,17 +175,18 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
 
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -229,17 +231,18 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -306,3 +309,213 @@ async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
             )
             assert res["type"] is FlowResultType.FORM
             assert res["errors"]["base"] == expected_error
+
+@pytest.mark.asyncio
+async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> None:
+    """Test creating an entry with EU region."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+
+    with (
+        patch(
+            "custom_components.ecowater_cloud.config_flow.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
+        patch(
+            "custom_components.ecowater_cloud.async_setup_entry",
+            return_value=True,
+        ) as mock_setup_entry,
+    ):
+        result2 = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                "username": MOCK_USERNAME,
+                "password": MOCK_PASSWORD,
+                "region": "eu",
+            },
+        )
+        await hass.async_block_till_done()
+
+    assert result2["type"] is FlowResultType.CREATE_ENTRY
+    assert result2["data"] == {
+        "backend": BACKEND_AYLA,
+        "username": MOCK_USERNAME,
+        "password": MOCK_PASSWORD,
+        "region": "eu",
+    }
+    mock_setup_entry.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
+    """Test the reconfigure flow updates the entry."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from homeassistant.config_entries import SOURCE_RECONFIGURE
+
+    entry = MockConfigEntry(
+        version=2,
+        minor_version=3,
+        domain=DOMAIN,
+        title="EcoWater Cloud",
+        data={
+            "backend": BACKEND_AYLA,
+            "username": MOCK_USERNAME,
+            "password": MOCK_PASSWORD,
+            "region": "us",
+        },
+        source="user",
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": entry.entry_id,
+        },
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+
+    with (
+        patch(
+            "custom_components.ecowater_cloud.config_flow.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
+        patch(
+            "custom_components.ecowater_cloud.async_setup_entry",
+            return_value=True,
+        ),
+    ):
+        result2 = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                "username": MOCK_USERNAME,
+                "password": "new-password",
+                "region": "eu",
+            },
+        )
+        await hass.async_block_till_done()
+
+    assert result2["type"] is FlowResultType.ABORT
+    assert result2["reason"] == "reconfigure_successful"
+    assert entry.data["username"] == MOCK_USERNAME
+    assert entry.data["password"] == "new-password"
+    assert entry.data["region"] == "eu"
+    assert entry.unique_id == f"ayla:eu:{MOCK_USERNAME}"
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_account_mismatch(hass: HomeAssistant) -> None:
+    """Test reconfigure fails when switching account email."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from homeassistant.config_entries import SOURCE_RECONFIGURE
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "old-password", "region": "us"},
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": entry.entry_id,
+        },
+        data=entry.data,
+    )
+
+    result2 = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {
+            "username": "different@example.com",
+            "password": "new-password",
+            "region": "us",
+        },
+    )
+    assert result2["type"] is FlowResultType.ABORT
+    assert result2["reason"] == "account_mismatch"
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_errors(hass: HomeAssistant) -> None:
+    """Test reconfigure handles errors."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from homeassistant.config_entries import SOURCE_RECONFIGURE
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "old-password", "region": "us"},
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": entry.entry_id,
+        },
+    )
+
+    with patch(
+        "custom_components.ecowater_cloud.config_flow.validate_input",
+        side_effect=AuthenticationError("auth"),
+    ):
+        res = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                "username": MOCK_USERNAME,
+                "password": "wrong-password",
+                "region": "us",
+            },
+        )
+        assert res["type"] is FlowResultType.FORM
+        assert res["errors"]["base"] == "invalid_auth"
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_duplicate(hass: HomeAssistant, mock_ayla_backend) -> None:
+    """Test reconfigure duplicate account is aborted."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from homeassistant.config_entries import SOURCE_RECONFIGURE
+
+    entry1 = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "eu"},
+        unique_id=f"ayla:eu:{MOCK_USERNAME}",
+    )
+    entry1.add_to_hass(hass)
+
+    entry2 = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "us"},
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
+    )
+    entry2.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": entry2.entry_id,
+        },
+    )
+
+    with patch(
+        "custom_components.ecowater_cloud.config_flow.AylaBackend",
+        return_value=mock_ayla_backend,
+    ):
+        result2 = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                "username": MOCK_USERNAME,
+                "password": "new-password",
+                "region": "eu",
+            },
+        )
+
+    assert result2["type"] is FlowResultType.ABORT
+    assert result2["reason"] == "already_configured"

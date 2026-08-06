@@ -47,9 +47,9 @@ class AylaApi:
     def __init__(self, session: ClientSession, region: str = REGION_US) -> None:
         """Initialise the API client."""
         self._session = session
-        self._region = region
-        self._user_url = URL_BASES[region]["user"]
-        self._ads_url = URL_BASES[region]["ads"]
+        self._region = region if region in URL_BASES else REGION_US
+        self._user_url = URL_BASES[self._region]["user"]
+        self._ads_url = URL_BASES[self._region]["ads"]
 
         self._access_token: str | None = None
         self._refresh_token: str | None = None

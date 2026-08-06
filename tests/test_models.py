@@ -140,3 +140,16 @@ class TestEcoWaterDeviceDataEquality:
         # frozen dataclasses are hashable
         s: set[EcoWaterDeviceData] = {snap}
         assert snap in s
+
+class TestDataFreshnessAge:
+    def test_age_with_timestamp(self) -> None:
+        now = datetime.datetime.now(datetime.UTC)
+        past = now - datetime.timedelta(hours=2)
+        freshness = DataFreshness(received_at=now, newest_data_at=past)
+        assert freshness.age is not None
+        assert abs((freshness.age - datetime.timedelta(hours=2)).total_seconds()) < 1
+
+    def test_age_without_timestamp(self) -> None:
+        now = datetime.datetime.now(datetime.UTC)
+        freshness = DataFreshness(received_at=now, newest_data_at=None)
+        assert freshness.age is None

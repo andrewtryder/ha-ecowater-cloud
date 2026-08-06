@@ -33,3 +33,4 @@ MAX_SCAN_INTERVAL: Final = timedelta(hours=24)
 
 # Stale-data detection
 STALE_DATA_THRESHOLD: Final = timedelta(hours=24)
+STALE_DATA_REPAIR_THRESHOLD: Final = timedelta(hours=36)

@@ -31,7 +31,7 @@ async def test_setup_and_unload_entry(hass: HomeAssistant, mock_ayla_backend) ->
             data=MOCK_ENTRY_DATA,
             source="user",
             options={},
-            unique_id="user@example.com",
+            unique_id="ayla:us:user@example.com",
             discovery_keys={},
         )
         entry.add_to_hass(hass)
@@ -64,7 +64,7 @@ async def test_setup_unsupported_backend(hass: HomeAssistant) -> None:
         data={"backend": "unsupported", "username": "user", "password": "pwd"},
         source="user",
         options={},
-        unique_id="user@example.com",
+        unique_id="ayla:us:user@example.com",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -104,8 +104,49 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
 
     assert await async_migrate_entry(hass, entry)
 
-    # Migration must bump version to 2.2 and stamp backend and region
+    # Migration must bump version to 2.3 and stamp backend, region, and unique_id
     assert entry.version == 2
-    assert entry.minor_version == 2
+    assert entry.minor_version == 3
     assert entry.data[CONF_BACKEND] == BACKEND_AYLA
     assert entry.data[CONF_REGION] == REGION_US
+    assert entry.unique_id == "ayla:us:user@example.com"
+
+
+@pytest.mark.asyncio
+async def test_migrate_entry_from_2_1(hass: HomeAssistant) -> None:
+    """Test config entry migration from 2.1."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    entry = MockConfigEntry(
+        version=2,
+        minor_version=1,
+        domain=DOMAIN,
+        title="EcoWater Cloud",
+        data={
+            "backend": "ayla",
+            "username": "user@example.com",
+            "password": "password",
+        },
+        source="user",
+        options={},
+        unique_id="user@example.com",
+        discovery_keys={},
+    )
+    entry.add_to_hass(hass)
+
+    from custom_components.ecowater_cloud import async_migrate_entry
+    from custom_components.ecowater_cloud.const import (
+        BACKEND_AYLA,
+        CONF_BACKEND,
+        CONF_REGION,
+        REGION_US,
+    )
+
+    assert await async_migrate_entry(hass, entry)
+
+    # Migration must bump version to 2.3 and stamp region and unique_id
+    assert entry.version == 2
+    assert entry.minor_version == 3
+    assert entry.data[CONF_BACKEND] == BACKEND_AYLA
+    assert entry.data[CONF_REGION] == REGION_US
+    assert entry.unique_id == "ayla:us:user@example.com"

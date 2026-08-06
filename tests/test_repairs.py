@@ -7,10 +7,9 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.ecowater_cloud.const import DOMAIN
-from custom_components.ecowater_cloud.coordinator import AccountCoordinator
-from custom_components.ecowater_cloud.exceptions import (
-    AuthenticationError,
-    ProtocolError,
+from custom_components.ecowater_cloud.coordinator import (
+    AccountCoordinator,
+    CoordinatorErrorCategory,
 )
 
 
@@ -29,7 +28,7 @@ async def test_auth_rejected_repair(hass: HomeAssistant, mock_issue_registry) ->
     entry.add_to_hass(hass)
 
     coordinator = AccountCoordinator(hass, entry, AsyncMock())
-    coordinator.last_exception = AuthenticationError("Auth failed")
+    coordinator.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
 
     from custom_components.ecowater_cloud.repairs import _check_auth_rejected
 
@@ -38,14 +37,18 @@ async def test_auth_rejected_repair(hass: HomeAssistant, mock_issue_registry) ->
     # Needs a small delay for async_create_issue to process
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "authentication_rejected")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_authentication_rejected"
+    )
     assert issue is not None
 
-    coordinator.last_exception = None
+    coordinator.last_error_category = None
     _check_auth_rejected(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "authentication_rejected")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_authentication_rejected"
+    )
     assert issue is None
 
 
@@ -58,19 +61,126 @@ async def test_protocol_changed_repair(
     entry.add_to_hass(hass)
 
     coordinator = AccountCoordinator(hass, entry, AsyncMock())
-    coordinator.last_exception = ProtocolError("Protocol changed")
+    coordinator.last_error_category = CoordinatorErrorCategory.PROTOCOL
 
     from custom_components.ecowater_cloud.repairs import _check_protocol_changed
 
     _check_protocol_changed(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "protocol_changed")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_protocol_changed"
+    )
     assert issue is not None
 
-    coordinator.last_exception = None
+    coordinator.last_error_category = None
     _check_protocol_changed(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "protocol_changed")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_protocol_changed"
+    )
     assert issue is None
+
+@pytest.mark.asyncio
+async def test_repair_isolation_between_entries(
+    hass: HomeAssistant, mock_issue_registry
+) -> None:
+    """Test that repairs for two entries do not collide."""
+    entry1 = MockConfigEntry(domain=DOMAIN, data={})
+    entry1.add_to_hass(hass)
+    
+    entry2 = MockConfigEntry(domain=DOMAIN, data={})
+    entry2.add_to_hass(hass)
+
+    coord1 = AccountCoordinator(hass, entry1, AsyncMock())
+    coord1.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
+    
+    coord2 = AccountCoordinator(hass, entry2, AsyncMock())
+    coord2.last_error_category = None
+
+    from custom_components.ecowater_cloud.repairs import _check_auth_rejected
+
+    _check_auth_rejected(hass, entry1, coord1)
+    _check_auth_rejected(hass, entry2, coord2)
+    await hass.async_block_till_done()
+
+    issue1 = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry1.entry_id}_authentication_rejected"
+    )
+    assert issue1 is not None
+
+    issue2 = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry2.entry_id}_authentication_rejected"
+    )
+    assert issue2 is None
+
+
+@pytest.mark.asyncio
+async def test_multi_device_repair_aggregation(
+    hass: HomeAssistant, mock_issue_registry
+) -> None:
+    """Test that multiple devices with unknown salt models are aggregated."""
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+    
+    from unittest.mock import MagicMock
+    
+    dev1 = MagicMock()
+    dev1.descriptor.name = "First Device"
+    dev1.descriptor.model_id = "m1"
+    dev1.capabilities.has_unmapped_salt_model = True
+
+    dev2 = MagicMock()
+    dev2.descriptor.name = "Second Device"
+    dev2.descriptor.model_id = "m2"
+    dev2.capabilities.has_unmapped_salt_model = True
+
+    coord = AccountCoordinator(hass, entry, AsyncMock())
+    coord.data = {"AC1": dev1, "AC2": dev2}
+
+    from custom_components.ecowater_cloud.repairs import _check_unknown_salt_models
+
+    _check_unknown_salt_models(hass, entry, coord)
+    await hass.async_block_till_done()
+
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_unknown_salt_model"
+    )
+    assert issue is not None
+    assert "First Device" in issue.translation_placeholders["devices"]
+    assert "Second Device" in issue.translation_placeholders["devices"]
+
+
+@pytest.mark.asyncio
+async def test_repairs_listener_registration(
+    hass: HomeAssistant, mock_issue_registry
+) -> None:
+    """Test that async_register_repairs listens to the coordinator."""
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+
+    coord = AccountCoordinator(hass, entry, AsyncMock())
+    coord.data = {}
+    
+    from custom_components.ecowater_cloud.repairs import async_register_repairs
+    
+    async_register_repairs(hass, entry, coord)
+    await hass.async_block_till_done()
+    
+    # Trigger an error via coordinator update
+    coord.last_error_category = CoordinatorErrorCategory.PROTOCOL
+    coord.async_update_listeners()
+    await hass.async_block_till_done()
+
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_protocol_changed"
+    )
+    assert issue is not None
+    
+    # Cleanup listener to avoid lingering timer
+    if getattr(entry, "on_unload", None):
+        for cb in entry.on_unload:
+            cb()
+    if getattr(coord, "_unsub_refresh", None):
+        coord._unsub_refresh()
