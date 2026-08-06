@@ -158,3 +158,19 @@ async def test_connectivity_error_timeout(hass, aioclient_mock):
 
     with pytest.raises(AylaConnectivityError, match="Request timed out"):
         await api.async_list_devices()
+
+@pytest.mark.asyncio
+async def test_region_url_selection(hass) -> None:
+    session = async_get_clientsession(hass)
+    
+    api_us = AylaApi(session, region="us")
+    assert api_us._user_url == "https://user-field.aylanetworks.com"
+    assert api_us._ads_url == "https://ads-field.aylanetworks.com"
+    
+    api_eu = AylaApi(session, region="eu")
+    assert api_eu._user_url == "https://user-field-eu.aylanetworks.com"
+    assert api_eu._ads_url == "https://ads-eu.aylanetworks.com"
+    
+    # Fallback to US if unknown
+    api_unknown = AylaApi(session, region="unknown")
+    assert api_unknown._user_url == "https://user-field.aylanetworks.com"

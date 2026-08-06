@@ -205,3 +205,34 @@ def test_missing_property_name():
 
     normalized = normalize_device(dev, props, received_at)
     assert normalized.water_used_today_gallons is None
+
+def test_unmapped_salt_model_logic():
+    """Test that only salt devices receive the unmapped salt model flag."""
+    dev = {"dsn": "AC0001"}
+    
+    # 1. Salt device with unknown model -> True
+    props_salt = [
+        {"name": "salt_level_tenths", "value": 40, "type": "integer"},
+        {"name": "model_id", "value": "99999", "type": "string"},
+    ]
+    received_at = datetime.datetime(2026, 8, 5, 12, 10, tzinfo=datetime.UTC)
+    norm1 = normalize_device(dev, props_salt, received_at)
+    assert norm1.capabilities.has_salt_sensor is True
+    assert norm1.capabilities.has_unmapped_salt_model is True
+
+    # 2. Non-salt device with unknown model -> False
+    props_no_salt = [
+        {"name": "model_id", "value": "99999", "type": "string"},
+    ]
+    norm2 = normalize_device(dev, props_no_salt, received_at)
+    assert norm2.capabilities.has_salt_sensor is False
+    assert norm2.capabilities.has_unmapped_salt_model is False
+
+    # 3. Salt device with known model -> False
+    props_known = [
+        {"name": "salt_level_tenths", "value": 40, "type": "integer"},
+        {"name": "model_id", "value": "46904", "type": "string"},
+    ]
+    norm3 = normalize_device(dev, props_known, received_at)
+    assert norm3.capabilities.has_salt_sensor is True
+    assert norm3.capabilities.has_unmapped_salt_model is False

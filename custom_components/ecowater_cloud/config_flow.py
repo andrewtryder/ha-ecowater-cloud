@@ -163,6 +163,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reauth_confirm",
             data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
             errors=errors,
+            description_placeholders={"username": reauth_entry.data[CONF_USERNAME]},
         )
 
     async def async_step_reconfigure(

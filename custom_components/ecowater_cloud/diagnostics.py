@@ -70,6 +70,62 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_error_code": data.capabilities.has_error_code,
         "has_unmapped_salt_model": data.capabilities.has_unmapped_salt_model,
         "total_water_source_property": data.total_water_source_property,
+        "has_power_outage_count": getattr(
+            data.capabilities, "has_power_outage_count", None
+        ),
+        "has_time_lost_events": getattr(
+            data.capabilities, "has_time_lost_events", None
+        ),
+        "has_longest_rec_outage_mins": getattr(
+            data.capabilities, "has_longest_rec_outage_mins", None
+        ),
+        "has_valve_reindex_count": getattr(
+            data.capabilities, "has_valve_reindex_count", None
+        ),
+        "has_valve_motor_state_enum": getattr(
+            data.capabilities, "has_valve_motor_state_enum", None
+        ),
+        "has_valve_pos_switch_enum": getattr(
+            data.capabilities, "has_valve_pos_switch_enum", None
+        ),
+        "has_valve_pos_time_left_secs": getattr(
+            data.capabilities, "has_valve_pos_time_left_secs", None
+        ),
+        "has_days_in_operation": getattr(
+            data.capabilities, "has_days_in_operation", None
+        ),
+        "has_total_untreated_water_gals": getattr(
+            data.capabilities, "has_total_untreated_water_gals", None
+        ),
+        "has_average_exhaustion_percent": getattr(
+            data.capabilities, "has_average_exhaustion_percent", None
+        ),
+        "has_efficiency_mode_enum": getattr(
+            data.capabilities, "has_efficiency_mode_enum", None
+        ),
+        "has_operating_capacity_grains": getattr(
+            data.capabilities, "has_operating_capacity_grains", None
+        ),
+        "has_hardness_grains": getattr(data.capabilities, "has_hardness_grains", None),
+        "has_iron_level_tenths_ppm": getattr(
+            data.capabilities, "has_iron_level_tenths_ppm", None
+        ),
+        "has_flow_monitor_min_rate_gpm": getattr(
+            data.capabilities, "has_flow_monitor_min_rate_gpm", None
+        ),
+        "has_flow_monitor_trip_sec": getattr(
+            data.capabilities, "has_flow_monitor_trip_sec", None
+        ),
+        "has_manual_regens": getattr(data.capabilities, "has_manual_regens", None),
+        "has_fill_secs": getattr(data.capabilities, "has_fill_secs", None),
+        "has_backwash_secs": getattr(data.capabilities, "has_backwash_secs", None),
+        "has_fast_rinse_secs": getattr(data.capabilities, "has_fast_rinse_secs", None),
+        "has_second_backwash_cycles": getattr(
+            data.capabilities, "has_second_backwash_cycles", None
+        ),
+        "has_second_backwash_secs": getattr(
+            data.capabilities, "has_second_backwash_secs", None
+        ),
     }
 
     import datetime
@@ -139,6 +195,28 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "flow_monitor_alert": data.flow_monitor_alert,
         "service_reminder_alert": data.service_reminder_alert,
         "error_code_alert": data.error_code_alert,
+        "power_outage_count": getattr(data, "power_outage_count", None),
+        "time_lost_events": getattr(data, "time_lost_events", None),
+        "longest_rec_outage_mins": getattr(data, "longest_rec_outage_mins", None),
+        "valve_reindex_count": getattr(data, "valve_reindex_count", None),
+        "valve_motor_state_enum": getattr(data, "valve_motor_state_enum", None),
+        "valve_pos_switch_enum": getattr(data, "valve_pos_switch_enum", None),
+        "valve_pos_time_left_secs": getattr(data, "valve_pos_time_left_secs", None),
+        "days_in_operation": getattr(data, "days_in_operation", None),
+        "total_untreated_water_gals": getattr(data, "total_untreated_water_gals", None),
+        "average_exhaustion_percent": getattr(data, "average_exhaustion_percent", None),
+        "efficiency_mode_enum": getattr(data, "efficiency_mode_enum", None),
+        "operating_capacity_grains": getattr(data, "operating_capacity_grains", None),
+        "hardness_grains": getattr(data, "hardness_grains", None),
+        "iron_level_tenths_ppm": getattr(data, "iron_level_tenths_ppm", None),
+        "flow_monitor_min_rate_gpm": getattr(data, "flow_monitor_min_rate_gpm", None),
+        "flow_monitor_trip_sec": getattr(data, "flow_monitor_trip_sec", None),
+        "manual_regens": getattr(data, "manual_regens", None),
+        "fill_secs": getattr(data, "fill_secs", None),
+        "backwash_secs": getattr(data, "backwash_secs", None),
+        "fast_rinse_secs": getattr(data, "fast_rinse_secs", None),
+        "second_backwash_cycles": getattr(data, "second_backwash_cycles", None),
+        "second_backwash_secs": getattr(data, "second_backwash_secs", None),
     }
 
 

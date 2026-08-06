@@ -18,7 +18,7 @@
 
 ## What It Does
 
-This integration connects your EcoWater Wi-Fi-enabled water softener to Home Assistant via the EcoWater cloud, giving you real-time visibility into your water system without leaving your dashboard.
+This integration connects your EcoWater Wi-Fi-enabled water softener to Home Assistant via the EcoWater cloud, giving you Cloud-reported visibility into your EcoWater system without leaving your dashboard.
 
 **Sensors include:**
 
@@ -33,7 +33,15 @@ Entities are created dynamically — only capabilities your specific device repo
 
 ## Device Compatibility
 
-This integration has been developed and tested against a **single EcoWater model** using the Ayla Wi-Fi cloud backend. It should work with other Ayla-connected EcoWater devices, but we can't guarantee it until we have fixture data from more models.
+The following backends and models are known to this integration:
+
+| Backend | Region | OEM model | Display model | Status |
+|---|---|---|---|---|
+| Ayla | US | EWS3500 | EWS ECR3700R30 | Live tested |
+| Ayla | EU | — | — | Endpoint implemented, untested |
+| HydroLink | — | — | — | Not supported |
+
+It should work with other Ayla-connected EcoWater devices, but we can't guarantee it until we have fixture data from more models.
 
 **Have a different model?** We'd love your help — see [Submitting a Device Fixture](#submitting-a-device-fixture) below.
 
@@ -89,7 +97,7 @@ This integration has been developed and tested against a **single EcoWater model
 
 The integration polls the cloud every **30 minutes** by default (configurable in the options flow).
 
-Water softeners are conservative with telemetry — when no water is flowing, your device may not push data to the cloud for 12–24 hours. This is **normal**. Check the `source_last_updated` diagnostic sensor to see when the cloud last received fresh data from your device. As long as the `device_reported_online` binary sensor stays on, everything is fine.
+Water softeners are conservative with telemetry — when no water is flowing, your device may not push data to the cloud for 12–24 hours. This is **normal**. Check the `source_last_updated` diagnostic sensor to see when the cloud last received fresh data from your device. An online state confirms cloud connectivity but does not guarantee that every telemetry value is current.
 
 ## Troubleshooting
 
@@ -117,7 +125,7 @@ If your device model isn't fully supported — or entities are missing — you c
 ## Privacy & Security
 
 - Communicates exclusively with the EcoWater Ayla cloud servers over HTTPS.
-- Credentials are stored and encrypted by Home Assistant.
+- Credentials are stored and managed by Home Assistant.
 - No telemetry or personal data is sent to the integration developer.
 
 ## Contributing
