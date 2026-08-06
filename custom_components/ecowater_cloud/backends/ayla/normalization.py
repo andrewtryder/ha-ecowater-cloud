@@ -1033,6 +1033,11 @@ def normalize_device(
     has_capacity_remaining = "capacity_remaining_percent" in props
     has_regen_time_remaining = "regen_time_rem_secs" in props
     has_valve_position = "current_valve_position_enum" in props
+    # Unknown-model detection: model_id is known but not in the salt capacity map
+    model_id_val = descriptor.model_id
+    has_unmapped_model = (
+        model_id_val is not None and model_id_val not in SALT_TENTHS_MAX
+    )
 
     capabilities = DeviceCapabilities(
         has_water_usage_today=has_water_usage_today,
@@ -1059,6 +1064,7 @@ def normalize_device(
         has_service_reminder_alert="service_reminder_alert" in props,
         has_error_code_alert="error_code_alert" in props,
         has_error_code="error_code" in props,
+        has_unmapped_model=has_unmapped_model,
     )
 
     return EcoWaterDeviceData(

@@ -22,6 +22,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from . import EcoWaterCloudConfigEntry
 from .coordinator import AccountCoordinator
@@ -284,6 +285,19 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: d.freshness.oldest_data_at,
     ),
     EcoWaterSensorEntityDescription(
+        key="source_data_age",
+        translation_key="source_data_age",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda d: (
+            int((dt_util.utcnow() - d.freshness.newest_data_at).total_seconds())
+            if d.freshness.newest_data_at is not None
+            else None
+        ),
+    ),
+    EcoWaterSensorEntityDescription(
         key="wifi_signal_strength",
         translation_key="wifi_signal_strength",
         device_class=SensorDeviceClass.SIGNAL_STRENGTH,
@@ -292,6 +306,48 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         value_fn=lambda d: d.descriptor.wifi_signal_strength_dbm,
+    ),
+    # --- Unknown-model diagnostics ---
+    # Disabled by default, gated on has_unmapped_model
+    EcoWaterSensorEntityDescription(
+        key="raw_salt_level",
+        translation_key="raw_salt_level",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        value_fn=lambda d: d.salt_level_raw,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="model_id",
+        translation_key="model_id",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        value_fn=lambda d: d.descriptor.model_id,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="oem_model",
+        translation_key="oem_model",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        value_fn=lambda d: d.descriptor.oem_model,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="firmware_version",
+        translation_key="firmware_version",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        value_fn=lambda d: d.descriptor.firmware_version,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="total_water_source_property",
+        translation_key="total_water_source_property",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        value_fn=lambda d: d.total_water_source_property,
     ),
 )
 

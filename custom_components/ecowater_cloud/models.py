@@ -66,6 +66,7 @@ class DeviceCapabilities:
     has_service_reminder_alert: bool
     has_error_code_alert: bool
     has_error_code: bool
+    has_unmapped_model: bool
 
 
 @dataclass(frozen=True, slots=True)

@@ -68,8 +68,11 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_service_reminder_alert": data.capabilities.has_service_reminder_alert,
         "has_error_code_alert": data.capabilities.has_error_code_alert,
         "has_error_code": data.capabilities.has_error_code,
+        "has_unmapped_model": data.capabilities.has_unmapped_model,
         "total_water_source_property": data.total_water_source_property,
     }
+
+    import datetime
 
     freshness_dict = {
         "received_at": data.freshness.received_at.isoformat()
@@ -79,6 +82,13 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         if data.freshness.oldest_data_at
         else None,
         "newest_data_at": data.freshness.newest_data_at.isoformat()
+        if data.freshness.newest_data_at
+        else None,
+        "source_data_age_seconds": int(
+            (
+                datetime.datetime.now(datetime.UTC) - data.freshness.newest_data_at
+            ).total_seconds()
+        )
         if data.freshness.newest_data_at
         else None,
     }

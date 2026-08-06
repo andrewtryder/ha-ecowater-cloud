@@ -76,6 +76,7 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             has_service_reminder_alert=True,
             has_error_code_alert=True,
             has_error_code=True,
+            has_unmapped_model=False,
         ),
         freshness=DataFreshness(
             received_at=datetime.datetime(2026, 8, 5, 14, 0, 0, tzinfo=datetime.UTC),
