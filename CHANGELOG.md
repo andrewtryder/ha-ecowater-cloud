@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.2.0...v0.3.0) (2026-08-06)
+
+
+### Features
+
+* add ayla region selection (US/EU) ([#14](https://github.com/andrewtryder/ha-ecowater-cloud/issues/14)) ([a70aa90](https://github.com/andrewtryder/ha-ecowater-cloud/commit/a70aa90ddca02938662073883248d15c5bc845e8))
+* add read-only diagnostic sensors ([825cbe0](https://github.com/andrewtryder/ha-ecowater-cloud/commit/825cbe027441ee56b7fab575e917c01adcdefea7))
+* add read-only diagnostic sensors ([#11](https://github.com/andrewtryder/ha-ecowater-cloud/issues/11)) ([fb8a0ef](https://github.com/andrewtryder/ha-ecowater-cloud/commit/fb8a0ef0a71e70ecb23b1bcc79ac6fd8c1ebf891))
+* add stale data, repairs, and unknown model support ([#10](https://github.com/andrewtryder/ha-ecowater-cloud/issues/10)) ([a34e16d](https://github.com/andrewtryder/ha-ecowater-cloud/commit/a34e16d61e9648b441841b44941a9f1a98d29d93))
+* add stale-data detection ([648e89a](https://github.com/andrewtryder/ha-ecowater-cloud/commit/648e89af9c896f60e1c9b07517c8b5d0012a70fb))
+* add stale-data detection ([#12](https://github.com/andrewtryder/ha-ecowater-cloud/issues/12)) ([a4f22ff](https://github.com/andrewtryder/ha-ecowater-cloud/commit/a4f22ff6ddf141644a395e586f3f9076fed1da62))
+
+
+### Documentation
+
+* remove hydrolink support references ([fb70cd4](https://github.com/andrewtryder/ha-ecowater-cloud/commit/fb70cd47e5bd33acf50c61180701bc8aa786c221))
+
 ## [0.2.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.1.0...v0.2.0) (2026-08-06)
 
 
