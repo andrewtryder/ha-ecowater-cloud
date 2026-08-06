@@ -58,6 +58,7 @@ async def test_form_user(hass: HomeAssistant, mock_ayla_backend) -> None:
         "backend": BACKEND_AYLA,
         "username": "test@example.com",
         "password": MOCK_PASSWORD,
+        "region": "us",
     }
     mock_setup_entry.assert_awaited_once()
 

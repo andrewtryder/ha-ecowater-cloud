@@ -30,7 +30,7 @@ def mock_ayla_api(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     # Patch AylaBackend to use this API
     monkeypatch.setattr(
         "custom_components.ecowater_cloud.backends.ayla.backend.AylaApi",
-        lambda session: api,
+        lambda session, region="us": api,
     )
     return api
 

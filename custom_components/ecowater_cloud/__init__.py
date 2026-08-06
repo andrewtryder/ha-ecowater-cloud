@@ -17,8 +17,10 @@ from .const import (
     BACKEND_AYLA,
     CONF_BACKEND,
     CONF_POLLING_INTERVAL,
+    CONF_REGION,
     DEFAULT_SCAN_INTERVAL,
     PLATFORMS,
+    REGION_US,
 )
 from .coordinator import AccountCoordinator
 
@@ -48,10 +50,11 @@ async def async_setup_entry(
 
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
+    region = entry.data.get(CONF_REGION, REGION_US)
 
     session = async_get_clientsession(hass)
 
-    backend = AylaBackend(session, username, password)
+    backend = AylaBackend(session, username, password, region=region)
 
     polling_mins = entry.options.get(CONF_POLLING_INTERVAL)
     if polling_mins is not None:
@@ -90,9 +93,16 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         new_data = {**entry.data}
         # Stamp backend as ayla if it doesn't exist (it should, but just in case)
         new_data.setdefault(CONF_BACKEND, BACKEND_AYLA)
+        new_data.setdefault(CONF_REGION, REGION_US)
 
         hass.config_entries.async_update_entry(
-            entry, data=new_data, version=2, minor_version=1
+            entry, data=new_data, version=2, minor_version=2
+        )
+    elif entry.version == 2 and entry.minor_version < 2:
+        new_data = {**entry.data}
+        new_data.setdefault(CONF_REGION, REGION_US)
+        hass.config_entries.async_update_entry(
+            entry, data=new_data, version=2, minor_version=2
         )
 
     _LOGGER.info("Migration to version %s successful", entry.version)

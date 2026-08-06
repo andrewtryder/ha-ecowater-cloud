@@ -95,11 +95,12 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
     entry.add_to_hass(hass)
 
     from custom_components.ecowater_cloud import async_migrate_entry
-    from custom_components.ecowater_cloud.const import BACKEND_AYLA, CONF_BACKEND
+    from custom_components.ecowater_cloud.const import BACKEND_AYLA, CONF_BACKEND, CONF_REGION, REGION_US
 
     assert await async_migrate_entry(hass, entry)
 
-    # Migration must bump version to 2.1 and stamp backend
+    # Migration must bump version to 2.2 and stamp backend and region
     assert entry.version == 2
-    assert entry.minor_version == 1
+    assert entry.minor_version == 2
     assert entry.data[CONF_BACKEND] == BACKEND_AYLA
+    assert entry.data[CONF_REGION] == REGION_US
