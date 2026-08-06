@@ -257,6 +257,9 @@
       },
       "second_backwash_duration": {
         "name": "Second backwash duration"
+      },
+      "source_data_age": {
+        "name": "Source data age"
       }
     },
     "binary_sensor": {

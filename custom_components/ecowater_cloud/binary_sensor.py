@@ -13,10 +13,8 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import dt as dt_util
 
 from . import EcoWaterCloudConfigEntry
-from .const import STALE_DATA_THRESHOLD
 from .coordinator import AccountCoordinator
 from .entity import EcoWaterEntity
 from .models import EcoWaterDeviceData
@@ -111,11 +109,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         # No capability gate: always add if we have any data from this device.
-        is_on_fn=lambda d: (
-            None
-            if d.freshness.newest_data_at is None
-            else (dt_util.utcnow() - d.freshness.newest_data_at) > STALE_DATA_THRESHOLD
-        ),
+        is_on_fn=lambda d: d.freshness.is_stale,
     ),
 )
 

@@ -22,7 +22,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import dt as dt_util
 
 from . import EcoWaterCloudConfigEntry
 from .coordinator import AccountCoordinator
@@ -363,14 +362,10 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         key="source_data_age",
         translation_key="source_data_age",
         device_class=SensorDeviceClass.DURATION,
-        native_unit_of_measurement=UnitOfTime.SECONDS,
+        native_unit_of_measurement=UnitOfTime.HOURS,
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda d: (
-            int((dt_util.utcnow() - d.freshness.newest_data_at).total_seconds())
-            if d.freshness.newest_data_at is not None
-            else None
-        ),
+        value_fn=lambda d: d.freshness.age.total_seconds() / 3600,
     ),
     EcoWaterSensorEntityDescription(
         key="wifi_signal_strength",
