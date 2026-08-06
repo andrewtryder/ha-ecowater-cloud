@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  validate:
-    name: Validate
+  validate-python:
+    name: Validate Python
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,10 +36,22 @@ jobs:
       - name: Pytest
         run: uv run pytest tests/ -v --tb=short
 
+  validate-hacs:
+    name: Validate HACS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: HACS validation
         uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main
         with:
           category: integration
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  validate-hassfest:
+    name: Validate Hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Hassfest
         uses: home-assistant/actions/hassfest@a7c616ce81ccda50150bf1595786c71b1883fabb # master
