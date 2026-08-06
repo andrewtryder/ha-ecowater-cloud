@@ -51,6 +51,14 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
             data.capabilities.has_rock_removed_since_regeneration
         ),
         "has_total_rock_removed": data.capabilities.has_total_rock_removed,
+        "has_peak_flow": data.capabilities.has_peak_flow,
+        "has_capacity_remaining": data.capabilities.has_capacity_remaining,
+        "has_regen_time_remaining": data.capabilities.has_regen_time_remaining,
+        "has_valve_position": data.capabilities.has_valve_position,
+        "has_regeneration_stats": data.capabilities.has_regeneration_stats,
+        "has_total_regens": data.capabilities.has_total_regens,
+        "has_total_salt_used": data.capabilities.has_total_salt_used,
+        "has_alerts": data.capabilities.has_alerts,
         "total_water_source_property": data.total_water_source_property,
     }
 
@@ -95,6 +103,21 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "rock_removed_since_regeneration_lbs": data.rock_removed_since_regeneration_lbs,
         "total_rock_removed_lbs": data.total_rock_removed_lbs,
         "rock_removed_daily_avg_lbs": data.rock_removed_daily_avg_lbs,
+        "peak_water_flow_gpm": data.peak_water_flow_gpm,
+        "capacity_remaining_percent": data.capacity_remaining_percent,
+        "regen_time_rem_secs": data.regen_time_rem_secs,
+        "current_valve_position": data.current_valve_position,
+        "avg_days_between_regens": data.avg_days_between_regens,
+        "avg_salt_per_regen_lbs": data.avg_salt_per_regen_lbs,
+        "total_regens": data.total_regens,
+        "total_salt_used_lbs": data.total_salt_used_lbs,
+        "error_code": data.error_code,
+        "low_salt_alert": data.low_salt_alert,
+        "depletion_alert": data.depletion_alert,
+        "excessive_water_use_alert": data.excessive_water_use_alert,
+        "flow_monitor_alert": data.flow_monitor_alert,
+        "service_reminder_alert": data.service_reminder_alert,
+        "error_code_alert": data.error_code_alert,
     }
 
 
