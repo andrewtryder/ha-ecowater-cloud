@@ -34,7 +34,6 @@ from .const import (
     DOMAIN,
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
-    REGION_EU,
     REGION_US,
     SUPPORTED_REGIONS,
 )
@@ -64,7 +63,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     """
     session = async_get_clientsession(hass)
     region = data.get(CONF_REGION, REGION_US)
-    backend = AylaBackend(session, data[CONF_USERNAME], data[CONF_PASSWORD], region=region)
+    backend = AylaBackend(
+        session, data[CONF_USERNAME], data[CONF_PASSWORD], region=region
+    )
 
     await backend.async_authenticate()
 

@@ -95,7 +95,12 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
     entry.add_to_hass(hass)
 
     from custom_components.ecowater_cloud import async_migrate_entry
-    from custom_components.ecowater_cloud.const import BACKEND_AYLA, CONF_BACKEND, CONF_REGION, REGION_US
+    from custom_components.ecowater_cloud.const import (
+        BACKEND_AYLA,
+        CONF_BACKEND,
+        CONF_REGION,
+        REGION_US,
+    )
 
     assert await async_migrate_entry(hass, entry)
 
