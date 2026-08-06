@@ -120,7 +120,7 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_service_reminder_alert is True
     assert normalized.capabilities.has_error_code_alert is True
     assert normalized.capabilities.has_error_code is True
-    assert normalized.capabilities.has_unmapped_model is False
+    assert normalized.capabilities.has_unmapped_salt_model is False
 
 
 def test_normalize_edge_cases():

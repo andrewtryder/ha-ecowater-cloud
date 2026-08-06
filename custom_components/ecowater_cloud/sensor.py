@@ -378,13 +378,13 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: d.descriptor.wifi_signal_strength_dbm,
     ),
     # --- Unknown-model diagnostics ---
-    # Disabled by default, gated on has_unmapped_model
+    # Disabled by default, gated on has_unmapped_salt_model
     EcoWaterSensorEntityDescription(
         key="raw_salt_level",
         translation_key="raw_salt_level",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        supported_fn=lambda d: d.capabilities.has_unmapped_salt_model,
         value_fn=lambda d: d.salt_level_raw,
     ),
     EcoWaterSensorEntityDescription(
@@ -392,7 +392,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="model_id",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        supported_fn=lambda d: d.capabilities.has_unmapped_salt_model,
         value_fn=lambda d: d.descriptor.model_id,
     ),
     EcoWaterSensorEntityDescription(
@@ -400,7 +400,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="oem_model",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        supported_fn=lambda d: d.capabilities.has_unmapped_salt_model,
         value_fn=lambda d: d.descriptor.oem_model,
     ),
     EcoWaterSensorEntityDescription(
@@ -408,7 +408,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="firmware_version",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        supported_fn=lambda d: d.capabilities.has_unmapped_salt_model,
         value_fn=lambda d: d.descriptor.firmware_version,
     ),
     EcoWaterSensorEntityDescription(
@@ -416,7 +416,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="total_water_source_property",
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        supported_fn=lambda d: d.capabilities.has_unmapped_model,
+        supported_fn=lambda d: d.capabilities.has_unmapped_salt_model,
         value_fn=lambda d: d.total_water_source_property,
     ),
     EcoWaterSensorEntityDescription(

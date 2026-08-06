@@ -138,7 +138,7 @@ def _check_unknown_salt_models(
     unmapped = [
         f"{d.descriptor.name} (model {d.descriptor.model_id})"
         for d in coordinator.data.values()
-        if d.capabilities.has_unmapped_model
+        if d.capabilities.has_unmapped_salt_model
     ]
     if unmapped:
         _issue(
