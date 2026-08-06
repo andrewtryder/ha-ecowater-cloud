@@ -176,7 +176,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             normalized_email = user_input[CONF_USERNAME].lower().strip()
             region = user_input.get(CONF_REGION, REGION_US)
-            
+
             old_email = reconfigure_entry.data.get(CONF_USERNAME, "").lower().strip()
             if normalized_email != old_email:
                 return self.async_abort(reason="account_mismatch")

@@ -995,10 +995,12 @@ def normalize_device(
         0: "sodium_chloride",
         1: "potassium_chloride",
     }
-    
+
     # Salt
     salt_type_enum = _safe_int(props.get("salt_type_enum"))
-    salt_type_str = SALT_TYPE_MAP.get(salt_type_enum) if salt_type_enum is not None else None
+    salt_type_str = (
+        SALT_TYPE_MAP.get(salt_type_enum) if salt_type_enum is not None else None
+    )
 
     salt_level_tenths = _safe_float(props.get("salt_level_tenths"))
     salt_percent: float | None = None

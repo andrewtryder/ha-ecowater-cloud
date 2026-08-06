@@ -209,7 +209,7 @@ def test_missing_property_name():
 def test_unmapped_salt_model_logic():
     """Test that only salt devices receive the unmapped salt model flag."""
     dev = {"dsn": "AC0001"}
-    
+
     # 1. Salt device with unknown model -> True
     props_salt = [
         {"name": "salt_level_tenths", "value": 40, "type": "integer"},

@@ -89,13 +89,13 @@ async def test_repair_isolation_between_entries(
     """Test that repairs for two entries do not collide."""
     entry1 = MockConfigEntry(domain=DOMAIN, data={})
     entry1.add_to_hass(hass)
-    
+
     entry2 = MockConfigEntry(domain=DOMAIN, data={})
     entry2.add_to_hass(hass)
 
     coord1 = AccountCoordinator(hass, entry1, AsyncMock())
     coord1.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
-    
+
     coord2 = AccountCoordinator(hass, entry2, AsyncMock())
     coord2.last_error_category = None
 
@@ -123,9 +123,9 @@ async def test_multi_device_repair_aggregation(
     """Test that multiple devices with unknown salt models are aggregated."""
     entry = MockConfigEntry(domain=DOMAIN, data={})
     entry.add_to_hass(hass)
-    
+
     from unittest.mock import MagicMock
-    
+
     dev1 = MagicMock()
     dev1.descriptor.name = "First Device"
     dev1.descriptor.model_id = "m1"
@@ -162,12 +162,12 @@ async def test_repairs_listener_registration(
 
     coord = AccountCoordinator(hass, entry, AsyncMock())
     coord.data = {}
-    
+
     from custom_components.ecowater_cloud.repairs import async_register_repairs
-    
+
     async_register_repairs(hass, entry, coord)
     await hass.async_block_till_done()
-    
+
     # Trigger an error via coordinator update
     coord.last_error_category = CoordinatorErrorCategory.PROTOCOL
     coord.async_update_listeners()
@@ -177,7 +177,7 @@ async def test_repairs_listener_registration(
         DOMAIN, f"{entry.entry_id}_protocol_changed"
     )
     assert issue is not None
-    
+
     # Cleanup listener to avoid lingering timer
     if getattr(entry, "on_unload", None):
         for cb in entry.on_unload:

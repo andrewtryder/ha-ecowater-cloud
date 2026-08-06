@@ -350,8 +350,8 @@ async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> No
 @pytest.mark.asyncio
 async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     """Test the reconfigure flow updates the entry."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
     from homeassistant.config_entries import SOURCE_RECONFIGURE
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
         version=2,
@@ -410,8 +410,8 @@ async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
 @pytest.mark.asyncio
 async def test_reconfigure_account_mismatch(hass: HomeAssistant) -> None:
     """Test reconfigure fails when switching account email."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
     from homeassistant.config_entries import SOURCE_RECONFIGURE
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -443,8 +443,8 @@ async def test_reconfigure_account_mismatch(hass: HomeAssistant) -> None:
 @pytest.mark.asyncio
 async def test_reconfigure_errors(hass: HomeAssistant) -> None:
     """Test reconfigure handles errors."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
     from homeassistant.config_entries import SOURCE_RECONFIGURE
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -479,8 +479,8 @@ async def test_reconfigure_errors(hass: HomeAssistant) -> None:
 @pytest.mark.asyncio
 async def test_reconfigure_duplicate(hass: HomeAssistant, mock_ayla_backend) -> None:
     """Test reconfigure duplicate account is aborted."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
     from homeassistant.config_entries import SOURCE_RECONFIGURE
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     entry1 = MockConfigEntry(
         domain=DOMAIN,

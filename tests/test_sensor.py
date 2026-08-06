@@ -115,8 +115,8 @@ async def test_water_dashboard_eligibility(
     hass: HomeAssistant, mock_ayla_backend
 ) -> None:
     """Test that water usage sensors have the correct state class for energy dashboard."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
     from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
 
     with patch(
         "custom_components.ecowater_cloud.AylaBackend", return_value=mock_ayla_backend
