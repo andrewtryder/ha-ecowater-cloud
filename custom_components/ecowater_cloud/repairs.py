@@ -18,7 +18,7 @@ from homeassistant.helpers.issue_registry import (
     async_delete_issue,
 )
 
-from .const import DOMAIN, STALE_DATA_THRESHOLD
+from .const import DOMAIN, STALE_DATA_REPAIR_THRESHOLD
 from .coordinator import CoordinatorErrorCategory
 
 if TYPE_CHECKING:
@@ -101,17 +101,10 @@ def _check_auth_rejected(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-<<<<<<< HEAD
-    issue_id = "authentication_rejected"
-    if coordinator.last_error_category == CoordinatorErrorCategory.AUTHENTICATION:
-        _issue(hass, issue_id, IssueSeverity.ERROR)
-=======
     translation_key = "authentication_rejected"
     issue_id = f"{entry.entry_id}_{translation_key}"
-    last_exc = coordinator.last_exception
-    if isinstance(last_exc, (AuthenticationError, ReauthenticationRequired)):
+    if coordinator.last_error_category == CoordinatorErrorCategory.AUTHENTICATION:
         _issue(hass, issue_id, translation_key, IssueSeverity.ERROR)
->>>>>>> fix/repairs-issue-id-collision
     else:
         _resolve(hass, issue_id)
 
@@ -171,14 +164,13 @@ def _check_stale_data(
         _resolve(hass, issue_id)
         return
 
-    import datetime
-
-    now = datetime.datetime.now(datetime.UTC)
     stale_devices = []
     for d in coordinator.data.values():
-        newest = d.freshness.newest_data_at
-        if newest is not None and (now - newest) > STALE_DATA_THRESHOLD:
-            age_hours = int((now - newest).total_seconds() / 3600)
+        if (
+            d.freshness.age is not None
+            and d.freshness.age > STALE_DATA_REPAIR_THRESHOLD
+        ):
+            age_hours = int(d.freshness.age.total_seconds() / 3600)
             stale_devices.append(f"{d.descriptor.name} ({age_hours}h ago)")
 
     if stale_devices:
@@ -198,16 +190,9 @@ def _check_protocol_changed(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-<<<<<<< HEAD
-    issue_id = "protocol_changed"
-    if coordinator.last_error_category == CoordinatorErrorCategory.PROTOCOL:
-        _issue(hass, issue_id, IssueSeverity.ERROR)
-=======
     translation_key = "protocol_changed"
     issue_id = f"{entry.entry_id}_{translation_key}"
-    last_exc = coordinator.last_exception
-    if isinstance(last_exc, ProtocolError):
+    if coordinator.last_error_category == CoordinatorErrorCategory.PROTOCOL:
         _issue(hass, issue_id, translation_key, IssueSeverity.ERROR)
->>>>>>> fix/repairs-issue-id-collision
     else:
         _resolve(hass, issue_id)

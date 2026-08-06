@@ -110,14 +110,6 @@ class DataFreshness:
             return None
         return self.received_at - self.newest_data_at
 
-    @property
-    def is_stale(self) -> bool | None:
-        """Return True if the data is older than 24 hours. Returns None if unknown."""
-        if self.age is None:
-            return None
-        return self.age > datetime.timedelta(hours=24)
-
-
 @dataclass(frozen=True, slots=True)
 class RegenerationState:
     """Telemetry related to device regeneration/recharge cycles."""
