@@ -19,7 +19,7 @@ from homeassistant.helpers.issue_registry import (
 )
 
 from .const import DOMAIN, STALE_DATA_THRESHOLD
-from .exceptions import AuthenticationError, ProtocolError, ReauthenticationRequired
+from .coordinator import CoordinatorErrorCategory
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -101,8 +101,7 @@ def _check_auth_rejected(
     coordinator: AccountCoordinator,
 ) -> None:
     issue_id = "authentication_rejected"
-    last_exc = coordinator.last_exception
-    if isinstance(last_exc, (AuthenticationError, ReauthenticationRequired)):
+    if coordinator.last_error_category == CoordinatorErrorCategory.AUTHENTICATION:
         _issue(hass, issue_id, IssueSeverity.ERROR)
     else:
         _resolve(hass, issue_id)
@@ -186,8 +185,7 @@ def _check_protocol_changed(
     coordinator: AccountCoordinator,
 ) -> None:
     issue_id = "protocol_changed"
-    last_exc = coordinator.last_exception
-    if isinstance(last_exc, ProtocolError):
+    if coordinator.last_error_category == CoordinatorErrorCategory.PROTOCOL:
         _issue(hass, issue_id, IssueSeverity.ERROR)
     else:
         _resolve(hass, issue_id)

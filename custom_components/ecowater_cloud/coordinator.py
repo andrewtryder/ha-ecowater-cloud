@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -25,6 +26,15 @@ if TYPE_CHECKING:
     from .backends import BackendAdapter
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class CoordinatorErrorCategory(StrEnum):
+    """Categorized errors for diagnostics and repairs."""
+
+    AUTHENTICATION = "authentication"
+    CONNECTIVITY = "connectivity"
+    RATE_LIMIT = "rate_limit"
+    PROTOCOL = "protocol"
 
 
 class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
@@ -59,6 +69,7 @@ class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
             update_interval=scan_interval,
         )
         self._backend = backend
+        self.last_error_category: CoordinatorErrorCategory | None = None
 
     async def _async_setup(self) -> None:
         """Authenticate before the first account refresh.
@@ -70,13 +81,18 @@ class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
         """
         try:
             await self._backend.async_authenticate()
+            self.last_error_category = None
         except AuthenticationError as err:
+            self.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
             raise ConfigEntryAuthFailed from err
         except ConnectivityError as err:
+            self.last_error_category = CoordinatorErrorCategory.CONNECTIVITY
             raise UpdateFailed("Unable to connect to EcoWater") from err
         except RateLimitError as err:
+            self.last_error_category = CoordinatorErrorCategory.RATE_LIMIT
             raise UpdateFailed("EcoWater rate limit reached") from err
         except ProtocolError as err:
+            self.last_error_category = CoordinatorErrorCategory.PROTOCOL
             raise UpdateFailed("Unexpected EcoWater authentication response") from err
 
     async def _async_update_data(self) -> dict[str, EcoWaterDeviceData]:
@@ -101,12 +117,17 @@ class AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]]):
         """
         try:
             account_info = await self._backend.async_get_all_device_data()
+            self.last_error_category = None
             return dict(account_info.devices)
         except (AuthenticationError, ReauthenticationRequired) as err:
+            self.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
             raise ConfigEntryAuthFailed(str(err)) from err
         except ConnectivityError as err:
+            self.last_error_category = CoordinatorErrorCategory.CONNECTIVITY
             raise UpdateFailed(str(err)) from err
         except RateLimitError as err:
+            self.last_error_category = CoordinatorErrorCategory.RATE_LIMIT
             raise UpdateFailed("EcoWater rate limit reached") from err
         except ProtocolError as err:
+            self.last_error_category = CoordinatorErrorCategory.PROTOCOL
             raise UpdateFailed("Unexpected EcoWater response") from err

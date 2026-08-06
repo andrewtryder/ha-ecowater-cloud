@@ -7,10 +7,9 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.ecowater_cloud.const import DOMAIN
-from custom_components.ecowater_cloud.coordinator import AccountCoordinator
-from custom_components.ecowater_cloud.exceptions import (
-    AuthenticationError,
-    ProtocolError,
+from custom_components.ecowater_cloud.coordinator import (
+    AccountCoordinator,
+    CoordinatorErrorCategory,
 )
 
 
@@ -29,7 +28,7 @@ async def test_auth_rejected_repair(hass: HomeAssistant, mock_issue_registry) ->
     entry.add_to_hass(hass)
 
     coordinator = AccountCoordinator(hass, entry, AsyncMock())
-    coordinator.last_exception = AuthenticationError("Auth failed")
+    coordinator.last_error_category = CoordinatorErrorCategory.AUTHENTICATION
 
     from custom_components.ecowater_cloud.repairs import _check_auth_rejected
 
@@ -41,7 +40,7 @@ async def test_auth_rejected_repair(hass: HomeAssistant, mock_issue_registry) ->
     issue = mock_issue_registry.async_get_issue(DOMAIN, "authentication_rejected")
     assert issue is not None
 
-    coordinator.last_exception = None
+    coordinator.last_error_category = None
     _check_auth_rejected(hass, entry, coordinator)
     await hass.async_block_till_done()
 
@@ -58,7 +57,7 @@ async def test_protocol_changed_repair(
     entry.add_to_hass(hass)
 
     coordinator = AccountCoordinator(hass, entry, AsyncMock())
-    coordinator.last_exception = ProtocolError("Protocol changed")
+    coordinator.last_error_category = CoordinatorErrorCategory.PROTOCOL
 
     from custom_components.ecowater_cloud.repairs import _check_protocol_changed
 
@@ -68,7 +67,7 @@ async def test_protocol_changed_repair(
     issue = mock_issue_registry.async_get_issue(DOMAIN, "protocol_changed")
     assert issue is not None
 
-    coordinator.last_exception = None
+    coordinator.last_error_category = None
     _check_protocol_changed(hass, entry, coordinator)
     await hass.async_block_till_done()
 
