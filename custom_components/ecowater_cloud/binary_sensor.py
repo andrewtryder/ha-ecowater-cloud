@@ -13,8 +13,10 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from . import EcoWaterCloudConfigEntry
+from .const import STALE_DATA_THRESHOLD
 from .coordinator import AccountCoordinator
 from .entity import EcoWaterEntity
 from .models import EcoWaterDeviceData
@@ -53,13 +55,12 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         supported_fn=lambda d: d.regeneration.is_enabled is not None,
         is_on_fn=lambda d: d.regeneration.is_enabled,
     ),
-    # --- Alerts / Problems ---
     EcoWaterBinarySensorEntityDescription(
         key="low_salt_alert",
         translation_key="low_salt_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_low_salt_alert,
         is_on_fn=lambda d: d.low_salt_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -67,7 +68,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="depletion_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_depletion_alert,
         is_on_fn=lambda d: d.depletion_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -75,7 +76,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="excessive_water_use_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_excessive_water_use_alert,
         is_on_fn=lambda d: d.excessive_water_use_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -83,7 +84,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="flow_monitor_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_flow_monitor_alert,
         is_on_fn=lambda d: d.flow_monitor_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -91,7 +92,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="service_reminder_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_service_reminder_alert,
         is_on_fn=lambda d: d.service_reminder_alert,
     ),
     EcoWaterBinarySensorEntityDescription(
@@ -99,8 +100,22 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="error_code_alert",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        supported_fn=lambda d: d.capabilities.has_alerts,
+        supported_fn=lambda d: d.capabilities.has_error_code_alert,
         is_on_fn=lambda d: d.error_code_alert,
+    ),
+    # --- Stale data detection ---
+    EcoWaterBinarySensorEntityDescription(
+        key="data_stale",
+        translation_key="data_stale",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        # No capability gate: always add if we have any data from this device.
+        is_on_fn=lambda d: (
+            None
+            if d.freshness.newest_data_at is None
+            else (dt_util.utcnow() - d.freshness.newest_data_at) > STALE_DATA_THRESHOLD
+        ),
     ),
 )
 

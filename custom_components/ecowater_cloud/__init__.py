@@ -70,6 +70,11 @@ async def async_setup_entry(
 
     entry.runtime_data = EcoWaterCloudData(coordinator=coordinator)
 
+    # Register Repairs issue tracking (must happen after first refresh)
+    from .repairs import async_register_repairs
+
+    async_register_repairs(hass, entry, coordinator)
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True

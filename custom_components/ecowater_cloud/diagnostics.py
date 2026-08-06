@@ -55,12 +55,24 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_capacity_remaining": data.capabilities.has_capacity_remaining,
         "has_regen_time_remaining": data.capabilities.has_regen_time_remaining,
         "has_valve_position": data.capabilities.has_valve_position,
-        "has_regeneration_stats": data.capabilities.has_regeneration_stats,
+        "has_avg_days_between_regens": data.capabilities.has_avg_days_between_regens,
+        "has_avg_salt_per_regen": data.capabilities.has_avg_salt_per_regen,
         "has_total_regens": data.capabilities.has_total_regens,
         "has_total_salt_used": data.capabilities.has_total_salt_used,
-        "has_alerts": data.capabilities.has_alerts,
+        "has_low_salt_alert": data.capabilities.has_low_salt_alert,
+        "has_depletion_alert": data.capabilities.has_depletion_alert,
+        "has_excessive_water_use_alert": (
+            data.capabilities.has_excessive_water_use_alert
+        ),
+        "has_flow_monitor_alert": data.capabilities.has_flow_monitor_alert,
+        "has_service_reminder_alert": data.capabilities.has_service_reminder_alert,
+        "has_error_code_alert": data.capabilities.has_error_code_alert,
+        "has_error_code": data.capabilities.has_error_code,
+        "has_unmapped_model": data.capabilities.has_unmapped_model,
         "total_water_source_property": data.total_water_source_property,
     }
+
+    import datetime
 
     freshness_dict = {
         "received_at": data.freshness.received_at.isoformat()
@@ -70,6 +82,13 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         if data.freshness.oldest_data_at
         else None,
         "newest_data_at": data.freshness.newest_data_at.isoformat()
+        if data.freshness.newest_data_at
+        else None,
+        "source_data_age_seconds": int(
+            (
+                datetime.datetime.now(datetime.UTC) - data.freshness.newest_data_at
+            ).total_seconds()
+        )
         if data.freshness.newest_data_at
         else None,
     }

@@ -16,18 +16,11 @@ from homeassistant.config_entries import (
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.selector import (
-    SelectOptionDict,
-    SelectSelector,
-    SelectSelectorConfig,
-    SelectSelectorMode,
-)
 
 from .backends.ayla import AylaBackend
 from .const import (
     BACKEND_AYLA,
     CONF_BACKEND,
-    CONF_FREQUENT_DATA_INTERVAL,
     CONF_POLLING_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -172,9 +165,6 @@ class EcoWaterCloudOptionsFlow(OptionsFlowWithReload):
         default_polling = self.config_entry.options.get(
             CONF_POLLING_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds() / 60)
         )
-        default_frequent = str(
-            self.config_entry.options.get(CONF_FREQUENT_DATA_INTERVAL, "0")
-        )
         min_polling = int(MIN_SCAN_INTERVAL.total_seconds() / 60)
         max_polling = int(MAX_SCAN_INTERVAL.total_seconds() / 60)
 
@@ -182,24 +172,6 @@ class EcoWaterCloudOptionsFlow(OptionsFlowWithReload):
             {
                 vol.Required(CONF_POLLING_INTERVAL, default=default_polling): vol.All(
                     vol.Coerce(int), vol.Clamp(min=min_polling, max=max_polling)
-                ),
-                vol.Required(
-                    CONF_FREQUENT_DATA_INTERVAL, default=default_frequent
-                ): SelectSelector(
-                    SelectSelectorConfig(
-                        options=[
-                            SelectOptionDict(
-                                value="0", label="Disabled (Passive mode)"
-                            ),
-                            SelectOptionDict(value="1", label="1 minute"),
-                            SelectOptionDict(value="5", label="5 minutes"),
-                            SelectOptionDict(value="10", label="10 minutes"),
-                            SelectOptionDict(value="15", label="15 minutes"),
-                            SelectOptionDict(value="30", label="30 minutes"),
-                            SelectOptionDict(value="60", label="60 minutes"),
-                        ],
-                        mode=SelectSelectorMode.DROPDOWN,
-                    )
                 ),
             }
         )

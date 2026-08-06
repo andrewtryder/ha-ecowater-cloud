@@ -106,10 +106,18 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_capacity_remaining is True
     assert normalized.capabilities.has_regen_time_remaining is True
     assert normalized.capabilities.has_valve_position is True
-    assert normalized.capabilities.has_regeneration_stats is True
+    assert normalized.capabilities.has_avg_days_between_regens is True
+    assert normalized.capabilities.has_avg_salt_per_regen is True
     assert normalized.capabilities.has_total_regens is True
     assert normalized.capabilities.has_total_salt_used is True
-    assert normalized.capabilities.has_alerts is True
+    assert normalized.capabilities.has_low_salt_alert is True
+    assert normalized.capabilities.has_depletion_alert is False
+    assert normalized.capabilities.has_excessive_water_use_alert is False
+    assert normalized.capabilities.has_flow_monitor_alert is False
+    assert normalized.capabilities.has_service_reminder_alert is False
+    assert normalized.capabilities.has_error_code_alert is True
+    assert normalized.capabilities.has_error_code is True
+    assert normalized.capabilities.has_unmapped_model is False
 
 
 def test_normalize_edge_cases():

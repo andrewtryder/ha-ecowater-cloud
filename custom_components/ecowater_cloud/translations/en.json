@@ -34,10 +34,31 @@
       "init": {
         "title": "Configure EcoWater Cloud Options",
         "data": {
-          "polling_interval_minutes": "Polling interval (minutes)",
-          "frequent_data_interval": "Frequent data interval (legacy devices)"
+          "polling_interval_minutes": "Polling interval (minutes)"
         }
       }
+    }
+  },
+  "issues": {
+    "authentication_rejected": {
+      "title": "EcoWater Cloud authentication failed",
+      "description": "The EcoWater Cloud credentials for this integration were rejected. Go to the integration settings and use **Re-authenticate** to enter a new password."
+    },
+    "no_devices": {
+      "title": "No EcoWater devices found",
+      "description": "The EcoWater Cloud account was authenticated but no supported devices were found. Verify that your device appears in the EcoWater app and try reloading the integration."
+    },
+    "unknown_salt_model": {
+      "title": "EcoWater device model not fully supported",
+      "description": "The salt level percentage cannot be calculated for: {devices}. The device model is not yet mapped. Download diagnostics and open a GitHub issue to help add support."
+    },
+    "data_stale": {
+      "title": "EcoWater device data is stale",
+      "description": "The following device(s) have not sent fresh data to the cloud in over 24 hours: {devices}. This may indicate a connectivity issue with the device. Check that the device appears online in the EcoWater app."
+    },
+    "protocol_changed": {
+      "title": "EcoWater Cloud API response changed",
+      "description": "The EcoWater Cloud returned an unexpected response. This may indicate the API has changed. Please open a GitHub issue with diagnostics attached."
     }
   },
   "entity": {
@@ -103,6 +124,9 @@
       "source_oldest_data": {
         "name": "Source oldest data"
       },
+      "source_data_age": {
+        "name": "Source data age"
+      },
       "wifi_signal_strength": {
         "name": "Wi-Fi signal strength"
       },
@@ -142,6 +166,21 @@
       },
       "error_code": {
         "name": "Error code"
+      },
+      "raw_salt_level": {
+        "name": "Raw salt level (unmapped model)"
+      },
+      "model_id": {
+        "name": "Model ID (unmapped model)"
+      },
+      "oem_model": {
+        "name": "OEM model (unmapped model)"
+      },
+      "firmware_version": {
+        "name": "Firmware version (unmapped model)"
+      },
+      "total_water_source_property": {
+        "name": "Total water source property (unmapped model)"
       }
     },
     "binary_sensor": {
@@ -171,6 +210,9 @@
       },
       "error_code_alert": {
         "name": "Error code alert"
+      },
+      "data_stale": {
+        "name": "Data stale"
       }
     }
   }
