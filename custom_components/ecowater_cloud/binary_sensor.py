@@ -102,6 +102,13 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         supported_fn=lambda d: d.capabilities.has_error_code_alert,
         is_on_fn=lambda d: d.error_code_alert,
     ),
+    EcoWaterBinarySensorEntityDescription(
+        key="data_stale",
+        translation_key="data_stale",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        is_on_fn=lambda d: d.freshness.is_stale,
+    ),
 )
 
 
