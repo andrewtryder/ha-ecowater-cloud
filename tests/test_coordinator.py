@@ -13,6 +13,8 @@ from custom_components.ecowater_cloud.coordinator import AccountCoordinator
 from custom_components.ecowater_cloud.exceptions import (
     AuthenticationError,
     ConnectivityError,
+    ProtocolError,
+    RateLimitError,
     ReauthenticationRequired,
 )
 from tests.conftest import MOCK_SERIAL
@@ -74,6 +76,29 @@ class TestCoordinatorUpdate:
         coordinator = _make_coordinator(hass, backend)
 
         with pytest.raises(ConfigEntryAuthFailed, match="session expired"):
+            await coordinator._async_update_data()
+    async def test_rate_limit_error_raises_update_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        backend = MagicMock()
+        backend.async_get_all_device_data = AsyncMock(
+            side_effect=RateLimitError("too many requests")
+        )
+        coordinator = _make_coordinator(hass, backend)
+
+        with pytest.raises(UpdateFailed, match="EcoWater rate limit reached"):
+            await coordinator._async_update_data()
+
+    async def test_protocol_error_raises_update_failed(
+        self, hass: HomeAssistant
+    ) -> None:
+        backend = MagicMock()
+        backend.async_get_all_device_data = AsyncMock(
+            side_effect=ProtocolError("bad payload")
+        )
+        coordinator = _make_coordinator(hass, backend)
+
+        with pytest.raises(UpdateFailed, match="Unexpected EcoWater response"):
             await coordinator._async_update_data()
 
 
