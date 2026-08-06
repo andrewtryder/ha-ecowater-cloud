@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.3.0...v0.3.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* explicit salt type mapping and remove solar crystals ([#21](https://github.com/andrewtryder/ha-ecowater-cloud/issues/21)) ([eb01eee](https://github.com/andrewtryder/ha-ecowater-cloud/commit/eb01eee627632e2c00e70a318159da38232cb392))
+* gate unknown salt model detection on salt sensor presence ([#20](https://github.com/andrewtryder/ha-ecowater-cloud/issues/20)) ([cdad706](https://github.com/andrewtryder/ha-ecowater-cloud/commit/cdad70631bbd01b749a3034c1bbd48a8a98057e4))
+
+
+### Documentation
+
+* add HACS button and uninstall instructions ([922a9ad](https://github.com/andrewtryder/ha-ecowater-cloud/commit/922a9addd17e031f4fc80043db90f7e4c9b3ad98))
+
 ## [0.3.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.2.0...v0.3.0) (2026-08-06)
 
 
