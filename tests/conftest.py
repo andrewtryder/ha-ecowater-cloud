@@ -76,7 +76,7 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             has_service_reminder_alert=True,
             has_error_code_alert=True,
             has_error_code=True,
-            has_unmapped_model=False,
+            has_unmapped_salt_model=False,
             has_power_outage_count=True,
             has_time_lost_events=True,
             has_longest_rec_outage_mins=True,

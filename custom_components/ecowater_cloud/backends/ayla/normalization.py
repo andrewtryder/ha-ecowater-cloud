@@ -1035,8 +1035,10 @@ def normalize_device(
     has_valve_position = "current_valve_position_enum" in props
     # Unknown-model detection: model_id is known but not in the salt capacity map
     model_id_val = descriptor.model_id
-    has_unmapped_model = (
-        model_id_val is not None and model_id_val not in SALT_TENTHS_MAX
+    has_unmapped_salt_model = (
+        has_salt_sensor
+        and model_id_val is not None
+        and model_id_val not in SALT_TENTHS_MAX
     )
 
     capabilities = DeviceCapabilities(
@@ -1064,7 +1066,7 @@ def normalize_device(
         has_service_reminder_alert="service_reminder_alert" in props,
         has_error_code_alert="error_code_alert" in props,
         has_error_code="error_code" in props,
-        has_unmapped_model=has_unmapped_model,
+        has_unmapped_salt_model=has_unmapped_salt_model,
         has_power_outage_count="power_outage_count" in props,
         has_time_lost_events="time_lost_events" in props,
         has_longest_rec_outage_mins="longest_rec_outage_mins" in props,

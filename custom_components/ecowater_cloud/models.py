@@ -66,7 +66,7 @@ class DeviceCapabilities:
     has_service_reminder_alert: bool
     has_error_code_alert: bool
     has_error_code: bool
-    has_unmapped_model: bool
+    has_unmapped_salt_model: bool
 
     # --- New Diagnostic Capabilities ---
     has_power_outage_count: bool

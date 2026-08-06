@@ -68,7 +68,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_service_reminder_alert": data.capabilities.has_service_reminder_alert,
         "has_error_code_alert": data.capabilities.has_error_code_alert,
         "has_error_code": data.capabilities.has_error_code,
-        "has_unmapped_model": data.capabilities.has_unmapped_model,
+        "has_unmapped_salt_model": data.capabilities.has_unmapped_salt_model,
         "total_water_source_property": data.total_water_source_property,
     }
 
