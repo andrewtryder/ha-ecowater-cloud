@@ -87,6 +87,16 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         supported_fn=lambda d: d.capabilities.has_flow_sensor,
         value_fn=lambda d: d.current_flow_gpm,
     ),
+    EcoWaterSensorEntityDescription(
+        key="peak_water_flow",
+        translation_key="peak_water_flow",
+        device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
+        native_unit_of_measurement="gal/min",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_peak_flow,
+        value_fn=lambda d: d.peak_water_flow_gpm,
+    ),
     # --- Salt & Rock ---
     EcoWaterSensorEntityDescription(
         key="salt_level",
@@ -95,6 +105,23 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         supported_fn=lambda d: d.capabilities.has_salt_sensor,
         value_fn=lambda d: d.salt_level_percent,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="capacity_remaining",
+        translation_key="capacity_remaining",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        supported_fn=lambda d: d.capabilities.has_capacity_remaining,
+        value_fn=lambda d: d.capacity_remaining_percent,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="total_salt_used",
+        translation_key="total_salt_used",
+        device_class=SensorDeviceClass.WEIGHT,
+        native_unit_of_measurement=UnitOfMass.POUNDS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        supported_fn=lambda d: d.capabilities.has_total_salt_used,
+        value_fn=lambda d: d.total_salt_used_lbs,
     ),
     EcoWaterSensorEntityDescription(
         key="days_until_out_of_salt",
@@ -131,6 +158,48 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: (
             d.regeneration.status.lower() if d.regeneration.status else None
         ),
+    ),
+    EcoWaterSensorEntityDescription(
+        key="regeneration_time_remaining",
+        translation_key="regeneration_time_remaining",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        supported_fn=lambda d: d.capabilities.has_regen_time_remaining,
+        value_fn=lambda d: d.regen_time_rem_secs,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="current_valve_position",
+        translation_key="current_valve_position",
+        supported_fn=lambda d: d.capabilities.has_valve_position,
+        value_fn=lambda d: (
+            d.current_valve_position.lower() if d.current_valve_position else None
+        ),
+    ),
+    EcoWaterSensorEntityDescription(
+        key="average_days_between_regenerations",
+        translation_key="average_days_between_regenerations",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+        state_class=SensorStateClass.MEASUREMENT,
+        supported_fn=lambda d: d.capabilities.has_regeneration_stats,
+        value_fn=lambda d: d.avg_days_between_regens,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="average_salt_per_regeneration",
+        translation_key="average_salt_per_regeneration",
+        device_class=SensorDeviceClass.WEIGHT,
+        native_unit_of_measurement=UnitOfMass.POUNDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        supported_fn=lambda d: d.capabilities.has_regeneration_stats,
+        value_fn=lambda d: d.avg_salt_per_regen_lbs,
+    ),
+    EcoWaterSensorEntityDescription(
+        key="total_regenerations",
+        translation_key="total_regenerations",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        supported_fn=lambda d: d.capabilities.has_total_regens,
+        value_fn=lambda d: d.total_regens,
     ),
     EcoWaterSensorEntityDescription(
         key="days_since_last_regeneration",
@@ -177,6 +246,13 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: d.rock_removed_daily_avg_lbs,
     ),
     # --- Diagnostics ---
+    EcoWaterSensorEntityDescription(
+        key="error_code",
+        translation_key="error_code",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_alerts,
+        value_fn=lambda d: d.error_code,
+    ),
     EcoWaterSensorEntityDescription(
         key="integration_last_successful_update",
         translation_key="integration_last_successful_update",
