@@ -1101,9 +1101,9 @@ def normalize_device(
             props.get("capacity_remaining_percent"), scale=10.0
         ),
         regen_time_rem_secs=_safe_float(props.get("regen_time_rem_secs")),
-        current_valve_position=VALVE_POSITION_MAP.get(
-            _safe_int(props.get("current_valve_position_enum"))
-        ),
+        current_valve_position=VALVE_POSITION_MAP.get(val)
+        if (val := _safe_int(props.get("current_valve_position_enum"))) is not None
+        else None,
         avg_days_between_regens=_safe_float(
             props.get("avg_days_between_regens"), scale=100.0
         ),

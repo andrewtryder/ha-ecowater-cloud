@@ -1,11 +1,11 @@
 # EcoWater Cloud for Home Assistant
 
-![Alpha Release](https://img.shields.io/badge/status-alpha-red.svg)
+![Experimental](https://img.shields.io/badge/status-experimental-red.svg)
 ![HACS Custom Repository](https://img.shields.io/badge/HACS-Custom-orange.svg)
 
 A modern, async, standalone Home Assistant integration for EcoWater Cloud connected water treatment devices.
 
-> **⚠️ ALPHA STATUS**: This integration is currently in early alpha testing. Do not submit this repository to the default HACS store yet. It should be used exclusively as a custom repository while it undergoes stabilization and verification.
+> **⚠️ EXPERIMENTAL STATUS**: This integration is currently in early experimental testing. Do not submit this repository to the default HACS store yet. It should be used exclusively as a custom repository while it undergoes stabilization and verification.
 
 > **⚠️ WARNING**: Do not run the old `ecowater_softener` integration and this new `ecowater_cloud` integration on the same account simultaneously! Doing so may cause aggressive polling, resulting in account lockouts or temporary IP bans from the cloud service.
 

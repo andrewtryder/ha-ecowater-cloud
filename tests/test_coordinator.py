@@ -77,6 +77,7 @@ class TestCoordinatorUpdate:
 
         with pytest.raises(ConfigEntryAuthFailed, match="session expired"):
             await coordinator._async_update_data()
+
     async def test_rate_limit_error_raises_update_failed(
         self, hass: HomeAssistant
     ) -> None:

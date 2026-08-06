@@ -10,7 +10,6 @@ from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ecowater_cloud.const import (
     BACKEND_AYLA,
-    CONF_BACKEND,
     CONF_FREQUENT_DATA_INTERVAL,
     CONF_POLLING_INTERVAL,
     DOMAIN,
@@ -263,11 +262,17 @@ async def test_options_flow(hass: HomeAssistant) -> None:
         CONF_FREQUENT_DATA_INTERVAL: "10",
     }
 
+
 @pytest.mark.asyncio
 async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
     """Test reauth confirm handles exceptions."""
     from pytest_homeassistant_custom_component.common import MockConfigEntry
-    from custom_components.ecowater_cloud.exceptions import AuthenticationError, ConnectivityError, RateLimitError
+
+    from custom_components.ecowater_cloud.exceptions import (
+        AuthenticationError,
+        ConnectivityError,
+        RateLimitError,
+    )
 
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -277,7 +282,11 @@ async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
 
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
-        context={"source": "reauth", "entry_id": entry.entry_id, "unique_id": entry.unique_id},
+        context={
+            "source": "reauth",
+            "entry_id": entry.entry_id,
+            "unique_id": entry.unique_id,
+        },
         data=entry.data,
     )
 
