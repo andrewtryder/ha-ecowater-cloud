@@ -867,6 +867,19 @@ def _safe_str(value: Any) -> str | None:
     return str(value)
 
 
+def _safe_bool(value: Any) -> bool | None:
+    """Safely convert a value to a boolean."""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.lower() in ("1", "true", "yes")
+    return bool(value)
+
+
 def _parse_ayla_datetime(value: str) -> datetime.datetime | None:
     """Parse Ayla ISO8601 strings to UTC datetime."""
     try:
@@ -999,6 +1012,29 @@ def normalize_device(
     has_rock_removed_since_regeneration = "rock_removed_since_rech_lbs" in props
     has_total_rock_removed = "total_rock_removed_lbs" in props
 
+    # High-value capabilities
+    has_peak_flow = "peak_water_flow_gpm" in props
+    has_capacity_remaining = "capacity_remaining_percent" in props
+    has_regen_time_remaining = "regen_time_rem_secs" in props
+    has_valve_position = "current_valve_position_enum" in props
+    has_regeneration_stats = (
+        "avg_days_between_regens" in props or "avg_salt_per_regen_lbs" in props
+    )
+    has_total_regens = "total_regens" in props
+    has_total_salt_used = "total_salt_use_lbs" in props
+
+    has_alerts = any(
+        alert in props
+        for alert in (
+            "low_salt_alert",
+            "depletion_alert",
+            "excessive_water_use_alert",
+            "flow_monitor_alert",
+            "service_reminder_alert",
+            "error_code_alert",
+        )
+    )
+
     capabilities = DeviceCapabilities(
         has_water_usage_today=has_water_usage_today,
         has_water_usage_daily_avg=has_water_usage_daily_avg,
@@ -1009,6 +1045,14 @@ def normalize_device(
         has_rock_removed_daily_avg=has_rock_removed_daily_avg,
         has_rock_removed_since_regeneration=has_rock_removed_since_regeneration,
         has_total_rock_removed=has_total_rock_removed,
+        has_peak_flow=has_peak_flow,
+        has_capacity_remaining=has_capacity_remaining,
+        has_regen_time_remaining=has_regen_time_remaining,
+        has_valve_position=has_valve_position,
+        has_regeneration_stats=has_regeneration_stats,
+        has_total_regens=has_total_regens,
+        has_total_salt_used=has_total_salt_used,
+        has_alerts=has_alerts,
     )
 
     return EcoWaterDeviceData(
@@ -1044,4 +1088,23 @@ def normalize_device(
         rock_removed_daily_avg_lbs=_safe_float(
             props.get("daily_avg_rock_removed_lbs"), scale=10000.0
         ),
+        peak_water_flow_gpm=_safe_float(props.get("peak_water_flow_gpm"), scale=10.0),
+        capacity_remaining_percent=_safe_float(
+            props.get("capacity_remaining_percent"), scale=10.0
+        ),
+        regen_time_rem_secs=_safe_float(props.get("regen_time_rem_secs")),
+        current_valve_position=_safe_str(props.get("current_valve_position_enum")),
+        avg_days_between_regens=_safe_float(props.get("avg_days_between_regens")),
+        avg_salt_per_regen_lbs=_safe_float(
+            props.get("avg_salt_per_regen_lbs"), scale=10.0
+        ),
+        total_regens=_safe_int(props.get("total_regens")),
+        total_salt_used_lbs=_safe_float(props.get("total_salt_use_lbs"), scale=10.0),
+        error_code=_safe_str(props.get("error_code")),
+        low_salt_alert=_safe_bool(props.get("low_salt_alert")),
+        depletion_alert=_safe_bool(props.get("depletion_alert")),
+        excessive_water_use_alert=_safe_bool(props.get("excessive_water_use_alert")),
+        flow_monitor_alert=_safe_bool(props.get("flow_monitor_alert")),
+        service_reminder_alert=_safe_bool(props.get("service_reminder_alert")),
+        error_code_alert=_safe_bool(props.get("error_code_alert")),
     )

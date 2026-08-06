@@ -51,6 +51,14 @@ class DeviceCapabilities:
     has_rock_removed_daily_avg: bool
     has_rock_removed_since_regeneration: bool
     has_total_rock_removed: bool
+    has_peak_flow: bool
+    has_capacity_remaining: bool
+    has_regen_time_remaining: bool
+    has_valve_position: bool
+    has_regeneration_stats: bool
+    has_total_regens: bool
+    has_total_salt_used: bool
+    has_alerts: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,6 +106,25 @@ class EcoWaterDeviceData:
     rock_removed_since_regeneration_lbs: float | None = field(default=None)
     total_rock_removed_lbs: float | None = field(default=None)
     rock_removed_daily_avg_lbs: float | None = field(default=None)
+
+    # --- High-Value Advanced Metrics ---
+    peak_water_flow_gpm: float | None = field(default=None)
+    capacity_remaining_percent: float | None = field(default=None)
+    regen_time_rem_secs: float | None = field(default=None)
+    current_valve_position: str | None = field(default=None)
+    avg_days_between_regens: float | None = field(default=None)
+    avg_salt_per_regen_lbs: float | None = field(default=None)
+    total_regens: int | None = field(default=None)
+    total_salt_used_lbs: float | None = field(default=None)
+    error_code: str | None = field(default=None)
+
+    # --- Alerts ---
+    low_salt_alert: bool | None = field(default=None)
+    depletion_alert: bool | None = field(default=None)
+    excessive_water_use_alert: bool | None = field(default=None)
+    flow_monitor_alert: bool | None = field(default=None)
+    service_reminder_alert: bool | None = field(default=None)
+    error_code_alert: bool | None = field(default=None)
 
     def __post_init__(self) -> None:
         """Validate invariants after construction."""

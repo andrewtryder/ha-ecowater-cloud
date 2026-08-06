@@ -133,6 +133,83 @@
         "value": 5,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
+    },
+    {
+      "property": {
+        "name": "peak_water_flow_gpm",
+        "value": 150,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "capacity_remaining_percent",
+        "value": 781,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "regen_time_rem_secs",
+        "value": 3600,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "current_valve_position_enum",
+        "value": "Service",
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "avg_days_between_regens",
+        "value": 4.5,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "avg_salt_per_regen_lbs",
+        "value": 55,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "total_regens",
+        "value": 150,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "total_salt_use_lbs",
+        "value": 1050,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "error_code",
+        "value": "E1",
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "low_salt_alert",
+        "value": 1,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
+    },
+    {
+      "property": {
+        "name": "error_code_alert",
+        "value": 0,
+        "data_updated_at": "2026-08-05T12:05:00Z"
+      }
     }
   ]
 }

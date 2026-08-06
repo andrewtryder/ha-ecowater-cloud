@@ -74,8 +74,23 @@ def test_normalize_synthetic_device():
     assert normalized.freshness.newest_data_at == datetime.datetime(
         2026, 8, 5, 12, 6, tzinfo=datetime.UTC
     )
+    assert normalized.rock_removed_since_regeneration_lbs == pytest.approx(0.6634)
+    assert normalized.total_rock_removed_lbs == pytest.approx(1054.4)
 
-    # Capabilities
+    assert normalized.peak_water_flow_gpm == pytest.approx(15.0)
+    assert normalized.capacity_remaining_percent == pytest.approx(78.1)
+    assert normalized.regen_time_rem_secs == 3600
+    assert normalized.current_valve_position == "Service"
+    assert normalized.avg_days_between_regens == 4.5
+    assert normalized.avg_salt_per_regen_lbs == pytest.approx(5.5)
+    assert normalized.total_regens == 150
+    assert normalized.total_salt_used_lbs == pytest.approx(105.0)
+    assert normalized.error_code == "E1"
+    assert normalized.low_salt_alert is True
+    assert normalized.error_code_alert is False
+    assert normalized.depletion_alert is None
+
+    # Verify capabilities
     assert normalized.capabilities.has_water_usage_today is True
     assert normalized.capabilities.has_water_usage_daily_avg is True
     assert normalized.capabilities.has_water_available is True
@@ -85,6 +100,16 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_rock_removed_daily_avg is True
     assert normalized.capabilities.has_rock_removed_since_regeneration is True
     assert normalized.capabilities.has_total_rock_removed is True
+
+    # High-value capabilities
+    assert normalized.capabilities.has_peak_flow is True
+    assert normalized.capabilities.has_capacity_remaining is True
+    assert normalized.capabilities.has_regen_time_remaining is True
+    assert normalized.capabilities.has_valve_position is True
+    assert normalized.capabilities.has_regeneration_stats is True
+    assert normalized.capabilities.has_total_regens is True
+    assert normalized.capabilities.has_total_salt_used is True
+    assert normalized.capabilities.has_alerts is True
 
 
 def test_normalize_edge_cases():
