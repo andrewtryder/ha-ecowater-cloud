@@ -67,6 +67,32 @@ class DeviceCapabilities:
     has_error_code_alert: bool
     has_error_code: bool
 
+    # --- New Diagnostic Capabilities ---
+    has_power_outage_count: bool
+    has_time_lost_events: bool
+    has_longest_rec_outage_mins: bool
+    has_valve_reindex_count: bool
+    has_valve_motor_state_enum: bool
+    has_valve_pos_switch_enum: bool
+    has_valve_pos_time_left_secs: bool
+    has_days_in_operation: bool
+
+    has_total_untreated_water_gals: bool
+    has_average_exhaustion_percent: bool
+    has_efficiency_mode_enum: bool
+    has_operating_capacity_grains: bool
+    has_hardness_grains: bool
+    has_iron_level_tenths_ppm: bool
+    has_flow_monitor_min_rate_gpm: bool
+    has_flow_monitor_trip_sec: bool
+
+    has_manual_regens: bool
+    has_fill_secs: bool
+    has_backwash_secs: bool
+    has_fast_rinse_secs: bool
+    has_second_backwash_cycles: bool
+    has_second_backwash_secs: bool
+
 
 @dataclass(frozen=True, slots=True)
 class DataFreshness:
@@ -132,6 +158,34 @@ class EcoWaterDeviceData:
     flow_monitor_alert: bool | None = field(default=None)
     service_reminder_alert: bool | None = field(default=None)
     error_code_alert: bool | None = field(default=None)
+
+    # --- Device Health Diagnostics ---
+    power_outage_count: int | None = field(default=None)
+    time_lost_events: int | None = field(default=None)
+    longest_rec_outage_mins: int | None = field(default=None)
+    valve_reindex_count: int | None = field(default=None)
+    valve_motor_state_enum: int | None = field(default=None)
+    valve_pos_switch_enum: int | None = field(default=None)
+    valve_pos_time_left_secs: int | None = field(default=None)
+    days_in_operation: int | None = field(default=None)
+
+    # --- Water & Efficiency ---
+    total_untreated_water_gals: float | None = field(default=None)
+    average_exhaustion_percent: float | None = field(default=None)
+    efficiency_mode_enum: int | None = field(default=None)
+    operating_capacity_grains: int | None = field(default=None)
+    hardness_grains: int | None = field(default=None)
+    iron_level_tenths_ppm: int | None = field(default=None)
+    flow_monitor_min_rate_gpm: float | None = field(default=None)
+    flow_monitor_trip_sec: int | None = field(default=None)
+
+    # --- Regeneration History ---
+    manual_regens: int | None = field(default=None)
+    fill_secs: int | None = field(default=None)
+    backwash_secs: int | None = field(default=None)
+    fast_rinse_secs: int | None = field(default=None)
+    second_backwash_cycles: int | None = field(default=None)
+    second_backwash_secs: int | None = field(default=None)
 
     def __post_init__(self) -> None:
         """Validate invariants after construction."""
