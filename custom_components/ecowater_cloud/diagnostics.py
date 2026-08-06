@@ -74,7 +74,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
 
     import datetime
 
-    freshness_dict = {
+    freshness_dict: dict[str, Any] = {
         "received_at": data.freshness.received_at.isoformat()
         if data.freshness.received_at
         else None,
@@ -84,14 +84,16 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "newest_data_at": data.freshness.newest_data_at.isoformat()
         if data.freshness.newest_data_at
         else None,
-        "source_data_age_seconds": int(
+    }
+
+    if data.freshness.newest_data_at:
+        freshness_dict["source_data_age_seconds"] = int(
             (
                 datetime.datetime.now(datetime.UTC) - data.freshness.newest_data_at
             ).total_seconds()
         )
-        if data.freshness.newest_data_at
-        else None,
-    }
+    else:
+        freshness_dict["source_data_age_seconds"] = "unavailable_from_source"
 
     regeneration_dict = {
         "status": data.regeneration.status,
