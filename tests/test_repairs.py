@@ -37,14 +37,18 @@ async def test_auth_rejected_repair(hass: HomeAssistant, mock_issue_registry) ->
     # Needs a small delay for async_create_issue to process
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "authentication_rejected")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_authentication_rejected"
+    )
     assert issue is not None
 
     coordinator.last_error_category = None
     _check_auth_rejected(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "authentication_rejected")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_authentication_rejected"
+    )
     assert issue is None
 
 
@@ -64,12 +68,16 @@ async def test_protocol_changed_repair(
     _check_protocol_changed(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "protocol_changed")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_protocol_changed"
+    )
     assert issue is not None
 
     coordinator.last_error_category = None
     _check_protocol_changed(hass, entry, coordinator)
     await hass.async_block_till_done()
 
-    issue = mock_issue_registry.async_get_issue(DOMAIN, "protocol_changed")
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_protocol_changed"
+    )
     assert issue is None
