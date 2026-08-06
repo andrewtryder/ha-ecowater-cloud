@@ -991,13 +991,14 @@ def normalize_device(
         estimated_last_date=_calculate_past_date(days_since_regen, received_at),
     )
 
+    SALT_TYPE_MAP = {
+        0: "sodium_chloride",
+        1: "potassium_chloride",
+    }
+    
     # Salt
     salt_type_enum = _safe_int(props.get("salt_type_enum"))
-    salt_type_str = None
-    if salt_type_enum == 0:
-        salt_type_str = "sodium_chloride"
-    elif salt_type_enum is not None:
-        salt_type_str = "potassium_chloride"
+    salt_type_str = SALT_TYPE_MAP.get(salt_type_enum) if salt_type_enum is not None else None
 
     salt_level_tenths = _safe_float(props.get("salt_level_tenths"))
     salt_percent: float | None = None
