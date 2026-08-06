@@ -109,11 +109,6 @@ class DataFreshness:
         target = self.newest_data_at or self.received_at
         return self.received_at - target
 
-    @property
-    def is_stale(self) -> bool:
-        """Return True if the data is older than 24 hours."""
-        return self.age > datetime.timedelta(hours=24)
-
 
 @dataclass(frozen=True, slots=True)
 class RegenerationState:

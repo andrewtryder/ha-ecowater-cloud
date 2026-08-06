@@ -18,7 +18,7 @@ from homeassistant.helpers.issue_registry import (
     async_delete_issue,
 )
 
-from .const import DOMAIN, STALE_DATA_THRESHOLD
+from .const import DOMAIN, STALE_DATA_REPAIR_THRESHOLD
 from .exceptions import AuthenticationError, ProtocolError, ReauthenticationRequired
 
 if TYPE_CHECKING:
@@ -165,8 +165,8 @@ def _check_stale_data(
     stale_devices = []
     for d in coordinator.data.values():
         newest = d.freshness.newest_data_at
-        if newest is not None and (now - newest) > STALE_DATA_THRESHOLD:
-            age_hours = int((now - newest).total_seconds() / 3600)
+        if d.freshness.age > STALE_DATA_REPAIR_THRESHOLD:
+            age_hours = int(d.freshness.age.total_seconds() / 3600)
             stale_devices.append(f"{d.descriptor.name} ({age_hours}h ago)")
 
     if stale_devices:
