@@ -29,10 +29,11 @@ class AylaBackend(BackendAdapter):
         session: aiohttp.ClientSession,
         username: str,
         password: str,
+        region: str = "us",
     ) -> None:
         self._username = username
         self._password = password
-        self._api = AylaApi(session)
+        self._api = AylaApi(session, region=region)
 
     async def async_authenticate(self) -> None:
         """Authenticate with the Ayla user service."""

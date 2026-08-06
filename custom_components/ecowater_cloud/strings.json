@@ -6,7 +6,8 @@
         "description": "Enter your EcoWater cloud account email and password.",
         "data": {
           "username": "[%key:common::config_flow::data::email%]",
-          "password": "[%key:common::config_flow::data::password%]"
+          "password": "[%key:common::config_flow::data::password%]",
+          "region": "Region"
         }
       },
       "reauth_confirm": {
@@ -15,6 +16,15 @@
         "data": {
           "password": "[%key:common::config_flow::data::password%]"
         }
+      },
+      "reconfigure": {
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "region": "Region"
+        },
+        "description": "Update your EcoWater credentials or region.",
+        "title": "Reconfigure EcoWater Cloud"
       }
     },
     "error": {
@@ -213,6 +223,14 @@
       },
       "data_stale": {
         "name": "Data stale"
+      }
+    }
+  },
+  "selector": {
+    "region": {
+      "options": {
+        "us": "North America",
+        "eu": "Europe (Untested)"
       }
     }
   }
