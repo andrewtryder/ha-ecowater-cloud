@@ -80,7 +80,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle the EcoWater Cloud config flow."""
 
     VERSION = 2
-    MINOR_VERSION = 2
+    MINOR_VERSION = 3
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -89,7 +89,9 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             normalized_email = user_input[CONF_USERNAME].lower().strip()
-            await self.async_set_unique_id(normalized_email)
+            region = user_input.get(CONF_REGION, REGION_US)
+            unique_id = f"{BACKEND_AYLA}:{region}:{normalized_email}"
+            await self.async_set_unique_id(unique_id)
             self._abort_if_unique_id_configured()
 
             try:
@@ -172,6 +174,15 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             normalized_email = user_input[CONF_USERNAME].lower().strip()
+            region = user_input.get(CONF_REGION, REGION_US)
+            
+            old_email = reconfigure_entry.data.get(CONF_USERNAME, "").lower().strip()
+            if normalized_email != old_email:
+                return self.async_abort(reason="account_mismatch")
+
+            new_unique_id = f"{BACKEND_AYLA}:{region}:{normalized_email}"
+            await self.async_set_unique_id(new_unique_id)
+            self._abort_if_unique_id_configured()
             try:
                 test_data = {
                     CONF_USERNAME: normalized_email,
@@ -191,6 +202,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
             else:
                 return self.async_update_reload_and_abort(
                     reconfigure_entry,
+                    unique_id=new_unique_id,
                     data={
                         **reconfigure_entry.data,
                         CONF_USERNAME: normalized_email,

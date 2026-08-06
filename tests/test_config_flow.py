@@ -132,17 +132,18 @@ async def test_duplicate_account(hass: HomeAssistant, mock_ayla_backend) -> None
     # Pre-create entry
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -174,17 +175,18 @@ async def test_reauth_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
 
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
@@ -229,17 +231,18 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
     entry = MockConfigEntry(
         version=2,
-        minor_version=2,
+        minor_version=3,
         domain=DOMAIN,
         title="EcoWater Cloud",
         data={
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
+            "region": "us",
         },
         source="user",
         options={},
-        unique_id=MOCK_USERNAME,
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
         discovery_keys={},
     )
     entry.add_to_hass(hass)
