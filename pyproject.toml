@@ -9,7 +9,7 @@ description = "Home Assistant custom integration for EcoWater Cloud"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.14.2"
-authors = [{ name = "Andrew Tryder" }]
+authors = [{ name = "Andrew Ryder" }]
 
 # Runtime dependencies are declared in manifest.json (installed by HA).
 # Nothing here — keep the runtime footprint inside HA's own environment.
