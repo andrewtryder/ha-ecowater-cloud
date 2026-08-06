@@ -1033,7 +1033,6 @@ def normalize_device(
     has_capacity_remaining = "capacity_remaining_percent" in props
     has_regen_time_remaining = "regen_time_rem_secs" in props
     has_valve_position = "current_valve_position_enum" in props
-
     # Unknown-model detection: model_id is known but not in the salt capacity map
     model_id_val = descriptor.model_id
     has_unmapped_model = (

@@ -88,7 +88,10 @@ def test_normalize_synthetic_device():
     assert normalized.error_code == "E1"
     assert normalized.low_salt_alert is True
     assert normalized.error_code_alert is False
-    assert normalized.depletion_alert is None
+    assert normalized.depletion_alert is False
+    assert normalized.excessive_water_use_alert is False
+    assert normalized.flow_monitor_alert is False
+    assert normalized.service_reminder_alert is False
 
     # Verify capabilities
     assert normalized.capabilities.has_water_usage_today is True
