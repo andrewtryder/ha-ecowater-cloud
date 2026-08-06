@@ -114,10 +114,10 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_total_regens is True
     assert normalized.capabilities.has_total_salt_used is True
     assert normalized.capabilities.has_low_salt_alert is True
-    assert normalized.capabilities.has_depletion_alert is False
-    assert normalized.capabilities.has_excessive_water_use_alert is False
-    assert normalized.capabilities.has_flow_monitor_alert is False
-    assert normalized.capabilities.has_service_reminder_alert is False
+    assert normalized.capabilities.has_depletion_alert is True
+    assert normalized.capabilities.has_excessive_water_use_alert is True
+    assert normalized.capabilities.has_flow_monitor_alert is True
+    assert normalized.capabilities.has_service_reminder_alert is True
     assert normalized.capabilities.has_error_code_alert is True
     assert normalized.capabilities.has_error_code is True
     assert normalized.capabilities.has_unmapped_model is False
