@@ -17,7 +17,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "latest"
+          version: "0.12.2"
       - name: Install zizmor
         run: uv tool install zizmor
       - name: Run zizmor

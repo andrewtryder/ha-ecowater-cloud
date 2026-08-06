@@ -30,3 +30,7 @@ jobs:
             chore
             revert
           requireScope: false
+          # Allow uppercase subjects
+          subjectPattern: ^.+$
+          subjectPatternError: |
+            The subject must contain at least one character.
