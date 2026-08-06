@@ -10,15 +10,15 @@ This file contains binding rules for any AI coding agent working in this reposit
 | Domain | `ecowater_cloud` |
 | Integration directory | `custom_components/ecowater_cloud` |
 | Ayla backend identifier | `ayla` |
-| Future HydroLink backend | `hydrolink` |
 | Integration display name | `EcoWater Cloud` |
 
 ## Non-negotiable implementation rules
 
 1. **No old package.** Never import, install, or reference `ecowater_softener` or `ayla_iot_unofficial`.
 2. **Reference only.** The repos `barleybobs/homeassistant-ecowater-softener` and `barleybobs/ecowater-softener` may be consulted as protocol references only. Do not copy their architecture.
-3. **Async only.** No `requests`, `time.sleep`, background threads, or `websocket-client`. All HTTP uses injected `aiohttp.ClientSession`.
-4. **HA session.** Home Assistant runtime HTTP must use the HA-managed client session (`async_get_clientsession`).
+3. **No HydroLink Support.** We are not building HydroLink support into this integration. Always refer users to the `ha-ecowater-hydrolink` repository for HydroLink devices.
+4. **Async only.** No `requests`, `time.sleep`, background threads, or `websocket-client`. All HTTP uses injected `aiohttp.ClientSession`.
+5. **HA session.** Home Assistant runtime HTTP must use the HA-managed client session (`async_get_clientsession`).
 5. **One coordinator per account.** A single `AccountCoordinator` supports multiple physical devices.
 6. **Normalized models.** Backend adapters convert raw cloud responses into frozen `DeviceSnapshot` dataclasses. Entities never access backend-specific dicts.
 7. **Capability-driven entities.** Only create a sensor/entity if the corresponding `DeviceSnapshot` field is not `None`. Never convert missing values into fabricated zeros.

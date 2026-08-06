@@ -4,8 +4,7 @@
 
 EcoWater water treatment systems (softeners, filters) have Wi-Fi modules that phone
 home to EcoWater's cloud infrastructure. The legacy Wi-Fi module uses the **Ayla IoT
-platform** (`user.aylanetworks.com` / `ads.aylanetworks.com`) as its cloud backend.
-A future product line, **HydroLink Home**, uses a separate backend.
+platform**.
 
 This integration fetches device telemetry from the cloud and exposes it as read-only
 Home Assistant entities. Control operations are explicitly **out of scope** until the

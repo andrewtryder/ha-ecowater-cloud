@@ -1,6 +1,6 @@
 """Backend adapter protocol for the EcoWater Cloud integration.
 
-Each cloud backend (Ayla, HydroLink, …) must implement :class:`BackendAdapter`.
+Each cloud backend must implement :class:`BackendAdapter`.
 The coordinator interacts exclusively with this protocol; it has no knowledge
 of any specific cloud's HTTP API.
 """

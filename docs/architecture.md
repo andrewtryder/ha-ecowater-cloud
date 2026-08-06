@@ -174,15 +174,6 @@ Stage 2 will evaluate whether a non-blocking version is safe and worth implement
 
 ---
 
-## Backend extensibility
-
-Adding the future `hydrolink` backend requires:
-
-1. `backends/hydrolink/__init__.py` implementing `BackendAdapter`.
-2. A new value `"hydrolink"` in `SUPPORTED_BACKENDS`.
-3. `async_migrate_entry` handling any config-entry schema changes.
-4. No changes to `coordinator.py`, `models.py`, or entities.
-
 ---
 
 ## Protocol uncertainties (to be resolved in Stage 2)
