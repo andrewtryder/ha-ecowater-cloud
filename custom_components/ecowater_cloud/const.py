@@ -14,6 +14,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
 # Configuration Keys
 CONF_BACKEND: Final = "backend"
 CONF_POLLING_INTERVAL: Final = "polling_interval_minutes"
+CONF_FREQUENT_DATA_INTERVAL: Final = "frequent_data_interval"
 
 # Supported Backends
 BACKEND_AYLA: Final = "ayla"

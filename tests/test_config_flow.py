@@ -4,11 +4,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant.config_entries import SOURCE_REAUTH, SOURCE_USER
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ecowater_cloud.const import (
     BACKEND_AYLA,
+    CONF_FREQUENT_DATA_INTERVAL,
     CONF_POLLING_INTERVAL,
     DOMAIN,
 )
@@ -248,8 +250,61 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
     result2 = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        user_input={CONF_POLLING_INTERVAL: 15},
+        user_input={
+            CONF_POLLING_INTERVAL: 15,
+            CONF_FREQUENT_DATA_INTERVAL: "10",
+        },
     )
 
     assert result2["type"] is FlowResultType.CREATE_ENTRY
-    assert result2["data"] == {CONF_POLLING_INTERVAL: 15}
+    assert result2["data"] == {
+        CONF_POLLING_INTERVAL: 15,
+        CONF_FREQUENT_DATA_INTERVAL: "10",
+    }
+
+
+@pytest.mark.asyncio
+async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
+    """Test reauth confirm handles exceptions."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.ecowater_cloud.exceptions import (
+        AuthenticationError,
+        ConnectivityError,
+        RateLimitError,
+    )
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "old-password"},
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": "reauth",
+            "entry_id": entry.entry_id,
+            "unique_id": entry.unique_id,
+        },
+        data=entry.data,
+    )
+
+    exceptions = [
+        (AuthenticationError("auth"), "invalid_auth"),
+        (ConnectivityError("conn"), "cannot_connect"),
+        (RateLimitError("rate"), "rate_limit"),
+        (ValueError("unknown"), "unknown"),
+    ]
+
+    for exc, expected_error in exceptions:
+        with patch(
+            "custom_components.ecowater_cloud.config_flow.validate_input",
+            side_effect=exc,
+        ):
+            res = await hass.config_entries.flow.async_configure(
+                result["flow_id"],
+                {"password": "new-password"},
+            )
+            assert res["type"] is FlowResultType.FORM
+            assert res["errors"]["base"] == expected_error

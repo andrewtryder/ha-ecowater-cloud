@@ -24,3 +24,11 @@ Before tagging and publishing a new release, maintainers must verify the followi
 - Ensure `manifest.json` version matches the intended release.
 - Wait for all CI checks to pass on `main`.
 - Merge the Release Please PR (or manually draft a GitHub Release) to trigger the tag.
+
+## Versioning Policy
+This project uses plain three-part semantic versions (e.g., `0.2.0`). Prerelease suffixes (like `-alpha` or `-beta`) are not used. Project maturity is described in the README and release notes.
+
+Future versions will use:
+- **Patch releases** (e.g., `0.2.1`) for compatible fixes.
+- **Minor releases** (e.g., `0.3.0`) for compatible features while below 1.0.
+- **1.0.0** when the integration reaches its defined stability requirements.

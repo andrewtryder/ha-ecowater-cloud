@@ -80,7 +80,7 @@ def test_normalize_synthetic_device():
     assert normalized.peak_water_flow_gpm == pytest.approx(15.0)
     assert normalized.capacity_remaining_percent == pytest.approx(78.1)
     assert normalized.regen_time_rem_secs == 3600
-    assert normalized.current_valve_position == "Service"
+    assert normalized.current_valve_position == "service"
     assert normalized.avg_days_between_regens == 4.5
     assert normalized.avg_salt_per_regen_lbs == pytest.approx(5.5)
     assert normalized.total_regens == 150

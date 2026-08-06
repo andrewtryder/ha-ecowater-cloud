@@ -158,21 +158,21 @@
     {
       "property": {
         "name": "current_valve_position_enum",
-        "value": "Service",
+        "value": 0,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },
     {
       "property": {
         "name": "avg_days_between_regens",
-        "value": 4.5,
+        "value": 450,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },
     {
       "property": {
         "name": "avg_salt_per_regen_lbs",
-        "value": 55,
+        "value": 55000,
         "data_updated_at": "2026-08-05T12:05:00Z"
       }
     },

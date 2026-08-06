@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ha-ecowater-cloud"
-version = "0.1.0"
+version = "0.2.0"
 description = "Home Assistant custom integration for EcoWater Cloud"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.14.2"
-authors = [{ name = "Andrew Tryder" }]
+authors = [{ name = "Andrew Ryder" }]
 
 # Runtime dependencies are declared in manifest.json (installed by HA).
 # Nothing here — keep the runtime footprint inside HA's own environment.
@@ -93,4 +93,17 @@ filterwarnings = [
 ]
 
 [dependency-groups]
-dev = []
+dev = [
+    "pytest-cov>=7.1.0",
+]
+
+# ---------------------------------------------------------------------------
+# Coverage
+# ---------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["custom_components/ecowater_cloud"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true

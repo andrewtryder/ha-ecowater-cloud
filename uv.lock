@@ -988,7 +988,7 @@ wheels = [
 
 [[package]]
 name = "ha-ecowater-cloud"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -1000,6 +1000,11 @@ dev = [
     { name = "pytest-asyncio" },
     { name = "pytest-homeassistant-custom-component" },
     { name = "ruff" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest-cov" },
 ]
 
 [package.metadata]
@@ -1015,7 +1020,7 @@ requires-dist = [
 provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
-dev = []
+dev = [{ name = "pytest-cov", specifier = ">=7.1.0" }]
 
 [[package]]
 name = "habluetooth"
