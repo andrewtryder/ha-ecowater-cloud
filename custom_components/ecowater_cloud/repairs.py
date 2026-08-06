@@ -72,6 +72,7 @@ def callback_safe(fn: Callable[[], None]) -> Callable[[], None]:
 def _issue(
     hass: HomeAssistant,
     issue_id: str,
+    translation_key: str,
     severity: IssueSeverity,
     translation_placeholders: dict[str, str] | None = None,
 ) -> None:
@@ -81,7 +82,7 @@ def _issue(
         issue_id,
         is_fixable=False,
         severity=severity,
-        translation_key=issue_id,
+        translation_key=translation_key,
         translation_placeholders=translation_placeholders or {},
     )
 
@@ -100,10 +101,11 @@ def _check_auth_rejected(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-    issue_id = "authentication_rejected"
+    translation_key = "authentication_rejected"
+    issue_id = f"{entry.entry_id}_{translation_key}"
     last_exc = coordinator.last_exception
     if isinstance(last_exc, (AuthenticationError, ReauthenticationRequired)):
-        _issue(hass, issue_id, IssueSeverity.ERROR)
+        _issue(hass, issue_id, translation_key, IssueSeverity.ERROR)
     else:
         _resolve(hass, issue_id)
 
@@ -113,11 +115,12 @@ def _check_no_devices(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-    issue_id = "no_devices"
+    translation_key = "no_devices"
+    issue_id = f"{entry.entry_id}_{translation_key}"
     data = coordinator.data
     # Only fire if we have a successful fetch (data is not None) but it's empty.
     if data is not None and len(data) == 0:
-        _issue(hass, issue_id, IssueSeverity.WARNING)
+        _issue(hass, issue_id, translation_key, IssueSeverity.WARNING)
     else:
         _resolve(hass, issue_id)
 
@@ -127,7 +130,8 @@ def _check_unknown_salt_models(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-    issue_id = "unknown_salt_model"
+    translation_key = "unknown_salt_model"
+    issue_id = f"{entry.entry_id}_{translation_key}"
     if coordinator.data is None:
         _resolve(hass, issue_id)
         return
@@ -141,6 +145,7 @@ def _check_unknown_salt_models(
         _issue(
             hass,
             issue_id,
+            translation_key,
             IssueSeverity.WARNING,
             {"devices": ", ".join(unmapped)},
         )
@@ -154,7 +159,8 @@ def _check_stale_data(
     coordinator: AccountCoordinator,
 ) -> None:
     """Create a Repairs issue if ANY device has stale source data."""
-    issue_id = "data_stale"
+    translation_key = "data_stale"
+    issue_id = f"{entry.entry_id}_{translation_key}"
     if coordinator.data is None:
         _resolve(hass, issue_id)
         return
@@ -173,6 +179,7 @@ def _check_stale_data(
         _issue(
             hass,
             issue_id,
+            translation_key,
             IssueSeverity.WARNING,
             {"devices": ", ".join(stale_devices)},
         )
@@ -185,9 +192,10 @@ def _check_protocol_changed(
     entry: ConfigEntry,
     coordinator: AccountCoordinator,
 ) -> None:
-    issue_id = "protocol_changed"
+    translation_key = "protocol_changed"
+    issue_id = f"{entry.entry_id}_{translation_key}"
     last_exc = coordinator.last_exception
     if isinstance(last_exc, ProtocolError):
-        _issue(hass, issue_id, IssueSeverity.ERROR)
+        _issue(hass, issue_id, translation_key, IssueSeverity.ERROR)
     else:
         _resolve(hass, issue_id)
