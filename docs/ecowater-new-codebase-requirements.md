@@ -1,7 +1,7 @@
 # EcoWater Home Assistant — New Codebase Requirements Register
 
-**Assessment date:** 2026-08-05  
-**Primary source:** `barleybobs/homeassistant-ecowater-softener` issue and pull-request history  
+**Assessment date:** 2026-08-05
+**Primary source:** `barleybobs/homeassistant-ecowater-softener` issue and pull-request history
 **Purpose:** Preserve the requirements needed to write a later Codex CLI implementation prompt for a new maintained repository.
 
 ---

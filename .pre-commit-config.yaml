@@ -13,3 +13,30 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+        require_serial: true
+      - id: ruff-format
+        name: ruff-format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+        require_serial: true
+      - id: mypy
+        name: mypy
+        entry: uv run mypy custom_components/ecowater_cloud
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: pytest
+        name: pytest
+        entry: uv run pytest tests/ -q
+        language: system
+        types: [python]
+        pass_filenames: false

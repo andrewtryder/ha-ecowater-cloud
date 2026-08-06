@@ -3,17 +3,17 @@
 ![Alpha Release](https://img.shields.io/badge/status-alpha-red.svg)
 ![HACS Custom Repository](https://img.shields.io/badge/HACS-Custom-orange.svg)
 
-A modern, async, standalone Home Assistant integration for EcoWater Cloud connected water treatment devices. 
+A modern, async, standalone Home Assistant integration for EcoWater Cloud connected water treatment devices.
 
 > **⚠️ ALPHA STATUS**: This integration is currently in early alpha testing. Do not submit this repository to the default HACS store yet. It should be used exclusively as a custom repository while it undergoes stabilization and verification.
 
-> **⚠️ WARNING**: Do not run the old `ecowater_softener` integration and this new `ecowater_cloud` integration on the same account simultaneously! Doing so may cause aggressive polling, resulting in account lockouts or temporary IP bans from the cloud service. 
+> **⚠️ WARNING**: Do not run the old `ecowater_softener` integration and this new `ecowater_cloud` integration on the same account simultaneously! Doing so may cause aggressive polling, resulting in account lockouts or temporary IP bans from the cloud service.
 
 **Note on Migration**: The old integration’s registry data will **not** be migrated automatically. This new integration uses a fresh domain (`ecowater_cloud`) and will create new entities.
 
 ## Features & Limitations
 
-- **Backend Support**: 
+- **Backend Support**:
   - **Ayla Wi-Fi Backend**: Experimental Ayla support (Read-Only). (Full support pending live account verification). For the first alpha, only US Ayla accounts are documented/supported unless live testing confirms the US endpoint works globally.
   - **HydroLink Home Backend**: Not supported in this repository. For HydroLink devices, please use [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink).
 - **Read-Only**: This integration is currently read-only. No control capabilities (like triggering a regeneration) are implemented yet.
@@ -30,9 +30,9 @@ The integration supports reading the following capabilities, dynamically enabled
 
 ### Polling & Stale Data Policy
 
-The integration natively polls the cloud every 30 minutes. 
+The integration natively polls the cloud every 30 minutes.
 
-**Important:** Water softeners are extremely conservative with telemetry uploads to save power and bandwidth. When no water is flowing, the device may not sync data to the cloud for 12–24 hours. The integration handles this natively by showing the `source_last_updated` diagnostic timestamp. 
+**Important:** Water softeners are extremely conservative with telemetry uploads to save power and bandwidth. When no water is flowing, the device may not sync data to the cloud for 12–24 hours. The integration handles this natively by showing the `source_last_updated` diagnostic timestamp.
 
 Unless the `device_reported_online` binary sensor explicitly drops, long periods without data updates are expected behavior and not a bug with the integration.
 
@@ -64,7 +64,7 @@ Unless the `device_reported_online` binary sensor explicitly drops, long periods
 ## Upgrades & Removal
 
 **To Upgrade**: Use HACS to download the latest version and restart Home Assistant. Entities will seamlessly resume polling.
-**To Remove**: 
+**To Remove**:
 1. Delete the integration instance from Settings -> Devices & Services.
 2. Remove the custom repository from HACS.
 3. Restart Home Assistant.
@@ -74,7 +74,7 @@ Unless the `device_reported_online` binary sensor explicitly drops, long periods
 If you encounter issues:
 1. Ensure your device is online in the official EcoWater app.
 2. Check the `source_last_updated` diagnostic sensor to see when the cloud last received data.
-3. Download the integration diagnostics file: Go to **Settings** -> **Devices & Services** -> **EcoWater Cloud** -> **Download diagnostics**. 
+3. Download the integration diagnostics file: Go to **Settings** -> **Devices & Services** -> **EcoWater Cloud** -> **Download diagnostics**.
 
 ### Collecting a Sanitized Fixture
 
@@ -88,7 +88,7 @@ To safely collect a fixture:
    ```bash
    ECOWATER_USERNAME="your-email@example.com" ECOWATER_PASSWORD="yourpassword" python3 scripts/probe_ayla.py --write-fixture my_device_fixture.json
    ```
-3. The script will automatically redact your email, IP addresses, MAC addresses, device tokens, and dealer information. 
+3. The script will automatically redact your email, IP addresses, MAC addresses, device tokens, and dealer information.
 4. **Manually review** `my_device_fixture.json` to ensure no sensitive personal data leaked.
 5. Attach the JSON file to your GitHub Issue.
 

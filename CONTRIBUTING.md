@@ -1,6 +1,6 @@
 # Contributing to ha-ecowater-cloud
 
-Thank you for your interest in contributing to the EcoWater Cloud integration! 
+Thank you for your interest in contributing to the EcoWater Cloud integration!
 
 ## Development Environment
 
@@ -29,7 +29,7 @@ Tests must achieve 100% coverage of all implemented behavior.
 
 ## Submitting Fixtures
 
-If your device has features not yet supported, you can submit a fixture. 
+If your device has features not yet supported, you can submit a fixture.
 Run the `probe_ayla.py` script provided in this repository using your credentials. **The script will automatically redact your email, tokens, IPs, MAC addresses, passwords, and dealer information.**
 
 Always manually review the generated JSON fixture to ensure no PII is leaked before sharing it in a GitHub issue or PR. Never share your password or live auth tokens.
