@@ -147,7 +147,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: (
             d.salt_type.lower().replace(" ", "_") if d.salt_type else None
         ),
-        options=["sodium_chloride", "potassium_chloride", "solar_crystals"],
+        options=["sodium_chloride", "potassium_chloride"],
     ),
     # --- Regeneration ---
     EcoWaterSensorEntityDescription(
