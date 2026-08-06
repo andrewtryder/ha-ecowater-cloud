@@ -22,19 +22,19 @@ jobs:
         run: uv python install 3.14
 
       - name: Install dependencies
-        run: uv pip install --system -e ".[dev]"
+        run: uv venv && uv pip install -e ".[dev]"
 
       - name: Ruff lint
-        run: ruff check .
+        run: uv run ruff check .
 
       - name: Ruff format check
-        run: ruff format --check .
+        run: uv run ruff format --check .
 
       - name: Mypy
-        run: mypy custom_components/ecowater_cloud
+        run: uv run mypy custom_components/ecowater_cloud
 
       - name: Pytest
-        run: pytest tests/ -v --tb=short
+        run: uv run pytest tests/ -v --tb=short
 
       - name: HACS validation
         uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main
