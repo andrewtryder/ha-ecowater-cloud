@@ -25,6 +25,14 @@ TOTAL_WATER_USED_PROPERTIES: tuple[str, ...] = (
     "total_outlet_water_gals",
 )
 
+VALVE_POSITION_MAP: dict[int, str] = {
+    0: "service",
+    1: "fill",
+    2: "brine_slow_rinse",
+    3: "backwash",
+    4: "fast_rinse",
+}
+
 
 def _first_present_property(
     props: dict[str, Any],
@@ -1093,10 +1101,14 @@ def normalize_device(
             props.get("capacity_remaining_percent"), scale=10.0
         ),
         regen_time_rem_secs=_safe_float(props.get("regen_time_rem_secs")),
-        current_valve_position=_safe_str(props.get("current_valve_position_enum")),
-        avg_days_between_regens=_safe_float(props.get("avg_days_between_regens")),
+        current_valve_position=VALVE_POSITION_MAP.get(
+            _safe_int(props.get("current_valve_position_enum"))
+        ),
+        avg_days_between_regens=_safe_float(
+            props.get("avg_days_between_regens"), scale=100.0
+        ),
         avg_salt_per_regen_lbs=_safe_float(
-            props.get("avg_salt_per_regen_lbs"), scale=10.0
+            props.get("avg_salt_per_regen_lbs"), scale=10_000.0
         ),
         total_regens=_safe_int(props.get("total_regens")),
         total_salt_used_lbs=_safe_float(props.get("total_salt_use_lbs"), scale=10.0),

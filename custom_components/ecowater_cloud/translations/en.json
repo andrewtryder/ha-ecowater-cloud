@@ -34,7 +34,8 @@
       "init": {
         "title": "Configure EcoWater Cloud Options",
         "data": {
-          "polling_interval_minutes": "Polling interval (minutes)"
+          "polling_interval_minutes": "Polling interval (minutes)",
+          "frequent_data_interval": "Frequent data interval (legacy devices)"
         }
       }
     }
@@ -104,6 +105,43 @@
       },
       "wifi_signal_strength": {
         "name": "Wi-Fi signal strength"
+      },
+      "peak_water_flow": {
+        "name": "Peak water flow"
+      },
+      "capacity_remaining": {
+        "name": "Capacity remaining"
+      },
+      "total_salt_used": {
+        "name": "Total salt used"
+      },
+      "regeneration_time_remaining": {
+        "name": "Regeneration time remaining"
+      },
+      "current_valve_position": {
+        "name": "Current valve position",
+        "state": {
+          "service": "Service",
+          "fill": "Fill",
+          "brine_slow_rinse": "Brine/Slow rinse",
+          "backwash": "Backwash",
+          "fast_rinse": "Fast rinse"
+        }
+      },
+      "average_days_between_regenerations": {
+        "name": "Average days between regenerations"
+      },
+      "average_salt_per_regeneration": {
+        "name": "Average salt per regeneration"
+      },
+      "total_regenerations": {
+        "name": "Total regenerations"
+      },
+      "total_rock_removed": {
+        "name": "Total rock removed"
+      },
+      "error_code": {
+        "name": "Error code"
       }
     },
     "binary_sensor": {
@@ -115,6 +153,24 @@
       },
       "recharge_enabled": {
         "name": "Recharge enabled"
+      },
+      "low_salt_alert": {
+        "name": "Low salt alert"
+      },
+      "depletion_alert": {
+        "name": "Depletion alert"
+      },
+      "excessive_water_use_alert": {
+        "name": "Excessive water use alert"
+      },
+      "flow_monitor_alert": {
+        "name": "Flow monitor alert"
+      },
+      "service_reminder_alert": {
+        "name": "Service reminder alert"
+      },
+      "error_code_alert": {
+        "name": "Error code alert"
       }
     }
   }

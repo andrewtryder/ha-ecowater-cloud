@@ -9,6 +9,8 @@ from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.ecowater_cloud.const import (
     BACKEND_AYLA,
+    CONF_BACKEND,
+    CONF_FREQUENT_DATA_INTERVAL,
     CONF_POLLING_INTERVAL,
     DOMAIN,
 )
@@ -248,8 +250,14 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
     result2 = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        user_input={CONF_POLLING_INTERVAL: 15},
+        user_input={
+            CONF_POLLING_INTERVAL: 15,
+            CONF_FREQUENT_DATA_INTERVAL: "10",
+        },
     )
 
     assert result2["type"] is FlowResultType.CREATE_ENTRY
-    assert result2["data"] == {CONF_POLLING_INTERVAL: 15}
+    assert result2["data"] == {
+        CONF_POLLING_INTERVAL: 15,
+        CONF_FREQUENT_DATA_INTERVAL: "10",
+    }

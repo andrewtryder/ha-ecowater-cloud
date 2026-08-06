@@ -171,6 +171,14 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
     EcoWaterSensorEntityDescription(
         key="current_valve_position",
         translation_key="current_valve_position",
+        device_class=SensorDeviceClass.ENUM,
+        options=[
+            "service",
+            "fill",
+            "brine_slow_rinse",
+            "backwash",
+            "fast_rinse",
+        ],
         supported_fn=lambda d: d.capabilities.has_valve_position,
         value_fn=lambda d: (
             d.current_valve_position.lower() if d.current_valve_position else None
