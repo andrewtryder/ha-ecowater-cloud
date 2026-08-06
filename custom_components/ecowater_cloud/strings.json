@@ -191,6 +191,72 @@
       },
       "total_water_source_property": {
         "name": "Total water source property (unmapped model)"
+      },
+      "total_untreated_water": {
+        "name": "Total untreated water"
+      },
+      "average_exhaustion": {
+        "name": "Average exhaustion percentage"
+      },
+      "salt_efficiency_mode": {
+        "name": "Salt efficiency mode"
+      },
+      "operating_capacity": {
+        "name": "Operating capacity"
+      },
+      "hardness_setting": {
+        "name": "Hardness setting"
+      },
+      "iron_setting": {
+        "name": "Iron setting"
+      },
+      "flow_monitor_minimum_rate": {
+        "name": "Flow monitor minimum rate"
+      },
+      "excessive_flow_trip_duration": {
+        "name": "Excessive flow trip duration"
+      },
+      "power_outage_count": {
+        "name": "Power outage count"
+      },
+      "time_lost_event_count": {
+        "name": "Time lost event count"
+      },
+      "longest_recent_outage": {
+        "name": "Longest recent outage"
+      },
+      "valve_reindex_count": {
+        "name": "Valve reindex count"
+      },
+      "motor_state": {
+        "name": "Motor state"
+      },
+      "valve_position_switch_state": {
+        "name": "Valve position switch state"
+      },
+      "remaining_valve_position_time": {
+        "name": "Remaining valve position time"
+      },
+      "days_in_operation": {
+        "name": "Days in operation"
+      },
+      "manual_regeneration_count": {
+        "name": "Manual regeneration count"
+      },
+      "fill_duration": {
+        "name": "Fill duration"
+      },
+      "backwash_duration": {
+        "name": "Backwash duration"
+      },
+      "rinse_duration": {
+        "name": "Rinse duration"
+      },
+      "second_backwash_cycles": {
+        "name": "Second backwash cycles"
+      },
+      "second_backwash_duration": {
+        "name": "Second backwash duration"
       }
     },
     "binary_sensor": {
