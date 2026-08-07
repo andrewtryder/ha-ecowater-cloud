@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.6.0...v0.6.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* pre-submission cleanups for binary sensor freshness and repair strings ([#34](https://github.com/andrewtryder/ha-ecowater-cloud/issues/34)) ([f96299d](https://github.com/andrewtryder/ha-ecowater-cloud/commit/f96299df3f21ae20c6a1cb50fe7733656e07be3c))
+
 ## [0.6.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.5.2...v0.6.0) (2026-08-07)
 
 
