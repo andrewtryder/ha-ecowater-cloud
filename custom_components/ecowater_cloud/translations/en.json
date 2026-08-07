@@ -2,19 +2,19 @@
   "config": {
     "step": {
       "user": {
-        "title": "[%key:common::config_flow::title::connect%]",
+        "title": "Connect to EcoWater Cloud",
         "description": "Enter your EcoWater cloud account email and password.",
         "data": {
-          "username": "[%key:common::config_flow::data::email%]",
-          "password": "[%key:common::config_flow::data::password%]",
+          "username": "Email",
+          "password": "Password",
           "region": "Region"
         }
       },
       "reauth_confirm": {
-        "title": "[%key:common::config_flow::title::reauth%]",
+        "title": "Re-authenticate EcoWater Cloud",
         "description": "The password for {username} is invalid or has expired. Please enter your current password.",
         "data": {
-          "password": "[%key:common::config_flow::data::password%]"
+          "password": "Password"
         }
       },
       "reconfigure": {
@@ -28,15 +28,15 @@
       }
     },
     "error": {
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "invalid_auth": "Invalid authentication",
+      "cannot_connect": "Failed to connect",
       "rate_limit": "Too many requests to the cloud. Please try again later.",
       "no_devices": "No supported devices found on this account.",
-      "unknown": "[%key:common::config_flow::error::unknown%]"
+      "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
-      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]",
+      "already_configured": "This EcoWater Cloud account is already configured.",
+      "reauth_successful": "Re-authentication was successful.",
       "account_mismatch": "The account email cannot be changed during reconfiguration. Add a new EcoWater Cloud integration for a different account."
     }
   },
