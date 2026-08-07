@@ -381,7 +381,6 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
         value_fn=lambda d: d.descriptor.wifi_signal_strength_dbm,
     ),
     # --- Unknown-model diagnostics ---
