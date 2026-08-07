@@ -204,6 +204,30 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         value_fn=lambda d: d.avg_salt_per_regen_lbs,
     ),
     EcoWaterSensorEntityDescription(
+        key="monthly_salt_use_estimate",
+        translation_key="monthly_salt_use_estimate",
+        device_class=SensorDeviceClass.WEIGHT,
+        native_unit_of_measurement=UnitOfMass.POUNDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        supported_fn=lambda d: (
+            d.capabilities.has_avg_salt_per_regen
+            and d.capabilities.has_avg_days_between_regens
+            and d.avg_days_between_regens is not None
+            and d.avg_days_between_regens > 0
+            and d.avg_salt_per_regen_lbs is not None
+        ),
+        value_fn=lambda d: (
+            round((d.avg_salt_per_regen_lbs / d.avg_days_between_regens) * 30.4375, 1)
+            if (
+                d.avg_salt_per_regen_lbs is not None
+                and d.avg_days_between_regens is not None
+                and d.avg_days_between_regens > 0
+            )
+            else None
+        ),
+    ),
+    EcoWaterSensorEntityDescription(
         key="total_regenerations",
         translation_key="total_regenerations",
         state_class=SensorStateClass.TOTAL_INCREASING,
