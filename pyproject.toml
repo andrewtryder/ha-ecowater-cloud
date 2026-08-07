@@ -26,6 +26,9 @@ dev = [
     "freezegun>=1.5",
 ]
 
+[tool.uv]
+override-dependencies = ["cryptography>=50.0.0"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["custom_components"]
 
