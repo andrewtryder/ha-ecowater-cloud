@@ -49,6 +49,8 @@ def _first_present_property(
 # Values sourced from reference implementation.
 SALT_TENTHS_MAX: dict[str, int] = {
     "1601": 80,
+    # 104703: Live-tested EWS3500 / EWS ECR3700R30 model
+    "104703": 80,
     "37801": 80,
     "37802": 80,
     "37803": 80,

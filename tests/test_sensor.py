@@ -145,3 +145,22 @@ async def test_water_dashboard_eligibility(
     assert state is not None
     assert state.attributes.get("device_class") == SensorDeviceClass.WATER
     assert state.attributes.get("state_class") == SensorStateClass.TOTAL_INCREASING
+
+
+def test_volume_sensor_state_classes() -> None:
+    """Verify that every sensor description using SensorDeviceClass.VOLUME has a valid state class."""
+    from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+
+    from custom_components.ecowater_cloud.sensor import SENSORS
+
+    allowed_state_classes = {
+        None,
+        SensorStateClass.TOTAL,
+        SensorStateClass.TOTAL_INCREASING,
+    }
+
+    for desc in SENSORS:
+        if desc.device_class == SensorDeviceClass.VOLUME:
+            assert desc.state_class in allowed_state_classes, (
+                f"Sensor '{desc.key}' with SensorDeviceClass.VOLUME has invalid state_class: {desc.state_class}"
+            )

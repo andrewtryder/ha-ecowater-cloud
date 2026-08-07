@@ -237,3 +237,29 @@ def test_unmapped_salt_model_logic():
     norm3 = normalize_device(dev, props_known, received_at)
     assert norm3.capabilities.has_salt_level is True
     assert norm3.capabilities.has_unmapped_salt_model is False
+
+
+def test_model_104703_normalization():
+    """Test normalization of live-tested EWS3500 / EWS ECR3700R30 model_id 104703."""
+    dev: AylaDeviceData = {
+        "dsn": "AC000W000999999",
+        "oem_model": "EWS3500",
+        "product_name": "EWS ECR3700R30",
+    }
+    props: list[AylaPropertyData] = [
+        {"name": "model_id", "value": "104703", "type": "string"},
+        {"name": "model_description", "value": "EWS ECR3700R30", "type": "string"},
+        {"name": "salt_level_tenths", "value": 30, "type": "integer"},
+    ]
+    received_at = datetime.datetime(2026, 8, 7, 11, 0, tzinfo=datetime.UTC)
+
+    normalized = normalize_device(dev, props, received_at)
+
+    assert normalized.descriptor.model_id == "104703"
+    assert normalized.descriptor.model == "EWS ECR3700R30"
+    assert normalized.descriptor.oem_model == "EWS3500"
+    assert normalized.salt_level_raw == 30
+    assert normalized.salt_level_percent == pytest.approx(37.5)
+    assert normalized.capabilities.has_salt_level is True
+    assert normalized.capabilities.has_salt_level_percentage is True
+    assert normalized.capabilities.has_unmapped_salt_model is False
