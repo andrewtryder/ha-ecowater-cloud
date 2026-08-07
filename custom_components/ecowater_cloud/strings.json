@@ -65,7 +65,7 @@
     },
     "data_stale": {
       "title": "EcoWater device data is stale",
-      "description": "The following device(s) have not sent fresh data to the cloud for an unusually long period: {devices}. This may indicate a connectivity issue with the device. Check that the device appears online in the EcoWater app."
+      "description": "The following device(s) have not sent fresh data to the cloud for over 36 hours: {devices}. This may indicate a connectivity issue with the device. Check that the device appears online in the EcoWater app."
     },
     "protocol_changed": {
       "title": "EcoWater Cloud API response changed",

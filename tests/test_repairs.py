@@ -185,3 +185,36 @@ async def test_repairs_listener_registration(
             cb()
     if getattr(coord, "_unsub_refresh", None):
         coord._unsub_refresh()
+
+
+@pytest.mark.asyncio
+async def test_stale_data_repair(hass: HomeAssistant, mock_issue_registry) -> None:
+    """Test stale data repair issue is created and deleted."""
+    from datetime import timedelta
+    from unittest.mock import MagicMock
+
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+
+    dev = MagicMock()
+    dev.descriptor.name = "Softener"
+    dev.freshness.age = timedelta(hours=40)
+
+    coord = AccountCoordinator(hass, entry, AsyncMock())
+    coord.data = {"AC1": dev}
+
+    from custom_components.ecowater_cloud.repairs import _check_stale_data
+
+    _check_stale_data(hass, entry, coord)
+    await hass.async_block_till_done()
+
+    issue = mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
+    assert issue is not None
+    assert "Softener (40h ago)" in issue.translation_placeholders["devices"]
+
+    dev.freshness.age = timedelta(hours=10)
+    _check_stale_data(hass, entry, coord)
+    await hass.async_block_till_done()
+
+    issue = mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
+    assert issue is None

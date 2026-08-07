@@ -179,4 +179,7 @@ class EcoWaterBinarySensor(EcoWaterEntity, BinarySensorEntity):
         """Return True if the binary sensor is on."""
         if not self.device_data:
             return None
-        return self.entity_description.is_on_fn(self.device_data)
+        val = self.entity_description.is_on_fn(self.device_data)
+        if val is None:
+            return None
+        return val
