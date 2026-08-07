@@ -85,7 +85,8 @@ It should work with other Ayla-connected EcoWater devices, but we can't guarante
 2. Click **Add Integration**.
 3. Search for **EcoWater Cloud**.
 4. Enter your EcoWater account email and password.
-5. Your devices will be discovered and added automatically.
+5. Select your account region (**North America** or **Europe**).
+6. Your devices will be discovered and added automatically.
 
 ## Upgrading & Uninstalling
 

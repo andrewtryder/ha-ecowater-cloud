@@ -921,6 +921,24 @@ def _calculate_past_date(
     return (received_at - datetime.timedelta(days=days)).date()
 
 
+TELEMETRY_PROPERTIES: set[str] = {
+    "gallons_used_today",
+    "current_water_flow_gpm",
+    "treated_water_avail_gals",
+    "salt_level_tenths",
+    "regen_status_enum",
+    "avg_daily_use_gals",
+    "total_water_used_gals",
+    "total_water_used_liters",
+    "total_water_used_m3",
+}
+
+REGEN_ENABLE_MAP: dict[int, bool] = {
+    0: False,
+    1: True,
+}
+
+
 def normalize_device(
     device_raw: AylaDeviceData,
     properties_raw: list[AylaPropertyData],
@@ -931,6 +949,7 @@ def normalize_device(
     # Build properties map
     props: dict[str, Any] = {}
     timestamps: list[datetime.datetime] = []
+    telemetry_timestamps: list[datetime.datetime] = []
 
     for prop in properties_raw:
         name = prop.get("name")
@@ -944,9 +963,25 @@ def normalize_device(
             dt = _parse_ayla_datetime(dt_str)
             if dt:
                 timestamps.append(dt)
+                if name in TELEMETRY_PROPERTIES:
+                    telemetry_timestamps.append(dt)
 
     oldest_data_at = min(timestamps) if timestamps else None
     newest_data_at = max(timestamps) if timestamps else None
+    telemetry_oldest_data_at = (
+        min(telemetry_timestamps) if telemetry_timestamps else None
+    )
+    telemetry_newest_data_at = (
+        max(telemetry_timestamps) if telemetry_timestamps else None
+    )
+
+    freshness = DataFreshness(
+        received_at=received_at,
+        oldest_data_at=oldest_data_at,
+        newest_data_at=newest_data_at,
+        telemetry_oldest_data_at=telemetry_oldest_data_at,
+        telemetry_newest_data_at=telemetry_newest_data_at,
+    )
 
     # Descriptor
     model_id_val = _safe_str(props.get("model_id"))
@@ -984,9 +1019,11 @@ def normalize_device(
 
     regeneration = RegenerationState(
         status=regen_status,
-        is_enabled=(regen_enabled_enum == 1)
-        if regen_enabled_enum is not None
-        else None,
+        is_enabled=(
+            REGEN_ENABLE_MAP.get(regen_enabled_enum)
+            if regen_enabled_enum is not None
+            else None
+        ),
         days_since_last=days_since_regen,
         estimated_last_date=_calculate_past_date(days_since_regen, received_at),
     )
@@ -1026,7 +1063,12 @@ def normalize_device(
     has_total_water_used = total_water_property is not None
 
     has_flow_sensor = "current_water_flow_gpm" in props
-    has_salt_sensor = "salt_level_tenths" in props
+    has_salt_level = "salt_level_tenths" in props
+    has_salt_level_percentage = salt_percent is not None
+    has_out_of_salt_estimate = "out_of_salt_estimate_days" in props
+    has_salt_type = "salt_type_enum" in props
+    has_regeneration_status = "regen_status_enum" in props
+    has_days_since_regeneration = "days_since_last_regen" in props
     has_rock_removed_daily_avg = "daily_avg_rock_removed_lbs" in props
     has_rock_removed_since_regeneration = "rock_removed_since_rech_lbs" in props
     has_total_rock_removed = "total_rock_removed_lbs" in props
@@ -1039,7 +1081,7 @@ def normalize_device(
     # Unknown-model detection: model_id is known but not in the salt capacity map
     model_id_val = descriptor.model_id
     has_unmapped_salt_model = (
-        has_salt_sensor
+        has_salt_level
         and model_id_val is not None
         and model_id_val not in SALT_TENTHS_MAX
     )
@@ -1050,7 +1092,12 @@ def normalize_device(
         has_water_available=has_water_available,
         has_total_water_used=has_total_water_used,
         has_flow_sensor=has_flow_sensor,
-        has_salt_sensor=has_salt_sensor,
+        has_salt_level=has_salt_level,
+        has_salt_level_percentage=has_salt_level_percentage,
+        has_out_of_salt_estimate=has_out_of_salt_estimate,
+        has_salt_type=has_salt_type,
+        has_regeneration_status=has_regeneration_status,
+        has_days_since_regeneration=has_days_since_regeneration,
         has_rock_removed_daily_avg=has_rock_removed_daily_avg,
         has_rock_removed_since_regeneration=has_rock_removed_since_regeneration,
         has_total_rock_removed=has_total_rock_removed,
@@ -1097,11 +1144,7 @@ def normalize_device(
     return EcoWaterDeviceData(
         descriptor=descriptor,
         capabilities=capabilities,
-        freshness=DataFreshness(
-            received_at=received_at,
-            oldest_data_at=oldest_data_at,
-            newest_data_at=newest_data_at,
-        ),
+        freshness=freshness,
         regeneration=regeneration,
         water_used_today_gallons=_safe_float(props.get("gallons_used_today")),
         water_used_daily_avg_gallons=_safe_float(props.get("avg_daily_use_gals")),

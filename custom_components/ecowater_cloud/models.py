@@ -47,7 +47,12 @@ class DeviceCapabilities:
     has_water_available: bool
     has_total_water_used: bool
     has_flow_sensor: bool
-    has_salt_sensor: bool
+    has_salt_level: bool
+    has_salt_level_percentage: bool
+    has_out_of_salt_estimate: bool
+    has_salt_type: bool
+    has_regeneration_status: bool
+    has_days_since_regeneration: bool
     has_rock_removed_daily_avg: bool
     has_rock_removed_since_regeneration: bool
     has_total_rock_removed: bool
@@ -102,13 +107,20 @@ class DataFreshness:
     received_at: datetime.datetime
     oldest_data_at: datetime.datetime | None = field(default=None)
     newest_data_at: datetime.datetime | None = field(default=None)
+    telemetry_oldest_data_at: datetime.datetime | None = field(default=None)
+    telemetry_newest_data_at: datetime.datetime | None = field(default=None)
 
     @property
     def age(self) -> datetime.timedelta | None:
-        """The age of the data based on newest timestamp. Returns None if absent."""
-        if self.newest_data_at is None:
+        """The age of data based on newest telemetry timestamp."""
+        ref = (
+            self.telemetry_newest_data_at
+            if self.telemetry_newest_data_at is not None
+            else self.newest_data_at
+        )
+        if ref is None:
             return None
-        return self.received_at - self.newest_data_at
+        return self.received_at - ref
 
 
 @dataclass(frozen=True, slots=True)

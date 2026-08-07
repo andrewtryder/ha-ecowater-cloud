@@ -45,7 +45,12 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_water_available": data.capabilities.has_water_available,
         "has_total_water_used": data.capabilities.has_total_water_used,
         "has_flow_sensor": data.capabilities.has_flow_sensor,
-        "has_salt_sensor": data.capabilities.has_salt_sensor,
+        "has_salt_level": data.capabilities.has_salt_level,
+        "has_salt_level_percentage": data.capabilities.has_salt_level_percentage,
+        "has_out_of_salt_estimate": data.capabilities.has_out_of_salt_estimate,
+        "has_salt_type": data.capabilities.has_salt_type,
+        "has_regeneration_status": data.capabilities.has_regeneration_status,
+        "has_days_since_regeneration": data.capabilities.has_days_since_regeneration,
         "has_rock_removed_daily_avg": data.capabilities.has_rock_removed_daily_avg,
         "has_rock_removed_since_regeneration": (
             data.capabilities.has_rock_removed_since_regeneration

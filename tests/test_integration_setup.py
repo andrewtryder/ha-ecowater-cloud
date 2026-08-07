@@ -102,7 +102,7 @@ async def test_backend_full_http_chain(hass: HomeAssistant, aioclient_mock) -> N
     assert device.capabilities.has_water_usage_daily_avg is True
     assert device.capabilities.has_water_available is True
     assert device.capabilities.has_total_water_used is True
-    assert device.capabilities.has_salt_sensor is True
+    assert device.capabilities.has_salt_level is True
 
 
 @pytest.mark.asyncio

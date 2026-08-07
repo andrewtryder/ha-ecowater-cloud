@@ -99,7 +99,7 @@ def test_normalize_synthetic_device():
     assert normalized.capabilities.has_water_available is True
     assert normalized.capabilities.has_total_water_used is True
     assert normalized.capabilities.has_flow_sensor is True
-    assert normalized.capabilities.has_salt_sensor is True
+    assert normalized.capabilities.has_salt_level is True
     assert normalized.capabilities.has_rock_removed_daily_avg is True
     assert normalized.capabilities.has_rock_removed_since_regeneration is True
     assert normalized.capabilities.has_total_rock_removed is True
@@ -191,7 +191,7 @@ def test_normalize_edge_cases():
     assert normalized.total_water_source_property is None
 
     assert normalized.capabilities.has_flow_sensor is True
-    assert normalized.capabilities.has_salt_sensor is True
+    assert normalized.capabilities.has_salt_level is True
     assert normalized.capabilities.has_rock_removed_daily_avg is False
     assert normalized.capabilities.has_rock_removed_since_regeneration is False
     assert normalized.capabilities.has_total_rock_removed is False
@@ -218,7 +218,7 @@ def test_unmapped_salt_model_logic():
     ]
     received_at = datetime.datetime(2026, 8, 5, 12, 10, tzinfo=datetime.UTC)
     norm1 = normalize_device(dev, props_salt, received_at)
-    assert norm1.capabilities.has_salt_sensor is True
+    assert norm1.capabilities.has_salt_level is True
     assert norm1.capabilities.has_unmapped_salt_model is True
 
     # 2. Non-salt device with unknown model -> False
@@ -226,7 +226,7 @@ def test_unmapped_salt_model_logic():
         {"name": "model_id", "value": "99999", "type": "string"},
     ]
     norm2 = normalize_device(dev, props_no_salt, received_at)
-    assert norm2.capabilities.has_salt_sensor is False
+    assert norm2.capabilities.has_salt_level is False
     assert norm2.capabilities.has_unmapped_salt_model is False
 
     # 3. Salt device with known model -> False
@@ -235,5 +235,5 @@ def test_unmapped_salt_model_logic():
         {"name": "model_id", "value": "46904", "type": "string"},
     ]
     norm3 = normalize_device(dev, props_known, received_at)
-    assert norm3.capabilities.has_salt_sensor is True
+    assert norm3.capabilities.has_salt_level is True
     assert norm3.capabilities.has_unmapped_salt_model is False

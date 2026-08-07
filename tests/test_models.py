@@ -1,5 +1,6 @@
 """Tests for the normalized models."""
 
+import dataclasses
 import datetime
 
 import pytest
@@ -51,7 +52,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(*[True] * 47),
+                capabilities=DeviceCapabilities(
+                    *[True] * len(dataclasses.fields(DeviceCapabilities))
+                ),
                 freshness=DataFreshness(received_at=naive_dt),
                 regeneration=RegenerationState(status="None"),
             )
@@ -66,7 +69,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(*[True] * 47),
+                capabilities=DeviceCapabilities(
+                    *[True] * len(dataclasses.fields(DeviceCapabilities))
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),
@@ -84,7 +89,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(*[True] * 47),
+                capabilities=DeviceCapabilities(
+                    *[True] * len(dataclasses.fields(DeviceCapabilities))
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),
@@ -102,7 +109,9 @@ class TestEcoWaterDeviceDataValidation:
                     name="Test",
                     model="Test Model",
                 ),
-                capabilities=DeviceCapabilities(*[True] * 47),
+                capabilities=DeviceCapabilities(
+                    *[True] * len(dataclasses.fields(DeviceCapabilities))
+                ),
                 freshness=DataFreshness(
                     received_at=datetime.datetime.now(datetime.UTC)
                 ),

@@ -103,7 +103,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="salt_level",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_salt_sensor,
+        supported_fn=lambda d: d.capabilities.has_salt_level_percentage,
         value_fn=lambda d: d.salt_level_percent,
     ),
     EcoWaterSensorEntityDescription(
@@ -129,21 +129,21 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_fn=lambda d: d.capabilities.has_salt_sensor,
+        supported_fn=lambda d: d.capabilities.has_out_of_salt_estimate,
         value_fn=lambda d: d.days_until_out_of_salt,
     ),
     EcoWaterSensorEntityDescription(
         key="estimated_out_of_salt_date",
         translation_key="estimated_out_of_salt_date",
         device_class=SensorDeviceClass.DATE,
-        supported_fn=lambda d: d.capabilities.has_salt_sensor,
+        supported_fn=lambda d: d.capabilities.has_out_of_salt_estimate,
         value_fn=lambda d: d.estimated_out_of_salt_date,
     ),
     EcoWaterSensorEntityDescription(
         key="salt_type",
         translation_key="salt_type",
         device_class=SensorDeviceClass.ENUM,
-        supported_fn=lambda d: d.capabilities.has_salt_sensor,
+        supported_fn=lambda d: d.capabilities.has_salt_type,
         value_fn=lambda d: (
             d.salt_type.lower().replace(" ", "_") if d.salt_type else None
         ),
@@ -155,6 +155,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="regeneration_status",
         device_class=SensorDeviceClass.ENUM,
         options=["standby", "regenerating", "scheduled"],
+        supported_fn=lambda d: d.capabilities.has_regeneration_status,
         value_fn=lambda d: (
             d.regeneration.status.lower() if d.regeneration.status else None
         ),
@@ -215,12 +216,14 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
+        supported_fn=lambda d: d.capabilities.has_days_since_regeneration,
         value_fn=lambda d: d.regeneration.days_since_last,
     ),
     EcoWaterSensorEntityDescription(
         key="estimated_last_regeneration_date",
         translation_key="estimated_last_regeneration_date",
         device_class=SensorDeviceClass.DATE,
+        supported_fn=lambda d: d.capabilities.has_days_since_regeneration,
         value_fn=lambda d: d.regeneration.estimated_last_date,
     ),
     EcoWaterSensorEntityDescription(

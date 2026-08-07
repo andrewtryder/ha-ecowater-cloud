@@ -5,6 +5,12 @@ import logging
 from typing import TYPE_CHECKING, cast
 
 from custom_components.ecowater_cloud.backends import BackendAdapter
+from custom_components.ecowater_cloud.exceptions import (
+    AuthenticationError,
+    ConnectivityError,
+    RateLimitError,
+    ReauthenticationRequired,
+)
 from custom_components.ecowater_cloud.models import (
     AccountInfo,
     DeviceDescriptor,
@@ -124,11 +130,22 @@ class AylaBackend(BackendAdapter):
                 _LOGGER.warning("Ignoring unsupported device model: %s", oem_model)
                 continue
 
-            raw_props = await self._api.async_get_device_properties(dsn)
-            unwrapped_props: list[AylaPropertyData] = [
-                cast(AylaPropertyData, p) for p in raw_props
-            ]
-
-            devices_data[dsn] = normalize_device(dev, unwrapped_props, received_at)
+            try:
+                raw_props = await self._api.async_get_device_properties(dsn)
+                unwrapped_props: list[AylaPropertyData] = [
+                    cast(AylaPropertyData, p) for p in raw_props
+                ]
+                devices_data[dsn] = normalize_device(dev, unwrapped_props, received_at)
+            except (
+                AuthenticationError,
+                ReauthenticationRequired,
+                ConnectivityError,
+                RateLimitError,
+            ):
+                raise
+            except Exception as err:
+                _LOGGER.error(
+                    "Failed to fetch or normalize device data for %s: %s", dsn, err
+                )
 
         return AccountInfo(devices=devices_data)
