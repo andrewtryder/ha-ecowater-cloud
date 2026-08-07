@@ -169,6 +169,9 @@
       "average_salt_per_regeneration": {
         "name": "Average salt per regeneration"
       },
+      "monthly_salt_use_estimate": {
+        "name": "Monthly salt use estimate"
+      },
       "total_regenerations": {
         "name": "Total regenerations"
       },
