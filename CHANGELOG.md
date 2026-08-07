@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.6.1...v0.6.2) (2026-08-07)
+
+
+### Bug Fixes
+
+* replace core translation key references with literal text in translations ([#38](https://github.com/andrewtryder/ha-ecowater-cloud/issues/38)) ([77c36af](https://github.com/andrewtryder/ha-ecowater-cloud/commit/77c36af517350d4ca6726075bfd5af426fe86c44))
+
+
+### Documentation
+
+* add device overview screenshot to README ([#36](https://github.com/andrewtryder/ha-ecowater-cloud/issues/36)) ([745813a](https://github.com/andrewtryder/ha-ecowater-cloud/commit/745813a8a4661acc05793ec30af44461dfaf2199))
+
 ## [0.6.1](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.6.0...v0.6.1) (2026-08-07)
 
 
