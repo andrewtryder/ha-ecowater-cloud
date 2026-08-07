@@ -14,6 +14,10 @@
   <a href="https://github.com/andrewtryder/ha-ecowater-cloud/blob/main/LICENSE"><img src="https://img.shields.io/github/license/andrewtryder/ha-ecowater-cloud?style=flat-square" alt="License"></a>
 </p>
 
+<p align="center">
+  <img src="docs/images/device-overview.png" alt="EcoWater Cloud Device Overview in Home Assistant" width="700">
+</p>
+
 ---
 
 ## What It Does
