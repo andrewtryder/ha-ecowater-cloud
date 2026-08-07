@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.6.2...v0.7.0) (2026-08-07)
+
+
+### Features
+
+* add EcoWater system_problem binary sensor ([#42](https://github.com/andrewtryder/ha-ecowater-cloud/issues/42)) ([093695a](https://github.com/andrewtryder/ha-ecowater-cloud/commit/093695aeca7f0313499febf080b1d934e81ddadd))
+* add initial automation blueprints and README import links ([#41](https://github.com/andrewtryder/ha-ecowater-cloud/issues/41)) ([7a323c7](https://github.com/andrewtryder/ha-ecowater-cloud/commit/7a323c70b8d8adff4e5bb20cd8fda3561cac1c7c))
+* add monthly salt use estimate sensor and dashboard card helper ([#43](https://github.com/andrewtryder/ha-ecowater-cloud/issues/43)) ([1070c7e](https://github.com/andrewtryder/ha-ecowater-cloud/commit/1070c7ebb6147400724520e501097ad71f8bc7a1))
+* enable wifi_signal_strength and data_stale by default ([#39](https://github.com/andrewtryder/ha-ecowater-cloud/issues/39)) ([b06be03](https://github.com/andrewtryder/ha-ecowater-cloud/commit/b06be038a162f1fc46a2c4deb854f7d46c4364b0))
+
+
+### Bug Fixes
+
+* address 0.7.0 readiness findings in blueprints, error handling, freshness, and sensors ([#44](https://github.com/andrewtryder/ha-ecowater-cloud/issues/44)) ([841954d](https://github.com/andrewtryder/ha-ecowater-cloud/commit/841954d73b969cbdb9d3cbbf6faad5952ee1538e))
+* remove invalid VOLUME state_class and restore model 104703 salt mapping ([#45](https://github.com/andrewtryder/ha-ecowater-cloud/issues/45)) ([f3b210a](https://github.com/andrewtryder/ha-ecowater-cloud/commit/f3b210a6052cf71af7bbca1f8ead387746951a65))
+
 ## [0.6.2](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.6.1...v0.6.2) (2026-08-07)
 
 
