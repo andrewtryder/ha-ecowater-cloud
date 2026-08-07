@@ -1,0 +1,42 @@
+blueprint:
+  name: EcoWater Cloud - Stale Data Warning
+  description: >
+    Send a notification when EcoWater cloud data becomes stale (has not synced for over 36 hours).
+  domain: automation
+  author: Andrew Ryder
+  homeassistant:
+    min_version: 2026.3.0
+  input:
+    data_stale_binary_sensor:
+      name: Data Stale Binary Sensor
+      description: The Data Stale binary sensor for your EcoWater device.
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: problem
+          multiple: false
+    notify_target:
+      name: Notification Action
+      description: The notification action/target to send the warning to.
+      selector:
+        target: {}
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input data_stale_binary_sensor
+    to: "on"
+
+condition: []
+
+action:
+  - action: notify.notify
+    target: !input notify_target
+    data:
+      title: "EcoWater Cloud: Data Stale Warning"
+      message: >-
+        Telemetry data for {{ state_attr(trigger.entity_id, 'friendly_name') or 'EcoWater' }} has not updated from the cloud for over 36 hours.
+        Please check device Wi-Fi connectivity or power status.

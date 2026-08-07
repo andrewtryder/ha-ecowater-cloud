@@ -1,0 +1,73 @@
+blueprint:
+  name: EcoWater Cloud - Low Salt Notification
+  description: >
+    Send a notification when an EcoWater softener reports low salt level
+    or drops below a target percentage.
+  domain: automation
+  author: Andrew Ryder
+  homeassistant:
+    min_version: 2026.3.0
+  input:
+    low_salt_binary_sensor:
+      name: Low Salt Binary Sensor (Optional)
+      description: The low salt alert binary sensor for your EcoWater device.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: problem
+          multiple: false
+    salt_level_sensor:
+      name: Salt Level Percentage Sensor (Optional)
+      description: The numeric salt level sensor for your EcoWater device.
+      default: ""
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+          multiple: false
+    salt_threshold:
+      name: Salt Percentage Threshold
+      description: Trigger if the salt level percentage falls below this threshold.
+      default: 20
+      selector:
+        number:
+          min: 5
+          max: 50
+          unit_of_measurement: "%"
+          mode: slider
+    notify_target:
+      name: Notification Action
+      description: The notification action/target to send the alert to.
+      selector:
+        target: {}
+    custom_message:
+      name: Custom Message
+      description: Optional custom text to include in the notification.
+      default: "EcoWater softener salt level is low. Please refill the salt tank."
+      selector:
+        text:
+          multiline: true
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input low_salt_binary_sensor
+    to: "on"
+    id: binary_alert
+  - platform: numeric_state
+    entity_id: !input salt_level_sensor
+    below: !input salt_threshold
+    id: numeric_alert
+
+condition: []
+
+action:
+  - action: notify.notify
+    target: !input notify_target
+    data:
+      title: "EcoWater Cloud: Low Salt Alert"
+      message: !input custom_message
