@@ -1,5 +1,6 @@
 """Test repairs logic for the EcoWater Cloud integration."""
 
+import datetime
 from unittest.mock import AsyncMock
 
 import pytest
@@ -217,4 +218,43 @@ async def test_stale_data_repair(hass: HomeAssistant, mock_issue_registry) -> No
     await hass.async_block_till_done()
 
     issue = mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
+    assert issue is None
+
+
+@pytest.mark.asyncio
+async def test_model_104703_no_repair(hass: HomeAssistant, mock_issue_registry) -> None:
+    """Test that live-tested model 104703 does not trigger an unknown_salt_model repair."""
+    from custom_components.ecowater_cloud.backends.ayla.models import (
+        AylaDeviceData,
+        AylaPropertyData,
+    )
+    from custom_components.ecowater_cloud.backends.ayla.normalization import (
+        normalize_device,
+    )
+    from custom_components.ecowater_cloud.repairs import _check_unknown_salt_models
+
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+
+    dev_raw: AylaDeviceData = {
+        "dsn": "AC000W000104703",
+        "oem_model": "EWS3500",
+        "product_name": "EWS ECR3700R30",
+    }
+    props_raw: list[AylaPropertyData] = [
+        {"name": "model_id", "value": "104703", "type": "string"},
+        {"name": "salt_level_tenths", "value": 30, "type": "integer"},
+    ]
+    received_at = datetime.datetime(2026, 8, 7, 11, 0, tzinfo=datetime.UTC)
+    norm_dev = normalize_device(dev_raw, props_raw, received_at)
+
+    coord = AccountCoordinator(hass, entry, AsyncMock())
+    coord.data = {"AC000W000104703": norm_dev}
+
+    _check_unknown_salt_models(hass, entry, coord)
+    await hass.async_block_till_done()
+
+    issue = mock_issue_registry.async_get_issue(
+        DOMAIN, f"{entry.entry_id}_unknown_salt_model"
+    )
     assert issue is None
