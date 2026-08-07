@@ -52,6 +52,7 @@ It should work with other Ayla-connected EcoWater devices, but we can't guarante
 > **⚠️** Do **not** run the old `ecowater_softener` integration and this `ecowater_cloud` integration on the same account at the same time. Doing so can cause aggressive polling that may lead to account lockouts or temporary IP bans from the cloud service.
 
 - This integration is **read-only** — no control actions (e.g. triggering a regeneration) are implemented.
+- Diagnostic entities ending with `(raw)` (e.g., `hardness_setting_raw`, `motor_state_raw`) represent uninterpreted protocol values directly reported by the EcoWater cloud backend without unit conversions or assumed scaling.
 - If you are migrating from the old integration, entities will **not** transfer automatically. This integration uses a separate domain (`ecowater_cloud`) and creates fresh entities.
 
 ## Installation

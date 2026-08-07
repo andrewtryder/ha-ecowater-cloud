@@ -36,7 +36,8 @@
     },
     "abort": {
       "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
-      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
+      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]",
+      "account_mismatch": "The account email cannot be changed during reconfiguration. Add a new EcoWater Cloud integration for a different account."
     }
   },
   "options": {
@@ -64,7 +65,7 @@
     },
     "data_stale": {
       "title": "EcoWater device data is stale",
-      "description": "The following device(s) have not sent fresh data to the cloud in over 24 hours: {devices}. This may indicate a connectivity issue with the device. Check that the device appears online in the EcoWater app."
+      "description": "The following device(s) have not sent fresh data to the cloud for an unusually long period: {devices}. This may indicate a connectivity issue with the device. Check that the device appears online in the EcoWater app."
     },
     "protocol_changed": {
       "title": "EcoWater Cloud API response changed",
@@ -198,17 +199,17 @@
       "average_exhaustion": {
         "name": "Average exhaustion percentage"
       },
-      "salt_efficiency_mode": {
-        "name": "Salt efficiency mode"
+      "salt_efficiency_mode_raw": {
+        "name": "Salt efficiency mode (raw)"
       },
-      "operating_capacity": {
-        "name": "Operating capacity"
+      "operating_capacity_raw": {
+        "name": "Operating capacity (raw)"
       },
-      "hardness_setting": {
-        "name": "Hardness setting"
+      "hardness_setting_raw": {
+        "name": "Hardness setting (raw)"
       },
-      "iron_setting": {
-        "name": "Iron setting"
+      "iron_setting_raw": {
+        "name": "Iron setting (raw)"
       },
       "flow_monitor_minimum_rate": {
         "name": "Flow monitor minimum rate"
@@ -228,11 +229,11 @@
       "valve_reindex_count": {
         "name": "Valve reindex count"
       },
-      "motor_state": {
-        "name": "Motor state"
+      "motor_state_raw": {
+        "name": "Motor state (raw)"
       },
-      "valve_position_switch_state": {
-        "name": "Valve position switch state"
+      "valve_position_switch_state_raw": {
+        "name": "Valve position switch state (raw)"
       },
       "remaining_valve_position_time": {
         "name": "Remaining valve position time"
@@ -252,8 +253,8 @@
       "rinse_duration": {
         "name": "Rinse duration"
       },
-      "second_backwash_cycles": {
-        "name": "Second backwash cycles"
+      "second_backwash_cycles_raw": {
+        "name": "Second backwash cycles (raw)"
       },
       "second_backwash_duration": {
         "name": "Second backwash duration"

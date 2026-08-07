@@ -113,7 +113,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         is_on_fn=lambda d: (
             d.freshness.age > STALE_DATA_THRESHOLD
             if d.freshness.age is not None
-            else False
+            else None
         ),
     ),
 )
