@@ -112,15 +112,10 @@ class DataFreshness:
 
     @property
     def age(self) -> datetime.timedelta | None:
-        """The age of data based on newest telemetry timestamp."""
-        ref = (
-            self.telemetry_newest_data_at
-            if self.telemetry_newest_data_at is not None
-            else self.newest_data_at
-        )
-        if ref is None:
+        """The age of data based strictly on telemetry timestamps."""
+        if self.telemetry_newest_data_at is None:
             return None
-        return self.received_at - ref
+        return self.received_at - self.telemetry_newest_data_at
 
 
 @dataclass(frozen=True, slots=True)

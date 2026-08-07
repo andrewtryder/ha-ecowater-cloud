@@ -29,6 +29,30 @@ class EcoWaterBinarySensorEntityDescription(BinarySensorEntityDescription):
     supported_fn: Callable[[EcoWaterDeviceData], bool] = lambda _: True
 
 
+def _evaluate_system_problem(data: EcoWaterDeviceData) -> bool | None:
+    """Evaluate system problem status, returning None if no signals are available."""
+    signals = (
+        None if data.descriptor.is_online is None else not data.descriptor.is_online,
+        (
+            None
+            if data.freshness.age is None
+            else data.freshness.age > STALE_DATA_THRESHOLD
+        ),
+        data.low_salt_alert,
+        data.depletion_alert,
+        data.service_reminder_alert,
+        data.error_code_alert,
+        data.excessive_water_use_alert,
+        data.flow_monitor_alert,
+    )
+
+    known = [signal for signal in signals if signal is not None]
+    if not known:
+        return None
+
+    return any(known)
+
+
 BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
     EcoWaterBinarySensorEntityDescription(
         key="device_reported_online",
@@ -121,16 +145,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         translation_key="system_problem",
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
-        is_on_fn=lambda d: bool(
-            (d.descriptor.is_online is False)
-            or (d.freshness.age is not None and d.freshness.age > STALE_DATA_THRESHOLD)
-            or d.low_salt_alert
-            or d.depletion_alert
-            or d.service_reminder_alert
-            or d.error_code_alert
-            or d.excessive_water_use_alert
-            or d.flow_monitor_alert
-        ),
+        is_on_fn=_evaluate_system_problem,
     ),
 )
 

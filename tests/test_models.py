@@ -152,14 +152,18 @@ class TestEcoWaterDeviceDataEquality:
 
 
 class TestDataFreshnessAge:
-    def test_age_with_timestamp(self) -> None:
+    def test_age_with_telemetry_timestamp(self) -> None:
         now = datetime.datetime.now(datetime.UTC)
         past = now - datetime.timedelta(hours=2)
-        freshness = DataFreshness(received_at=now, newest_data_at=past)
+        freshness = DataFreshness(received_at=now, telemetry_newest_data_at=past)
         assert freshness.age is not None
         assert abs((freshness.age - datetime.timedelta(hours=2)).total_seconds()) < 1
 
-    def test_age_without_timestamp(self) -> None:
+    def test_age_without_telemetry_timestamp(self) -> None:
         now = datetime.datetime.now(datetime.UTC)
-        freshness = DataFreshness(received_at=now, newest_data_at=None)
+        past = now - datetime.timedelta(hours=2)
+        # Even if newest_data_at (e.g. config property) is set, age should remain None if telemetry timestamp is missing
+        freshness = DataFreshness(
+            received_at=now, newest_data_at=past, telemetry_newest_data_at=None
+        )
         assert freshness.age is None

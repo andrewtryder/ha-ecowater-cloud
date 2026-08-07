@@ -111,6 +111,12 @@ def make_full_device_snapshot() -> EcoWaterDeviceData:
             newest_data_at=datetime.datetime(
                 2026, 8, 5, 13, 59, 0, tzinfo=datetime.UTC
             ),
+            telemetry_oldest_data_at=datetime.datetime(
+                2026, 8, 5, 13, 0, 0, tzinfo=datetime.UTC
+            ),
+            telemetry_newest_data_at=datetime.datetime(
+                2026, 8, 5, 13, 59, 0, tzinfo=datetime.UTC
+            ),
         ),
         regeneration=RegenerationState(
             status="Standby",

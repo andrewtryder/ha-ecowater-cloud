@@ -98,6 +98,17 @@ async def test_system_problem_evaluates_true_on_alerts() -> None:
     dev.descriptor.is_online = False
     assert sensor.is_on is True
 
+    # All unknown signals return None (unknown)
+    dev.descriptor.is_online = None
+    dev.freshness.age = None
+    dev.low_salt_alert = None
+    dev.depletion_alert = None
+    dev.service_reminder_alert = None
+    dev.error_code_alert = None
+    dev.excessive_water_use_alert = None
+    dev.flow_monitor_alert = None
+    assert sensor.is_on is None
+
 
 @pytest.mark.asyncio
 async def test_dynamic_binary_sensor_addition(

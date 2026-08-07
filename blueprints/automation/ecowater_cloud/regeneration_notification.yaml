@@ -16,11 +16,14 @@ blueprint:
             - domain: binary_sensor
               device_class: running
           multiple: false
-    notify_target:
-      name: Notification Action
-      description: The notification action/target to send the alerts to.
+    notify_device:
+      name: Notification Device
+      description: The notify entity to send the alerts to.
       selector:
-        target: {}
+        entity:
+          filter:
+            - domain: notify
+          multiple: false
     event_selection:
       name: Trigger Event
       description: Choose whether to notify on cycle start, cycle completion, or both.
@@ -37,6 +40,9 @@ blueprint:
 
 mode: single
 max_exceeded: silent
+
+variables:
+  selector_choice: !input event_selection
 
 trigger:
   - platform: state
@@ -70,8 +76,9 @@ action:
           - condition: trigger
             id: regen_started
         sequence:
-          - action: notify.notify
-            target: !input notify_target
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_device
             data:
               title: "EcoWater Cloud: Regeneration Started"
               message: >-
@@ -80,8 +87,9 @@ action:
           - condition: trigger
             id: regen_completed
         sequence:
-          - action: notify.notify
-            target: !input notify_target
+          - action: notify.send_message
+            target:
+              entity_id: !input notify_device
             data:
               title: "EcoWater Cloud: Regeneration Completed"
               message: >-
