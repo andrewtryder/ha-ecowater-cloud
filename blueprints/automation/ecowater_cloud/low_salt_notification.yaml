@@ -9,9 +9,8 @@ blueprint:
     min_version: 2026.3.0
   input:
     low_salt_binary_sensor:
-      name: Low Salt Binary Sensor (Optional)
+      name: Low Salt Binary Sensor
       description: The low salt alert binary sensor for your EcoWater device.
-      default: ""
       selector:
         entity:
           filter:
@@ -19,9 +18,8 @@ blueprint:
               device_class: problem
           multiple: false
     salt_level_sensor:
-      name: Salt Level Percentage Sensor (Optional)
+      name: Salt Level Percentage Sensor
       description: The numeric salt level sensor for your EcoWater device.
-      default: ""
       selector:
         entity:
           filter:
@@ -37,11 +35,14 @@ blueprint:
           max: 50
           unit_of_measurement: "%"
           mode: slider
-    notify_target:
-      name: Notification Action
-      description: The notification action/target to send the alert to.
+    notify_device:
+      name: Notification Device
+      description: The notify entity to send the alert to.
       selector:
-        target: {}
+        entity:
+          filter:
+            - domain: notify
+          multiple: false
     custom_message:
       name: Custom Message
       description: Optional custom text to include in the notification.
@@ -66,8 +67,9 @@ trigger:
 condition: []
 
 action:
-  - action: notify.notify
-    target: !input notify_target
+  - action: notify.send_message
+    target:
+      entity_id: !input notify_device
     data:
       title: "EcoWater Cloud: Low Salt Alert"
       message: !input custom_message

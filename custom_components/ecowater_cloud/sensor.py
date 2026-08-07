@@ -218,7 +218,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
             and d.avg_salt_per_regen_lbs is not None
         ),
         value_fn=lambda d: (
-            round((d.avg_salt_per_regen_lbs / d.avg_days_between_regens) * 30.4375, 1)
+            (d.avg_salt_per_regen_lbs / d.avg_days_between_regens) * 30.4375
             if (
                 d.avg_salt_per_regen_lbs is not None
                 and d.avg_days_between_regens is not None
@@ -375,7 +375,7 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         translation_key="source_last_updated",
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda d: d.freshness.newest_data_at,
+        value_fn=lambda d: d.freshness.telemetry_newest_data_at,
     ),
     EcoWaterSensorEntityDescription(
         key="source_oldest_data",

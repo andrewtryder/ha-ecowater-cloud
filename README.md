@@ -37,15 +37,13 @@ Entities are created dynamically — only capabilities your specific device repo
 
 ## Device Compatibility
 
-The following backends and models are known to this integration:
-
 | Backend | Region | OEM model | Display model | Status |
 |---|---|---|---|---|
 | Ayla | US | EWS3500 | EWS ECR3700R30 | Live tested |
 | Ayla | EU | — | — | Endpoint implemented, untested |
 | HydroLink | — | — | — | Not supported |
 
-It should work with other Ayla-connected EcoWater devices, but we can't guarantee it until we have fixture data from more models.
+Other Ayla-connected EcoWater devices reporting an EWS* OEM model may work, but only EWS3500/ECR3700R30 has been live tested.
 
 **Have a different model?** We'd love your help — see [Submitting a Device Fixture](#submitting-a-device-fixture) below.
 
@@ -61,51 +59,36 @@ It should work with other Ayla-connected EcoWater devices, but we can't guarante
 
 ## Installation
 
-### HACS (Recommended)
+### Method 1: HACS (Custom Repository) — Recommended
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=andrewtryder&repository=ha-ecowater-cloud&category=integration)
+1. Open **HACS** in Home Assistant.
+2. Click the three dots in the upper right corner → **Custom repositories**.
+3. Repository: `https://github.com/andrewtryder/ha-ecowater-cloud`
+4. Category: **Integration**
+5. Click **Add**.
+6. Find **EcoWater Cloud** in HACS and click **Download**.
+7. Restart Home Assistant.
 
-1. Click the button above to open HACS on your Home Assistant instance.
-2. Click **Download** on the repository page.
-3. **Restart Home Assistant.**
+### Method 2: Manual Installation
 
-*(If the button doesn't work)*
-1. Open **HACS** in your Home Assistant instance.
-2. Tap the **⋮** menu (top-right) → **Custom repositories**.
-3. Paste the repository URL: `https://github.com/andrewtryder/ha-ecowater-cloud`
-4. Set the category to **Integration** and click **Add**.
-5. Close the dialog, search for **EcoWater Cloud**, and click **Download**.
-6. **Restart Home Assistant.**
+1. Download the latest release zip from [Releases](https://github.com/andrewtryder/ha-ecowater-cloud/releases).
+2. Extract the `custom_components/ecowater_cloud` directory into your Home Assistant `<config>/custom_components/` directory.
+3. Restart Home Assistant.
 
-### Manual
+---
 
-1. Download the latest release from the [Releases](https://github.com/andrewtryder/ha-ecowater-cloud/releases) page.
-2. Copy the `custom_components/ecowater_cloud` folder into your `config/custom_components/` directory.
-3. **Restart Home Assistant.**
+## Configuration
 
-## Setup
+1. Go to **Settings → Devices & Services → Add Integration**.
+2. Search for **EcoWater Cloud**.
+3. Enter your **EcoWater Cloud credentials**:
+   - **Email** / Username
+   - **Password**
+4. Click **Submit**.
 
-1. Go to **Settings → Devices & Services**.
-2. Click **Add Integration**.
-3. Search for **EcoWater Cloud**.
-4. Enter your EcoWater account email and password.
-5. Select your account region (**North America** or **Europe**).
-6. Your devices will be discovered and added automatically.
+---
 
-## Upgrading & Uninstalling
-
-| Action | Steps |
-|---|---|
-| **Upgrade** | Open HACS → download the latest version → restart Home Assistant. |
-| **Uninstall** | 1. Delete the integration from Settings → Devices & Services.<br>2. Open HACS → find EcoWater Cloud → click **⋮** → **Remove**.<br>3. Remove the custom repository from HACS.<br>4. Restart Home Assistant. |
-
-## How Polling Works
-
-The integration polls the cloud every **30 minutes** by default (configurable in the options flow).
-
-Water softeners are conservative with telemetry — when no water is flowing, your device may not push data to the cloud for 12–24 hours. This is **normal**. Check the `source_last_updated` diagnostic sensor to see when the cloud last received fresh data from your device. An online state confirms cloud connectivity but does not guarantee that every telemetry value is current.
-
-## Automation Blueprints
+## Companion Automation Blueprints
 
 Easily import pre-built automation blueprints into Home Assistant to stay alerted on salt levels, flow, telemetry freshness, and regeneration status.
 
@@ -113,12 +96,12 @@ Easily import pre-built automation blueprints into Home Assistant to stay alerte
 |---|---|---|
 | **Low Salt Notification** | Alert when salt level drops below a target percentage or low-salt alert triggers | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Flow_salt_notification.yaml) |
 | **High Water Flow Alert** | Warn if continuous water flow exceeds a threshold (e.g. 5 GPM) for N minutes | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fhigh_flow_alert.yaml) |
-| **Stale Data Warning** | Alert when EcoWater cloud telemetry has not synced for over 36 hours | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fstale_data_notification.yaml) |
+| **Stale Data Warning** | Alert when EcoWater cloud telemetry has not synced for over 24 hours | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fstale_data_notification.yaml) |
 | **Regeneration Notification** | Notify when a regeneration cycle starts or completes | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fregeneration_notification.yaml) |
 
 ## Maintenance Dashboard Helper
 
-Add a concise, formatted device-health view to your Lovelace dashboard by copying the YAML snippet below into an **Entities** card:
+Add a concise, formatted device-health view to your Lovelace dashboard by copying the YAML snippet below into an **Entities** card. Replace the example entity IDs below with the corresponding entities from your EcoWater device:
 
 ```yaml
 type: entities

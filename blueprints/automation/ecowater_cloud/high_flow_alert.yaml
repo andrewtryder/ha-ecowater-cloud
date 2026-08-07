@@ -37,14 +37,20 @@ blueprint:
           max: 120
           unit_of_measurement: "minutes"
           mode: box
-    notify_target:
-      name: Notification Action
-      description: The notification action/target to send the alert to.
+    notify_device:
+      name: Notification Device
+      description: The notify entity to send the alert to.
       selector:
-        target: {}
+        entity:
+          filter:
+            - domain: notify
+          multiple: false
 
 mode: single
 max_exceeded: silent
+
+variables:
+  duration_minutes: !input duration
 
 trigger:
   - platform: numeric_state
@@ -56,10 +62,11 @@ trigger:
 condition: []
 
 action:
-  - action: notify.notify
-    target: !input notify_target
+  - action: notify.send_message
+    target:
+      entity_id: !input notify_device
     data:
       title: "EcoWater Cloud: High Water Flow Alert"
       message: >-
         High continuous water flow detected on {{ state_attr(trigger.entity_id, 'friendly_name') or 'EcoWater' }}.
-        Current flow is {{ trigger.to_state.state }} gal/min (exceeding {{ trigger.above }} gal/min for over {{ !input duration }} minutes).
+        Current flow is {{ trigger.to_state.state }} gal/min (exceeding {{ trigger.above }} gal/min for over {{ duration_minutes }} minutes).

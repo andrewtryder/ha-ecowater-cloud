@@ -58,8 +58,8 @@ async def test_all_sensors(hass: HomeAssistant, mock_ayla_backend) -> None:
     # Test monthly salt use estimate (lbs)
     state = hass.states.get("sensor.ecowater_softener_monthly_salt_use_estimate")
     assert state is not None
-    # 5.0 lbs / 10.0 days * 30.4375 = 15.2 lbs
-    assert float(state.state) == 15.2
+    # 5.0 lbs / 10.0 days * 30.4375 = 15.21875 lbs
+    assert float(state.state) == 15.21875
 
     # Test source last updated (datetime)
     state = hass.states.get("sensor.ecowater_softener_source_last_updated")
