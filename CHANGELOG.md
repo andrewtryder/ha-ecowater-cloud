@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.5.2...v0.6.0) (2026-08-07)
+
+
+### Features
+
+* refine salt/regen capabilities, telemetry freshness, per-device error isolation, and attribution ([e8f0a13](https://github.com/andrewtryder/ha-ecowater-cloud/commit/e8f0a138df356be3aeff27a1a90dd067a6999589))
+
+
+### Bug Fixes
+
+* resolve final v1.0 translation, nullability, repair text, and abort issues ([878eb67](https://github.com/andrewtryder/ha-ecowater-cloud/commit/878eb67ce15c987b39f1af4bcc9b286e97303d60))
+
 ## [0.5.2](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.5.1...v0.5.2) (2026-08-07)
 
 
