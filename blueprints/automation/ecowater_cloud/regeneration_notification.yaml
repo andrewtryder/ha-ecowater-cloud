@@ -1,0 +1,88 @@
+blueprint:
+  name: EcoWater Cloud - Regeneration Started / Completed
+  description: >
+    Send notifications when your EcoWater softener starts or completes a regeneration cycle.
+  domain: automation
+  author: Andrew Ryder
+  homeassistant:
+    min_version: 2026.3.0
+  input:
+    regenerating_binary_sensor:
+      name: Regenerating Binary Sensor
+      description: The Regenerating binary sensor for your EcoWater device.
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: running
+          multiple: false
+    notify_target:
+      name: Notification Action
+      description: The notification action/target to send the alerts to.
+      selector:
+        target: {}
+    event_selection:
+      name: Trigger Event
+      description: Choose whether to notify on cycle start, cycle completion, or both.
+      default: both
+      selector:
+        select:
+          options:
+            - label: Regeneration Started Only
+              value: started
+            - label: Regeneration Completed Only
+              value: completed
+            - label: Both Started and Completed
+              value: both
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input regenerating_binary_sensor
+    from: "off"
+    to: "on"
+    id: regen_started
+  - platform: state
+    entity_id: !input regenerating_binary_sensor
+    from: "on"
+    to: "off"
+    id: regen_completed
+
+condition:
+  - condition: template
+    value_template: >-
+      {% set choice = selector_choice | default('both') %}
+      {% if choice == 'started' and trigger.id == 'regen_started' %}
+        true
+      {% elif choice == 'completed' and trigger.id == 'regen_completed' %}
+        true
+      {% elif choice == 'both' %}
+        true
+      {% else %}
+        false
+      {% endif %}
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: regen_started
+        sequence:
+          - action: notify.notify
+            target: !input notify_target
+            data:
+              title: "EcoWater Cloud: Regeneration Started"
+              message: >-
+                EcoWater softener {{ state_attr(trigger.entity_id, 'friendly_name') or '' }} has started a regeneration cycle.
+      - conditions:
+          - condition: trigger
+            id: regen_completed
+        sequence:
+          - action: notify.notify
+            target: !input notify_target
+            data:
+              title: "EcoWater Cloud: Regeneration Completed"
+              message: >-
+                EcoWater softener {{ state_attr(trigger.entity_id, 'friendly_name') or '' }} has completed its regeneration cycle.

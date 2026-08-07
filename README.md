@@ -105,6 +105,17 @@ The integration polls the cloud every **30 minutes** by default (configurable in
 
 Water softeners are conservative with telemetry — when no water is flowing, your device may not push data to the cloud for 12–24 hours. This is **normal**. Check the `source_last_updated` diagnostic sensor to see when the cloud last received fresh data from your device. An online state confirms cloud connectivity but does not guarantee that every telemetry value is current.
 
+## Automation Blueprints
+
+Easily import pre-built automation blueprints into Home Assistant to stay alerted on salt levels, flow, telemetry freshness, and regeneration status.
+
+| Blueprint | Description | Import |
+|---|---|---|
+| **Low Salt Notification** | Alert when salt level drops below a target percentage or low-salt alert triggers | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Flow_salt_notification.yaml) |
+| **High Water Flow Alert** | Warn if continuous water flow exceeds a threshold (e.g. 5 GPM) for N minutes | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fhigh_flow_alert.yaml) |
+| **Stale Data Warning** | Alert when EcoWater cloud telemetry has not synced for over 36 hours | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fstale_data_notification.yaml) |
+| **Regeneration Notification** | Notify when a regeneration cycle starts or completes | [![Open your Home Assistant instance and show the blueprint import dialog.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fandrewtryder%2Fha-ecowater-cloud%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fecowater_cloud%2Fregeneration_notification.yaml) |
+
 ## Troubleshooting
 
 1. **Device not responding?** Open the official EcoWater app and confirm the device shows as online.
