@@ -115,6 +115,23 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
             else None
         ),
     ),
+    # --- System Problem Aggregated Alert ---
+    EcoWaterBinarySensorEntityDescription(
+        key="system_problem",
+        translation_key="system_problem",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        is_on_fn=lambda d: bool(
+            (d.descriptor.is_online is False)
+            or (d.freshness.age is not None and d.freshness.age > STALE_DATA_THRESHOLD)
+            or d.low_salt_alert
+            or d.depletion_alert
+            or d.service_reminder_alert
+            or d.error_code_alert
+            or d.excessive_water_use_alert
+            or d.flow_monitor_alert
+        ),
+    ),
 )
 
 

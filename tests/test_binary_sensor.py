@@ -52,6 +52,52 @@ async def test_binary_sensors(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert state is not None
     assert state.state == "off"
 
+    # Test system_problem (should be off when device is online and no alerts are active)
+    state = hass.states.get("binary_sensor.ecowater_softener_system_problem")
+    assert state is not None
+    assert state.state == "off"
+    assert state.attributes["device_class"] == BinarySensorDeviceClass.PROBLEM
+
+
+@pytest.mark.asyncio
+async def test_system_problem_evaluates_true_on_alerts() -> None:
+    """Test that system_problem binary sensor evaluates to True when any alert is active."""
+    from unittest.mock import MagicMock
+
+    from custom_components.ecowater_cloud.binary_sensor import (
+        BINARY_SENSORS,
+        EcoWaterBinarySensor,
+    )
+
+    desc = next(b for b in BINARY_SENSORS if b.key == "system_problem")
+
+    # Healthy device
+    dev = MagicMock()
+    dev.descriptor.backend = "ayla"
+    dev.descriptor.is_online = True
+    dev.freshness.age = None
+    dev.low_salt_alert = False
+    dev.depletion_alert = False
+    dev.service_reminder_alert = False
+    dev.error_code_alert = False
+    dev.excessive_water_use_alert = False
+    dev.flow_monitor_alert = False
+
+    coord = MagicMock()
+    coord.data = {"AC1": dev}
+
+    sensor = EcoWaterBinarySensor(coord, "AC1", desc)
+    assert sensor.is_on is False
+
+    # Low salt alert triggers system_problem
+    dev.low_salt_alert = True
+    assert sensor.is_on is True
+
+    # Offline device triggers system_problem
+    dev.low_salt_alert = False
+    dev.descriptor.is_online = False
+    assert sensor.is_on is True
+
 
 @pytest.mark.asyncio
 async def test_dynamic_binary_sensor_addition(

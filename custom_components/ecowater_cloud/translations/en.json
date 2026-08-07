@@ -290,6 +290,9 @@
       },
       "data_stale": {
         "name": "Data stale"
+      },
+      "system_problem": {
+        "name": "System problem"
       }
     }
   },
