@@ -110,7 +110,11 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         # No capability gate: always add if we have any data from this device.
-        is_on_fn=lambda d: d.freshness.age > STALE_DATA_THRESHOLD,
+        is_on_fn=lambda d: (
+            d.freshness.age > STALE_DATA_THRESHOLD
+            if d.freshness.age is not None
+            else False
+        ),
     ),
 )
 

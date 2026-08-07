@@ -110,6 +110,7 @@ class DataFreshness:
             return None
         return self.received_at - self.newest_data_at
 
+
 @dataclass(frozen=True, slots=True)
 class RegenerationState:
     """Telemetry related to device regeneration/recharge cycles."""

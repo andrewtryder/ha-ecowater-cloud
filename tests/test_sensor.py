@@ -110,6 +110,7 @@ async def test_sensor_missing_capability(
     state = hass.states.get("sensor.ecowater_softener_total_water_used")
     assert state is None
 
+
 @pytest.mark.asyncio
 async def test_water_dashboard_eligibility(
     hass: HomeAssistant, mock_ayla_backend

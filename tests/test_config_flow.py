@@ -310,6 +310,7 @@ async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
             assert res["type"] is FlowResultType.FORM
             assert res["errors"]["base"] == expected_error
 
+
 @pytest.mark.asyncio
 async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> None:
     """Test creating an entry with EU region."""
@@ -415,7 +416,11 @@ async def test_reconfigure_account_mismatch(hass: HomeAssistant) -> None:
 
     entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "old-password", "region": "us"},
+        data={
+            CONF_USERNAME: MOCK_USERNAME,
+            CONF_PASSWORD: "old-password",
+            "region": "us",
+        },
     )
     entry.add_to_hass(hass)
 
@@ -448,7 +453,11 @@ async def test_reconfigure_errors(hass: HomeAssistant) -> None:
 
     entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "old-password", "region": "us"},
+        data={
+            CONF_USERNAME: MOCK_USERNAME,
+            CONF_PASSWORD: "old-password",
+            "region": "us",
+        },
     )
     entry.add_to_hass(hass)
 

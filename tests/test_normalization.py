@@ -206,6 +206,7 @@ def test_missing_property_name():
     normalized = normalize_device(dev, props, received_at)
     assert normalized.water_used_today_gallons is None
 
+
 def test_unmapped_salt_model_logic():
     """Test that only salt devices receive the unmapped salt model flag."""
     dev = {"dsn": "AC0001"}

@@ -141,6 +141,7 @@ class TestEcoWaterDeviceDataEquality:
         s: set[EcoWaterDeviceData] = {snap}
         assert snap in s
 
+
 class TestDataFreshnessAge:
     def test_age_with_timestamp(self) -> None:
         now = datetime.datetime.now(datetime.UTC)

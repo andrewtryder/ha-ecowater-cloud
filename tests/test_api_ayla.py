@@ -159,6 +159,7 @@ async def test_connectivity_error_timeout(hass, aioclient_mock):
     with pytest.raises(AylaConnectivityError, match="Request timed out"):
         await api.async_list_devices()
 
+
 @pytest.mark.asyncio
 async def test_region_url_selection(hass) -> None:
     session = async_get_clientsession(hass)

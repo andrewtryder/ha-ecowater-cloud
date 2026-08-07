@@ -365,7 +365,11 @@ SENSORS: tuple[EcoWaterSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.HOURS,
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda d: d.freshness.age.total_seconds() / 3600,
+        value_fn=lambda d: (
+            d.freshness.age.total_seconds() / 3600
+            if d.freshness.age is not None
+            else None
+        ),
     ),
     EcoWaterSensorEntityDescription(
         key="wifi_signal_strength",

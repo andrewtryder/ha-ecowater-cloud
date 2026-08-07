@@ -82,6 +82,7 @@ async def test_protocol_changed_repair(
     )
     assert issue is None
 
+
 @pytest.mark.asyncio
 async def test_repair_isolation_between_entries(
     hass: HomeAssistant, mock_issue_registry
