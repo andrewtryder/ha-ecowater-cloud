@@ -95,9 +95,7 @@ class AylaApi:
             ) as response:
                 if response.status == 401:
                     should_refresh = (
-                        authenticate
-                        and _retry_auth
-                        and self._refresh_token is not None
+                        authenticate and _retry_auth and self._refresh_token is not None
                     )
                     if not should_refresh:
                         raise AylaAuthenticationError(
@@ -121,9 +119,7 @@ class AylaApi:
                     try:
                         from typing import cast
 
-                        return cast(
-                            "dict[str, Any] | list[Any]", await response.json()
-                        )
+                        return cast("dict[str, Any] | list[Any]", await response.json())
                     except ValueError as ex:
                         raise AylaProtocolError(
                             f"Malformed JSON response: {ex}"
