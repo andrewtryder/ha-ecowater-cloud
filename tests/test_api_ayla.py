@@ -35,6 +35,109 @@ async def test_successful_authentication(hass, aioclient_mock):
     assert api._refresh_token == "mocked_refresh"
 
 
+async def test_expired_access_token_refreshes_and_retries(hass, aioclient_mock):
+    """Test an expired access token is refreshed without requiring HA reauth."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json",
+        json={
+            "access_token": "expired_access",
+            "refresh_token": "refresh_1",
+        },
+        status=200,
+    )
+    aioclient_mock.get(f"{ADS_URL}/apiv1/devices.json", status=401)
+    aioclient_mock.post(
+        f"{USER_URL}/users/refresh_token.json",
+        json={
+            "access_token": "refreshed_access",
+            "refresh_token": "refresh_2",
+        },
+        status=200,
+    )
+    aioclient_mock.get(
+        f"{ADS_URL}/apiv1/devices.json",
+        json=[{"device": {"dsn": "DEV1", "model": "EWS1"}}],
+        status=200,
+    )
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    await api.async_authenticate("test@example.com", "password123")
+
+    devices = await api.async_list_devices()
+
+    assert devices == [{"dsn": "DEV1", "model": "EWS1"}]
+    assert api._access_token == "refreshed_access"
+    assert api._refresh_token == "refresh_2"
+
+
+async def test_refresh_keeps_existing_refresh_token_when_not_rotated(
+    hass, aioclient_mock
+):
+    """Test Ayla refresh responses may omit a replacement refresh token."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json",
+        json={
+            "access_token": "expired_access",
+            "refresh_token": "refresh_1",
+        },
+        status=200,
+    )
+    aioclient_mock.post(
+        f"{USER_URL}/users/refresh_token.json",
+        json={"access_token": "refreshed_access"},
+        status=200,
+    )
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    await api.async_authenticate("test@example.com", "password123")
+    await api._async_refresh_authentication()
+
+    assert api._access_token == "refreshed_access"
+    assert api._refresh_token == "refresh_1"
+
+
+async def test_refresh_failure_propagates_authentication_error(hass, aioclient_mock):
+    """Test a rejected refresh token still triggers the normal HA reauth path."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json",
+        json={
+            "access_token": "expired_access",
+            "refresh_token": "expired_refresh",
+        },
+        status=200,
+    )
+    aioclient_mock.get(f"{ADS_URL}/apiv1/devices.json", status=401)
+    aioclient_mock.post(f"{USER_URL}/users/refresh_token.json", status=401)
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    await api.async_authenticate("test@example.com", "password123")
+
+    with pytest.raises(AylaAuthenticationError):
+        await api.async_list_devices()
+
+
+async def test_401_without_refresh_token_requires_reauthentication(
+    hass, aioclient_mock
+):
+    """Test HTTP 401 remains an auth failure when no refresh token exists."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json",
+        json={"access_token": "expired_access"},
+        status=200,
+    )
+    aioclient_mock.get(f"{ADS_URL}/apiv1/devices.json", status=401)
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    await api.async_authenticate("test@example.com", "password123")
+
+    with pytest.raises(AylaAuthenticationError):
+        await api.async_list_devices()
+
+
 async def test_authentication_failure(hass, aioclient_mock):
     """Test login failure (HTTP 401)."""
     aioclient_mock.post(
