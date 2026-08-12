@@ -53,7 +53,6 @@ class AylaApi:
 
         self._access_token: str | None = None
         self._refresh_token: str | None = None
-        # We don't automatically retry authentication, but we keep state.
 
     @property
     def _auth_headers(self) -> dict[str, str]:
@@ -65,10 +64,22 @@ class AylaApi:
         return {"Authorization": f"auth_token {self._access_token}"}
 
     async def _async_request(
-        self, method: str, url: str, authenticate: bool = True, **kwargs: Any
+        self,
+        method: str,
+        url: str,
+        authenticate: bool = True,
+        *,
+        _retry_auth: bool = True,
+        **kwargs: Any,
     ) -> dict[str, Any] | list[Any]:
-        """Perform an HTTP request and handle Ayla-specific error mapping."""
-        headers = kwargs.pop("headers", {})
+        """Perform an HTTP request and handle Ayla-specific error mapping.
+
+        Authenticated requests transparently refresh the Ayla access token and
+        retry once when the service returns HTTP 401. If refresh is rejected,
+        the authentication error is allowed to propagate so Home Assistant can
+        start its normal reauthentication flow.
+        """
+        headers = dict(kwargs.pop("headers", {}))
         if authenticate:
             headers.update(self._auth_headers)
 
@@ -76,36 +87,43 @@ class AylaApi:
         if "timeout" not in kwargs:
             kwargs["timeout"] = DEFAULT_TIMEOUT
 
+        should_refresh = False
+
         try:
             async with self._session.request(
                 method, url, headers=headers, **kwargs
             ) as response:
                 if response.status == 401:
-                    raise AylaAuthenticationError(
-                        "Authentication rejected by Ayla API (HTTP 401)"
+                    should_refresh = (
+                        authenticate and _retry_auth and self._refresh_token is not None
                     )
-                if response.status == 404:
+                    if not should_refresh:
+                        raise AylaAuthenticationError(
+                            "Authentication rejected by Ayla API (HTTP 401)"
+                        )
+                elif response.status == 404:
                     if url.endswith("sign_in.json"):
                         raise AylaAuthenticationError(
                             "Authentication rejected by Ayla API (HTTP 404)"
                         )
                     raise AylaProtocolError("HTTP error 404: Resource not found")
-
-                if response.status == 429:
+                elif response.status == 429:
                     raise AylaRateLimitError("Ayla API rate limit exceeded")
+                else:
+                    response.raise_for_status()
 
-                response.raise_for_status()
+                    # Some endpoints (like sign_out) might return empty 204 or no JSON
+                    if response.status == 204:
+                        return {}
 
-                # Some endpoints (like sign_out) might return empty 204 or no JSON
-                if response.status == 204:
-                    return {}
+                    try:
+                        from typing import cast
 
-                try:
-                    from typing import cast
-
-                    return cast("dict[str, Any] | list[Any]", await response.json())
-                except ValueError as ex:
-                    raise AylaProtocolError(f"Malformed JSON response: {ex}") from ex
+                        return cast("dict[str, Any] | list[Any]", await response.json())
+                    except ValueError as ex:
+                        raise AylaProtocolError(
+                            f"Malformed JSON response: {ex}"
+                        ) from ex
 
         except ClientResponseError as ex:
             # Catch HTTP errors not handled above
@@ -115,6 +133,20 @@ class AylaApi:
             raise AylaConnectivityError(f"Connection failed: {ex}") from ex
         except TimeoutError as ex:
             raise AylaConnectivityError("Request timed out") from ex
+
+        if should_refresh:
+            _LOGGER.debug("Ayla access token expired; refreshing authentication")
+            await self._async_refresh_authentication()
+            return await self._async_request(
+                method,
+                url,
+                authenticate=authenticate,
+                _retry_auth=False,
+                headers=headers,
+                **kwargs,
+            )
+
+        raise AylaAuthenticationError("Authentication rejected by Ayla API")
 
     async def async_authenticate(self, email: str, password: str) -> None:
         """Authenticate with the Ayla API."""
@@ -143,6 +175,29 @@ class AylaApi:
         self._refresh_token = response.get("refresh_token")
 
         _LOGGER.debug("Successfully authenticated with Ayla API")
+
+    async def _async_refresh_authentication(self) -> None:
+        """Refresh the current Ayla access token."""
+        if not self._refresh_token:
+            raise AylaAuthenticationError("No Ayla refresh token available")
+
+        url = f"{self._user_url}/users/refresh_token.json"
+        payload = {"user": {"refresh_token": self._refresh_token}}
+
+        response = await self._async_request(
+            "POST",
+            url,
+            authenticate=False,
+            _retry_auth=False,
+            json=payload,
+        )
+
+        if not isinstance(response, dict) or "access_token" not in response:
+            raise AylaProtocolError("Invalid authentication refresh response format")
+
+        self._access_token = response["access_token"]
+        self._refresh_token = response.get("refresh_token", self._refresh_token)
+        _LOGGER.debug("Successfully refreshed Ayla API authentication")
 
     async def async_list_devices(self) -> list[dict[str, Any]]:
         """List all devices available to the authenticated account."""
