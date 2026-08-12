@@ -2,6 +2,9 @@
 
 import pytest
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from pytest_homeassistant_custom_component.test_util.aiohttp import (
+    AiohttpClientMockResponse,
+)
 
 from custom_components.ecowater_cloud.backends.ayla.api import AylaApi
 from custom_components.ecowater_cloud.backends.ayla.exceptions import (
@@ -45,18 +48,31 @@ async def test_expired_access_token_refreshes_and_retries(hass, aioclient_mock):
         },
         status=200,
     )
-    aioclient_mock.get(f"{ADS_URL}/apiv1/devices.json", status=401)
+
+    request_count = 0
+
+    async def devices_response(method, url, data):
+        nonlocal request_count
+        request_count += 1
+        if request_count == 1:
+            return AiohttpClientMockResponse(method, url, status=401)
+        return AiohttpClientMockResponse(
+            method,
+            url,
+            json=[{"device": {"dsn": "DEV1", "model": "EWS1"}}],
+            status=200,
+        )
+
+    aioclient_mock.get(
+        f"{ADS_URL}/apiv1/devices.json",
+        side_effect=devices_response,
+    )
     aioclient_mock.post(
         f"{USER_URL}/users/refresh_token.json",
         json={
             "access_token": "refreshed_access",
             "refresh_token": "refresh_2",
         },
-        status=200,
-    )
-    aioclient_mock.get(
-        f"{ADS_URL}/apiv1/devices.json",
-        json=[{"device": {"dsn": "DEV1", "model": "EWS1"}}],
         status=200,
     )
 
@@ -66,6 +82,7 @@ async def test_expired_access_token_refreshes_and_retries(hass, aioclient_mock):
 
     devices = await api.async_list_devices()
 
+    assert request_count == 2
     assert devices == [{"dsn": "DEV1", "model": "EWS1"}]
     assert api._access_token == "refreshed_access"
     assert api._refresh_token == "refresh_2"
