@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.1...v0.7.2) (2026-08-31)
+
+
+### Bug Fixes
+
+* configure dependabot cooldown period ([0add764](https://github.com/andrewtryder/ha-ecowater-cloud/commit/0add764420a1b0c99d19ade87d93e8dc27122e35))
+* configure dependabot cooldown period ([401de18](https://github.com/andrewtryder/ha-ecowater-cloud/commit/401de180005aeb20edcf0603a8385e22a2a814ce))
+
 ## [0.7.1](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.0...v0.7.1) (2026-08-12)
 
 
