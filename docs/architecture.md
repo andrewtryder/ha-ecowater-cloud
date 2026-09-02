@@ -61,7 +61,10 @@ ha-ecowater-cloud/
 Retrieves device list from `https://ads.aylanetworks.com/apiv1/devices.json`.
 Retrieves per-device properties from `https://ads.aylanetworks.com/apiv1/dsns/<dsn>/properties.json`.
 
-Token refresh is handled transparently inside the backend.
+Token refresh is handled transparently inside the backend. If the refresh token
+expires or is rejected, the backend automatically attempts full reauthentication
+using the credentials saved in the config entry before prompting for user
+reauthentication in Home Assistant.
 
 ### `models.py` — Normalized snapshots
 
