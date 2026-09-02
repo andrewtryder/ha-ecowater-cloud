@@ -2,10 +2,14 @@
 
 import datetime
 import logging
-from typing import TYPE_CHECKING, cast
+from collections.abc import Callable, Coroutine
+from typing import TYPE_CHECKING, Any, cast
 
 from custom_components.ecowater_cloud.backends import BackendAdapter
-from custom_components.ecowater_cloud.exceptions import UnsupportedDeviceError
+from custom_components.ecowater_cloud.exceptions import (
+    AuthenticationError,
+    UnsupportedDeviceError,
+)
 from custom_components.ecowater_cloud.models import (
     AccountInfo,
     DeviceDescriptor,
@@ -44,6 +48,17 @@ class AylaBackend(BackendAdapter):
         """Clear the current Ayla session."""
         await self._api.async_clear_authentication()
 
+    async def _async_execute_with_reauth[T](
+        self, func: Callable[[], Coroutine[Any, Any, T]]
+    ) -> T:
+        """Execute an API operation with full reauthentication fallback."""
+        try:
+            return await func()
+        except AuthenticationError:
+            _LOGGER.debug("Ayla session rejected; attempting full reauthentication")
+            await self._api.async_authenticate(self._username, self._password)
+            return await func()
+
     async def async_list_devices(self) -> list[DeviceDescriptor]:
         """Fetch basic descriptors for supported EcoWater devices only.
 
@@ -51,6 +66,9 @@ class AylaBackend(BackendAdapter):
         supported. Unsupported models are silently skipped, matching the
         behaviour of :meth:`async_get_all_device_data`.
         """
+        return await self._async_execute_with_reauth(self._async_list_devices_impl)
+
+    async def _async_list_devices_impl(self) -> list[DeviceDescriptor]:
         raw_devices = await self._api.async_list_devices()
         descriptors = []
         for dev in raw_devices:
@@ -82,6 +100,13 @@ class AylaBackend(BackendAdapter):
         a single device robustly, we first list devices to get the metadata,
         then fetch properties.
         """
+        return await self._async_execute_with_reauth(
+            lambda: self._async_get_device_data_impl(serial_number)
+        )
+
+    async def _async_get_device_data_impl(
+        self, serial_number: str
+    ) -> EcoWaterDeviceData:
         raw_devices = await self._api.async_list_devices()
         target_dev = None
         for dev in raw_devices:
@@ -108,6 +133,11 @@ class AylaBackend(BackendAdapter):
 
     async def async_get_all_device_data(self) -> AccountInfo:
         """Fetch all supported devices and their current telemetry."""
+        return await self._async_execute_with_reauth(
+            self._async_get_all_device_data_impl
+        )
+
+    async def _async_get_all_device_data_impl(self) -> AccountInfo:
         raw_devices = await self._api.async_list_devices()
 
         devices_data = {}

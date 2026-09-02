@@ -76,8 +76,8 @@ class AylaApi:
 
         Authenticated requests transparently refresh the Ayla access token and
         retry once when the service returns HTTP 401. If refresh is rejected,
-        the authentication error is allowed to propagate so Home Assistant can
-        start its normal reauthentication flow.
+        the authentication error is allowed to propagate so the backend layer
+        can perform full reauthentication or trigger Home Assistant reauth.
         """
         headers = dict(kwargs.pop("headers", {}))
         if authenticate:
