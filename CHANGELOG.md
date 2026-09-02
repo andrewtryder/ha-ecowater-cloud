@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.2...v0.7.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* automatically reauthenticate expired Ayla sessions ([abd47e4](https://github.com/andrewtryder/ha-ecowater-cloud/commit/abd47e4777ce5917d11e839bf083edc3e024e701))
+* automatically reauthenticate expired Ayla sessions ([970a473](https://github.com/andrewtryder/ha-ecowater-cloud/commit/970a4736bfb5d3fef84338977492172b72b861af))
+
 ## [0.7.2](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.1...v0.7.2) (2026-08-31)
 
 
