@@ -183,7 +183,14 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
             new_unique_id = f"{BACKEND_AYLA}:{region}:{normalized_email}"
             await self.async_set_unique_id(new_unique_id)
-            self._abort_if_unique_id_configured()
+            # Only abort when a *different* entry already owns this unique id.
+            # Same-region password changes keep the reconfigure entry's unique
+            # id, so _abort_if_unique_id_configured() would falsely abort.
+            existing = self.hass.config_entries.async_entry_for_domain_unique_id(
+                DOMAIN, new_unique_id
+            )
+            if existing is not None and existing.entry_id != reconfigure_entry.entry_id:
+                return self.async_abort(reason="already_configured")
             try:
                 test_data = {
                     CONF_USERNAME: normalized_email,
