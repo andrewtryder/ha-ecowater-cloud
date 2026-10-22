@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.4](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.3...v0.7.4) (2026-10-22)
+
+
+### Bug Fixes
+
+* allow same-region password reconfigure ([#73](https://github.com/andrewtryder/ha-ecowater-cloud/issues/73)) ([caa14a7](https://github.com/andrewtryder/ha-ecowater-cloud/commit/caa14a7c6f24f76d268e7358f72796bdb843ea9d))
+
 ## [0.7.3](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.2...v0.7.3) (2026-09-02)
 
 
