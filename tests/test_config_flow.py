@@ -350,7 +350,7 @@ async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> No
 
 @pytest.mark.asyncio
 async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
-    """Test the reconfigure flow updates the entry."""
+    """Test the reconfigure flow updates the entry when region changes."""
     from homeassistant.config_entries import SOURCE_RECONFIGURE
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -406,6 +406,67 @@ async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert entry.data["password"] == "new-password"
     assert entry.data["region"] == "eu"
     assert entry.unique_id == f"ayla:eu:{MOCK_USERNAME}"
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_same_region_password(
+    hass: HomeAssistant, mock_ayla_backend
+) -> None:
+    """Test reconfigure updates password when region is unchanged."""
+    from homeassistant.config_entries import SOURCE_RECONFIGURE
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    entry = MockConfigEntry(
+        version=2,
+        minor_version=3,
+        domain=DOMAIN,
+        title="EcoWater Cloud",
+        data={
+            "backend": BACKEND_AYLA,
+            "username": MOCK_USERNAME,
+            "password": MOCK_PASSWORD,
+            "region": "us",
+        },
+        source="user",
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": entry.entry_id,
+        },
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+
+    with (
+        patch(
+            "custom_components.ecowater_cloud.config_flow.AylaBackend",
+            return_value=mock_ayla_backend,
+        ),
+        patch(
+            "custom_components.ecowater_cloud.async_setup_entry",
+            return_value=True,
+        ),
+    ):
+        result2 = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {
+                "username": MOCK_USERNAME,
+                "password": "new-password",
+                "region": "us",
+            },
+        )
+        await hass.async_block_till_done()
+
+    assert result2["type"] is FlowResultType.ABORT
+    assert result2["reason"] == "reconfigure_successful"
+    assert entry.data["password"] == "new-password"
+    assert entry.data["region"] == "us"
+    assert entry.unique_id == f"ayla:us:{MOCK_USERNAME}"
 
 
 @pytest.mark.asyncio
