@@ -90,15 +90,20 @@ ha-ecowater-cloud/
 │       ├── coordinator.py         # AccountCoordinator (one per account)
 │       ├── config_flow.py         # UI config flow + reauth flow
 │       ├── diagnostics.py         # Diagnostics download handler
-│       ├── strings.json           # UI string keys
+│       ├── repairs.py             # HA Repairs issue tracking
 │       ├── translations/
 │       │   └── en.json            # English UI strings
+│       ├── entity.py              # Base entity
 │       ├── sensor.py              # Sensor entity platform
 │       ├── binary_sensor.py       # Binary sensor entity platform
 │       └── backends/
 │           ├── __init__.py        # BackendAdapter abstract protocol
 │           └── ayla/
-│               ├── __init__.py    # AylaBackend (async Ayla HTTP client)
+│               ├── __init__.py    # Re-exports AylaBackend
+│               ├── api.py         # Async Ayla HTTP client (AylaApi)
+│               ├── backend.py     # AylaBackend (BackendAdapter implementation)
+│               ├── models.py      # Raw Ayla payload types
+│               ├── normalization.py # Raw Ayla payloads → EcoWaterDeviceData
 │               └── exceptions.py  # Ayla-specific exceptions → base taxonomy
 ├── tests/
 ├── scripts/
@@ -141,7 +146,7 @@ EcoWaterError                  # base
 ├── ConnectivityError          # network, timeout, DNS
 ├── RateLimitError             # 429
 ├── ProtocolError              # unexpected response shape
-├── UnsupportedDeviceError     # device not mappable to DeviceSnapshot
+├── UnsupportedDeviceError     # device not mappable to EcoWaterDeviceData
 └── CommandError               # write rejected by cloud
 ```
 
@@ -149,23 +154,26 @@ Callers catch **specific** exceptions. `ProtocolError` wraps the raw message wit
 
 #### AccountCoordinator (`coordinator.py`)
 
-`AccountCoordinator(DataUpdateCoordinator[AccountInfo])` is instantiated once per config entry (one per account). Key behaviors:
+`AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]])` is instantiated once per config entry (one per account). Its `data` attribute maps serial number to device data. Key behaviors:
 
 - `_async_update_data` calls the backend adapter.
-- `AuthenticationError` → raises `ConfigEntryAuthFailed` (triggers HA reauth flow).
-- `ConnectivityError` → raises `UpdateFailed`.
-- `UnsupportedDeviceError` for a single device → logs a warning and continues with remaining devices.
+- `AuthenticationError` or `ReauthenticationRequired` → raises `ConfigEntryAuthFailed` (triggers HA reauth flow).
+- `ConnectivityError`, `RateLimitError`, or `ProtocolError` → raises `UpdateFailed`.
+- The failure type is recorded in `last_error_category`, which `repairs.py` reads.
+
+`UnsupportedDeviceError` for a single device is handled in the backend, which logs a warning and continues with the remaining devices.
 
 #### Config Flow (`config_flow.py`)
 
-Schema version 1:
+Schema version 2.3:
 
 | Step | Trigger | Action |
 |------|---------|--------|
-| `user` | New setup | Collect username + password; create entry |
+| `user` | New setup | Collect username + password + region; create entry |
 | `reauth_confirm` | `async_step_reauth` | Collect new password; update entry |
+| `reconfigure` | `async_step_reconfigure` | Update password or region; a different email aborts with `account_mismatch` |
 
-Credentials are stored in `entry.data` (encrypted by HA).
+The options flow sets the polling interval. Credentials are stored in `entry.data` (encrypted by HA).
 
 #### Entry-Point (`__init__.py`)
 
@@ -197,11 +205,12 @@ f"{backend}_{serial_number}_{entity_key}".lower()
 
 No email, password, token, or mutable display name is ever used in an identifier.
 
-### Config Entry Schema (version 1)
+### Config Entry Schema (version 2.3)
 
 ```python
 {
     "backend": "ayla",  # str — backend identifier
+    "region": "us",  # str — "us" or "eu"
     "username": "<email>",  # str — stored encrypted by HA
     "password": "<password>",  # str — stored encrypted by HA
 }
@@ -215,12 +224,16 @@ The old integration attempted a "force refresh" by posting to the `get_frequent_
 
 ### Backend Extensibility
 
-Adding a new backend (e.g. `hydrolink`) requires:
+HydroLink is out of scope for this integration; HydroLink users should use [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink).
 
-1. `backends/hydrolink/__init__.py` implementing `BackendAdapter`.
-2. A new value `"hydrolink"` in `SUPPORTED_BACKENDS`.
-3. `async_migrate_entry` handling any config-entry schema changes.
-4. **No changes** to `coordinator.py`, `models.py`, or entities.
+Adding any other backend requires:
+
+1. A `backends/<name>/` package implementing `BackendAdapter`.
+2. A new value in `SUPPORTED_BACKENDS`.
+3. Backend selection in `__init__.py` and `config_flow.py`, which both use Ayla directly today.
+4. `async_migrate_entry` handling any config-entry schema changes.
+
+`coordinator.py`, `models.py`, and entities should not need backend-specific changes.
 
 ### Protocol Notes & Open Questions
 
