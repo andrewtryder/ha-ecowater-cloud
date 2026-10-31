@@ -25,6 +25,9 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 
+# EWS: softeners. SHERO: HERO reverse osmosis monitors.
+SUPPORTED_OEM_MODEL_PREFIXES: tuple[str, ...] = ("EWS", "SHERO")
+
 
 class AylaBackend(BackendAdapter):
     """Async client for the Ayla IoT Platform."""
@@ -62,8 +65,9 @@ class AylaBackend(BackendAdapter):
     async def async_list_devices(self) -> list[DeviceDescriptor]:
         """Fetch basic descriptors for supported EcoWater devices only.
 
-        Only devices whose OEM model starts with ``EWS`` are considered
-        supported. Unsupported models are silently skipped, matching the
+        Only devices whose OEM model starts with a prefix in
+        ``SUPPORTED_OEM_MODEL_PREFIXES`` are considered supported.
+        Unsupported models are silently skipped, matching the
         behaviour of :meth:`async_get_all_device_data`.
         """
         return await self._async_execute_with_reauth(self._async_list_devices_impl)
@@ -73,7 +77,7 @@ class AylaBackend(BackendAdapter):
         descriptors = []
         for dev in raw_devices:
             oem_model = dev.get("oem_model", "")
-            if not oem_model.startswith("EWS"):
+            if not oem_model.startswith(SUPPORTED_OEM_MODEL_PREFIXES):
                 _LOGGER.debug(
                     "async_list_devices: skipping unsupported model '%s'", oem_model
                 )
@@ -151,7 +155,7 @@ class AylaBackend(BackendAdapter):
 
             # Filter for EcoWater devices only, as per reference repo logic
             oem_model = dev.get("oem_model", "")
-            if not oem_model.startswith("EWS"):
+            if not oem_model.startswith(SUPPORTED_OEM_MODEL_PREFIXES):
                 _LOGGER.warning("Ignoring unsupported device model: %s", oem_model)
                 continue
 

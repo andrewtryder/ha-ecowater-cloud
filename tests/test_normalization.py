@@ -13,12 +13,91 @@ from custom_components.ecowater_cloud.backends.ayla.models import (
 from custom_components.ecowater_cloud.backends.ayla.normalization import (
     normalize_device,
 )
+from custom_components.ecowater_cloud.models import EcoWaterDeviceData
 
 
 def load_fixture(name: str) -> dict:
     """Load a JSON fixture."""
     fixture_path = Path(__file__).parent / "fixtures" / "ayla" / name
     return json.loads(fixture_path.read_text())
+
+
+def load_ro_device() -> EcoWaterDeviceData:
+    """Normalize the synthetic reverse osmosis fixture."""
+    data = load_fixture("synthetic_ro_device.json")
+    props: list[AylaPropertyData] = [p["property"] for p in data["properties"]]
+    received_at = datetime.datetime(2026, 10, 30, 20, 0, tzinfo=datetime.UTC)
+    return normalize_device(data["device"], props, received_at)
+
+
+def test_normalize_ro_device():
+    """Test normalization of a reverse osmosis monitor."""
+    normalized = load_ro_device()
+
+    assert normalized.descriptor.oem_model == "SHERO"
+    assert normalized.descriptor.model == "HERO-385Plus"
+    assert normalized.descriptor.firmware_version == "SH-1.1"
+    assert normalized.descriptor.reports_intermittently is True
+    # "Offline" between check-ins is normal, so it must not read as a fault.
+    assert normalized.descriptor.is_online is None
+
+    assert normalized.water_used_daily_avg_gallons == 1.0
+    assert normalized.water_dispensed_gallons == 41.0
+    assert normalized.filter_life_remaining_days == 141
+    assert normalized.tds_removal_percent == 95.0
+    assert normalized.supply_voltage_volts == 5.1
+    assert normalized.wifi_signal_bars == 2
+    assert normalized.days_in_operation == 43
+    assert normalized.replace_filter_alert is True
+    assert normalized.replace_membrane_alert is False
+    assert normalized.replace_batteries_alert is False
+    assert normalized.no_ro_system_found_alert is False
+
+
+def test_normalize_ro_device_capabilities():
+    """Test RO capabilities are present and softener capabilities are absent."""
+    caps = load_ro_device().capabilities
+
+    assert caps.has_water_usage_daily_avg
+    assert caps.has_water_dispensed
+    assert caps.has_filter_life_remaining
+    assert caps.has_tds_removal
+    assert caps.has_supply_voltage
+    assert caps.has_wifi_signal_bars
+    assert caps.has_replace_filter_alert
+    assert caps.has_replace_membrane_alert
+    assert caps.has_replace_batteries_alert
+    assert caps.has_no_ro_system_found_alert
+
+    assert not caps.has_salt_level
+    assert not caps.has_regeneration_status
+    assert not caps.has_unmapped_salt_model
+
+
+def test_normalize_ro_device_freshness_uses_ro_telemetry():
+    """Test the RO check-in time drives telemetry freshness."""
+    freshness = load_ro_device().freshness
+
+    assert freshness.telemetry_newest_data_at == datetime.datetime(
+        2026, 10, 30, 7, 10, 27, tzinfo=datetime.UTC
+    )
+    assert freshness.oldest_data_at == datetime.datetime(
+        2026, 9, 18, 7, 10, 16, tzinfo=datetime.UTC
+    )
+
+
+def test_softener_keeps_connection_status():
+    """Test devices without product_class RO still report online status."""
+    data = load_fixture("synthetic_device.json")
+    props: list[AylaPropertyData] = [p["property"] for p in data["properties"]]
+    received_at = datetime.datetime(2026, 8, 5, 12, 10, tzinfo=datetime.UTC)
+
+    normalized = normalize_device(
+        {**data["device"], "connection_status": "Offline"}, props, received_at
+    )
+
+    assert normalized.descriptor.reports_intermittently is False
+    assert normalized.descriptor.is_online is False
 
 
 def test_normalize_synthetic_device():

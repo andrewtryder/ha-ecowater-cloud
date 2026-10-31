@@ -82,6 +82,10 @@ async def test_system_problem_evaluates_true_on_alerts() -> None:
     dev.error_code_alert = False
     dev.excessive_water_use_alert = False
     dev.flow_monitor_alert = False
+    dev.replace_filter_alert = False
+    dev.replace_membrane_alert = False
+    dev.replace_batteries_alert = False
+    dev.no_ro_system_found_alert = False
 
     coord = MagicMock()
     coord.data = {"AC1": dev}
@@ -107,7 +111,63 @@ async def test_system_problem_evaluates_true_on_alerts() -> None:
     dev.error_code_alert = None
     dev.excessive_water_use_alert = None
     dev.flow_monitor_alert = None
+    dev.replace_filter_alert = None
+    dev.replace_membrane_alert = None
+    dev.replace_batteries_alert = None
+    dev.no_ro_system_found_alert = None
     assert sensor.is_on is None
+
+
+@pytest.mark.parametrize(
+    ("alert", "value", "expected"),
+    [
+        ("replace_filter_alert", True, True),
+        ("replace_membrane_alert", True, True),
+        ("replace_batteries_alert", True, True),
+        ("no_ro_system_found_alert", True, True),
+        ("replace_filter_alert", False, False),
+    ],
+)
+def test_system_problem_reflects_ro_alerts(alert, value, expected) -> None:
+    """Test RO alerts feed the aggregate system problem sensor."""
+    from dataclasses import replace
+
+    from custom_components.ecowater_cloud.binary_sensor import (
+        _evaluate_system_problem,
+    )
+    from tests.test_normalization import load_ro_device
+
+    healthy = replace(
+        load_ro_device(),
+        replace_filter_alert=False,
+        replace_membrane_alert=False,
+        replace_batteries_alert=False,
+        no_ro_system_found_alert=False,
+    )
+
+    assert _evaluate_system_problem(replace(healthy, **{alert: value})) is expected
+
+
+@pytest.mark.parametrize(
+    ("hours", "expected"),
+    [(30, False), (47, False), (49, True)],
+)
+def test_intermittent_device_stale_threshold(hours, expected) -> None:
+    """Test a daily check-in device is not stale until it misses a check-in."""
+    import datetime
+    from dataclasses import replace
+
+    from custom_components.ecowater_cloud.binary_sensor import _is_stale
+    from tests.test_normalization import load_ro_device
+
+    device = load_ro_device()
+    newest = device.freshness.received_at - datetime.timedelta(hours=hours)
+    device = replace(
+        device,
+        freshness=replace(device.freshness, telemetry_newest_data_at=newest),
+    )
+
+    assert _is_stale(device) is expected
 
 
 @pytest.mark.asyncio

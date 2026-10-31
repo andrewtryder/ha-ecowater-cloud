@@ -56,6 +56,23 @@ async def test_ayla_backend_clear_authentication(mock_ayla_api: MagicMock) -> No
 
 
 @pytest.mark.asyncio
+async def test_ayla_backend_lists_reverse_osmosis_devices(
+    mock_ayla_api: MagicMock,
+) -> None:
+    mock_ayla_api.async_list_devices.return_value = [
+        {"dsn": "AC0002", "oem_model": "SHERO", "product_class": "RO"},
+        {"dsn": "IGNORE_ME", "oem_model": "OTHER_BRAND"},
+    ]
+    backend = AylaBackend(MagicMock(), "user", "pass")
+
+    devices = await backend.async_list_devices()
+    account = await backend.async_get_all_device_data()
+
+    assert [device.serial_number for device in devices] == ["AC0002"]
+    assert list(account.devices) == ["AC0002"]
+
+
+@pytest.mark.asyncio
 async def test_ayla_backend_list_devices(mock_ayla_api: MagicMock) -> None:
     backend = AylaBackend(MagicMock(), "user", "pass")
     devices = await backend.async_list_devices()

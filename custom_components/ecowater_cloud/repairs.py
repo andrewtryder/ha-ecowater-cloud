@@ -18,7 +18,11 @@ from homeassistant.helpers.issue_registry import (
     async_delete_issue,
 )
 
-from .const import DOMAIN, STALE_DATA_REPAIR_THRESHOLD
+from .const import (
+    DOMAIN,
+    INTERMITTENT_STALE_DATA_REPAIR_THRESHOLD,
+    STALE_DATA_REPAIR_THRESHOLD,
+)
 from .coordinator import CoordinatorErrorCategory
 
 if TYPE_CHECKING:
@@ -166,10 +170,12 @@ def _check_stale_data(
 
     stale_devices = []
     for d in coordinator.data.values():
-        if (
-            d.freshness.age is not None
-            and d.freshness.age > STALE_DATA_REPAIR_THRESHOLD
-        ):
+        threshold = (
+            INTERMITTENT_STALE_DATA_REPAIR_THRESHOLD
+            if d.descriptor.reports_intermittently
+            else STALE_DATA_REPAIR_THRESHOLD
+        )
+        if d.freshness.age is not None and d.freshness.age > threshold:
             age_hours = int(d.freshness.age.total_seconds() / 3600)
             stale_devices.append(f"{d.descriptor.name} ({age_hours}h ago)")
 
