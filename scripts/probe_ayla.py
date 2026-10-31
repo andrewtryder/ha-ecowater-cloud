@@ -47,6 +47,7 @@ _SENSITIVE_KEYS: frozenset[str] = frozenset(
         "zip",
         "lat",
         "lng",
+        "locality",
         "ssid",
         "wifi",
         "auth",
@@ -69,6 +70,7 @@ _SENSITIVE_PROPERTY_NAMES: frozenset[str] = frozenset(
         "wifi_ssid",
         "wifi_password",
         "wifi_bssid",
+        "connection_details",
         "lan_ip",
         "wan_ip",
         "gateway",
@@ -174,6 +176,9 @@ def redact_data(
         return data
 
     else:
+        # Ayla's numeric device "key" is an account-linked identifier.
+        if _parent_key == "key" and isinstance(data, int):
+            return "***REDACTED***"
         return data
 
 
