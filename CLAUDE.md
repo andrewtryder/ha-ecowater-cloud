@@ -25,7 +25,13 @@ uv run pytest tests/test_version.py::test_versions_match_and_are_stable -v
 uv run pytest --cov=custom_components/ecowater_cloud --cov-branch --cov-report=term-missing --cov-fail-under=90 tests/
 ```
 
-Pytest runs with `filterwarnings = error` and `asyncio_mode = auto`, so any new warning fails the suite. Hassfest and HACS validation run only in CI.
+Pytest runs with `filterwarnings = error` and `asyncio_mode = auto`, so any new warning fails the suite. HACS validation runs only in CI. Hassfest runs in CI or from the host with Docker; the image is amd64-only, so Apple Silicon needs the `--platform` flag:
+
+```bash
+docker run --rm --platform linux/amd64 -v "$PWD/custom_components:/github/workspace/custom_components:ro" ghcr.io/home-assistant/hassfest
+```
+
+`./script/develop` starts a test Home Assistant instance on port 8123, loading `custom_components/` from the repository and configuration from `config/`. The VS Code **Home Assistant** launch configuration does the same under the debugger, and `./script/stop` stops either. `config/.storage/` holds real credentials in plain text and is gitignored, along with everything else in `config/` except `configuration.yaml`.
 
 `scripts/probe_ayla.py` hits the live Ayla API using `ECOWATER_USERNAME` / `ECOWATER_PASSWORD` and writes a redacted fixture. Live captures belong in `.private/`, which is gitignored.
 

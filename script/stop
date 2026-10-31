@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Stop the local Home Assistant instance, whether it was started by
+# script/develop or by the VS Code debugger, and wait for it to exit.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+pattern="(hass|homeassistant) --config $PWD/config"
+
+pkill -f "$pattern" || exit 0
+
+while pgrep -f "$pattern" > /dev/null; do
+    sleep 1
+done

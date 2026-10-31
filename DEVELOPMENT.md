@@ -32,6 +32,24 @@ This repository uses a **devcontainer** and **[uv](https://docs.astral.sh/uv/)**
 3. Install uv and actionlint (version 1.7.12, available from the [actionlint releases](https://github.com/rhysd/actionlint/releases)), and put both on PATH.
 4. Install locked development dependencies with `uv sync --locked --extra dev`. Run tools with `uv run --locked --extra dev`. The validation script requires actionlint and fails if it is missing.
 
+### Test Home Assistant Instance
+
+To try the integration in a real Home Assistant instance, run this in the devcontainer, or use the **Run Home Assistant** VS Code task:
+
+```bash
+./script/develop
+```
+
+Then open <http://localhost:8123>, finish onboarding, and add **EcoWater Cloud** under **Settings → Devices & Services**. Restart the script to pick up code changes.
+
+To debug, press **F5** to start the **Home Assistant** launch configuration, which stops any running instance first. Breakpoints in `custom_components/` work without further setup. `./script/stop` stops an instance from the terminal.
+
+`config/configuration.yaml` is the only tracked file in `config/`. Everything else is local state, including `.storage/`, which holds your EcoWater credentials in plain text. To start over, run `git clean -fdX config`.
+
+Home Assistant installs extra packages such as the frontend into the venv on first start. `uv sync` removes them, and Home Assistant reinstalls them on the next start. `FFmpeg fails` and `Error loading libturbojpeg` errors in the log are harmless; the test configuration uses nothing that needs them.
+
+If <http://localhost:8123> hangs on loading, check that `./script/develop` is running. VS Code forwards the port even when nothing is listening behind it.
+
 ## Code Quality
 
 The portfolio standard validation interface executes the entire local test, linting, typing, and hygiene contract:
