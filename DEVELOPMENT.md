@@ -29,7 +29,8 @@ This repository uses a **devcontainer** and **[uv](https://docs.astral.sh/uv/)**
 
 1. Open the repository in Visual Studio Code.
 2. When prompted, select **Reopen in Container**.
-3. Dependencies are automatically managed. Run commands via `uv run`.
+3. Install uv and actionlint (version 1.7.12, available from the [actionlint releases](https://github.com/rhysd/actionlint/releases)), and put both on PATH.
+4. Install locked development dependencies with `uv sync --locked --extra dev`. Run tools with `uv run --locked --extra dev`. The validation script requires actionlint and fails if it is missing.
 
 ## Code Quality
 
@@ -42,16 +43,16 @@ The portfolio standard validation interface executes the entire local test, lint
 Pre-commit git hooks can be installed via:
 
 ```bash
-uv run pre-commit install
+uv run --locked --extra dev pre-commit install
 ```
 
 Before submitting any PR, all of these must pass:
 
 ```bash
-uv run ruff check .
-uv run ruff format --check .
-uv run mypy custom_components/ecowater_cloud
-uv run pytest tests/ -v --tb=short
+uv run --locked --extra dev ruff check .
+uv run --locked --extra dev ruff format --check .
+uv run --locked --extra dev mypy custom_components/ecowater_cloud
+uv run --locked --extra dev pytest tests/ -v --tb=short
 ```
 
 The minimum component branch coverage requirement is 90% (tests currently achieve >93%).
@@ -60,13 +61,13 @@ The minimum component branch coverage requirement is 90% (tests currently achiev
 
 ```bash
 # Full test suite with verbose output
-uv run pytest tests/ -v --tb=short
+uv run --locked --extra dev pytest tests/ -v --tb=short
 
 # Single test file
-uv run pytest tests/test_config_flow.py -v
+uv run --locked --extra dev pytest tests/test_config_flow.py -v
 
 # With coverage report
-uv run pytest tests/ --cov=custom_components/ecowater_cloud --cov-report=term-missing
+uv run --locked --extra dev pytest tests/ --cov=custom_components/ecowater_cloud --cov-report=term-missing
 ```
 
 ---
