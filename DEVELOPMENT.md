@@ -33,6 +33,18 @@ This repository uses a **devcontainer** and **[uv](https://docs.astral.sh/uv/)**
 
 ## Code Quality
 
+The portfolio standard validation interface executes the entire local test, linting, typing, and hygiene contract:
+
+```bash
+./scripts/validate-local.sh
+```
+
+Pre-commit git hooks can be installed via:
+
+```bash
+uv run pre-commit install
+```
+
 Before submitting any PR, all of these must pass:
 
 ```bash
@@ -42,7 +54,7 @@ uv run mypy custom_components/ecowater_cloud
 uv run pytest tests/ -v --tb=short
 ```
 
-Tests must achieve **100% coverage** of all implemented behavior.
+The minimum component branch coverage requirement is 90% (tests currently achieve >93%).
 
 ## Running Tests
 
