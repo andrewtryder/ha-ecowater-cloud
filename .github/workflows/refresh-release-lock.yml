@@ -1,0 +1,27 @@
+name: Refresh release lock
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  refresh-release-lock:
+    if: startsWith(github.ref_name, 'release-please--')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: uv lock
+      - name: Commit refreshed lockfile
+        run: |
+          if git diff --quiet -- uv.lock; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "chore: refresh release lock"
+          git push
