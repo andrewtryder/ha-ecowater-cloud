@@ -10,7 +10,10 @@ See the [Development Guide](DEVELOPMENT.md) for environment setup, architecture 
 
 1. All commits must follow [Conventional Commits](https://www.conventionalcommits.org/).
 2. Keep PRs focused on a single feature or bug fix.
-3. Ensure all checks pass before submitting (see [Code Quality](DEVELOPMENT.md#code-quality)).
+3. Ensure all checks pass before submitting (see [Code Quality](DEVELOPMENT.md#code-quality)):
+   ```bash
+   ./scripts/validate-local.sh
+   ```
 4. If you are adding support for a new model or new capabilities, include a sanitized fixture from `scripts/probe_ayla.py` as proof.
 
 ## Submitting Device Fixtures
