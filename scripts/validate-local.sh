@@ -61,7 +61,8 @@ echo "==> [6/8] Running actionlint workflow validation"
 actionlint .github/workflows/*.yml
 
 echo "==> [7/8] Running Python test suite with branch coverage (>=90% gate)"
-uv run --locked --extra dev pytest --cov=custom_components/ecowater_cloud --cov-branch --cov-report=term-missing --cov-fail-under=90 tests/
+uv run --locked --extra dev pytest --cov=custom_components/ecowater_cloud --cov-branch --cov-report=term-missing --cov-report=json:"$snapshot_dir/coverage.json" --cov-fail-under=90 tests/
+uv run --locked --extra dev python -c 'import json, sys; t = json.load(open(sys.argv[1]))["totals"]; n = t["num_statements"]; c = t["covered_lines"]; print(f"Statement coverage: {c}/{n}"); assert n and c * 100 >= n * 90, "Statement coverage must be at least 90%"' "$snapshot_dir/coverage.json"
 
 echo "==> [8/8] Checking for changes made by validation"
 check_changes
