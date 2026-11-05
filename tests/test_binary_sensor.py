@@ -180,3 +180,24 @@ async def test_data_stale_binary_sensor_unknown_freshness() -> None:
 
     sensor = EcoWaterBinarySensor(coord, "AC1", data_stale_desc)
     assert sensor.is_on is None
+
+
+def test_binary_sensor_device_class_compatibility() -> None:
+    """Test BinarySensorDeviceClass imports and enum values across HA versions."""
+    from custom_components.ecowater_cloud.binary_sensor import (
+        BINARY_SENSORS,
+        BinarySensorDeviceClass,
+    )
+
+    assert BinarySensorDeviceClass.CONNECTIVITY == "connectivity"
+    assert BinarySensorDeviceClass.PROBLEM == "problem"
+    assert BinarySensorDeviceClass.RUNNING == "running"
+
+    # Verify device_class assignment across all entity descriptions
+    device_classes = {b.key: b.device_class for b in BINARY_SENSORS}
+    assert (
+        device_classes["device_reported_online"] == BinarySensorDeviceClass.CONNECTIVITY
+    )
+    assert device_classes["system_problem"] == BinarySensorDeviceClass.PROBLEM
+    assert device_classes["regenerating"] == BinarySensorDeviceClass.RUNNING
+    assert device_classes["recharge_enabled"] is None
