@@ -263,3 +263,52 @@ def test_model_104703_normalization():
     assert normalized.capabilities.has_salt_level is True
     assert normalized.capabilities.has_salt_level_percentage is True
     assert normalized.capabilities.has_unmapped_salt_model is False
+
+
+def test_model_104705_normalization():
+    """Test normalization of live-tested EWS3500 model_id 104705."""
+    dev: AylaDeviceData = {
+        "dsn": "AC000W000999998",
+        "oem_model": "EWS3500",
+        "product_name": "EWS3500",
+    }
+    props: list[AylaPropertyData] = [
+        {"name": "model_id", "value": "104705", "type": "string"},
+        {"name": "model_description", "value": "EWS3500", "type": "string"},
+        {"name": "salt_level_tenths", "value": 40, "type": "integer"},
+    ]
+    received_at = datetime.datetime(2026, 11, 5, 12, 0, tzinfo=datetime.UTC)
+
+    normalized = normalize_device(dev, props, received_at)
+
+    assert normalized.descriptor.model_id == "104705"
+    assert normalized.descriptor.model == "EWS3500"
+    assert normalized.descriptor.oem_model == "EWS3500"
+    assert normalized.salt_level_raw == 40
+    assert normalized.salt_level_percent == pytest.approx(50.0)
+    assert normalized.capabilities.has_salt_level is True
+    assert normalized.capabilities.has_salt_level_percentage is True
+    assert normalized.capabilities.has_unmapped_salt_model is False
+
+
+def test_restored_model_50_tenths_max_normalization():
+    """Test normalization of restored model with 50-tenths maximum (e.g. 104704)."""
+    dev: AylaDeviceData = {
+        "dsn": "AC000W000999997",
+        "oem_model": "EWS Compact",
+        "product_name": "EWS Compact",
+    }
+    props: list[AylaPropertyData] = [
+        {"name": "model_id", "value": "104704", "type": "string"},
+        {"name": "salt_level_tenths", "value": 25, "type": "integer"},
+    ]
+    received_at = datetime.datetime(2026, 11, 5, 12, 0, tzinfo=datetime.UTC)
+
+    normalized = normalize_device(dev, props, received_at)
+
+    assert normalized.descriptor.model_id == "104704"
+    assert normalized.salt_level_raw == 25
+    assert normalized.salt_level_percent == pytest.approx(50.0)
+    assert normalized.capabilities.has_salt_level is True
+    assert normalized.capabilities.has_salt_level_percentage is True
+    assert normalized.capabilities.has_unmapped_salt_model is False
