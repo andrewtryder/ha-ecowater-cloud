@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Mapping
-from typing import Any, cast
+from typing import Any
 
 import voluptuous as vol
 from homeassistant.config_entries import (
@@ -76,6 +76,19 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     return {"title": "EcoWater Cloud"}
 
 
+def _as_form_schema(schema: vol.Schema) -> Any:
+    """Prepare a Voluptuous schema for async_show_form data_schema.
+
+    Home Assistant 2026.8 annotated data_schema as voluptuous.Schema | None, while
+    Home Assistant 2026.10+ annotates it as probatio.schema.Schema | None.
+    At runtime, Home Assistant 2026.10+ transparently supports Voluptuous schemas
+    via probatio's compatibility layer. Restricting the boundary conversion here
+    ensures strict type verification of the schema definition itself while satisfying
+    the differing async_show_form parameter types across Home Assistant versions.
+    """
+    return schema
+
+
 class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle the EcoWater Cloud config flow."""
 
@@ -117,7 +130,9 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title=info["title"], data=data)
 
         return self.async_show_form(
-            step_id="user", data_schema=cast(Any, STEP_USER_DATA_SCHEMA), errors=errors
+            step_id="user",
+            data_schema=_as_form_schema(STEP_USER_DATA_SCHEMA),
+            errors=errors,
         )
 
     async def async_step_reauth(
@@ -161,7 +176,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=cast(Any, vol.Schema({vol.Required(CONF_PASSWORD): str})),
+            data_schema=_as_form_schema(vol.Schema({vol.Required(CONF_PASSWORD): str})),
             errors=errors,
             description_placeholders={"username": reauth_entry.data[CONF_USERNAME]},
         )
@@ -240,7 +255,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=cast(Any, schema),
+            data_schema=_as_form_schema(schema),
             errors=errors,
         )
 
@@ -277,7 +292,7 @@ class EcoWaterCloudOptionsFlow(OptionsFlowWithReload):
             }
         )
 
-        return self.async_show_form(step_id="init", data_schema=cast(Any, schema))
+        return self.async_show_form(step_id="init", data_schema=_as_form_schema(schema))
 
 
 class NoDevicesError(Exception):

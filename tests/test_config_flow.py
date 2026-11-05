@@ -589,3 +589,36 @@ async def test_reconfigure_duplicate(hass: HomeAssistant, mock_ayla_backend) -> 
 
     assert result2["type"] is FlowResultType.ABORT
     assert result2["reason"] == "already_configured"
+
+
+def test_schema_compatibility_and_validation() -> None:
+    """Test _as_form_schema helper and schema validation semantics."""
+    import voluptuous as vol
+
+    from custom_components.ecowater_cloud.config_flow import (
+        STEP_USER_DATA_SCHEMA,
+        _as_form_schema,
+    )
+
+    # Verify _as_form_schema returns the identical schema object
+    schema = vol.Schema({vol.Required("test"): str})
+    wrapped = _as_form_schema(schema)
+    assert wrapped is schema
+    assert wrapped({"test": "value"}) == {"test": "value"}
+    with pytest.raises(vol.Invalid):
+        wrapped({"test": 123})
+
+    # Verify STEP_USER_DATA_SCHEMA accepts valid and rejects invalid inputs
+    user_schema = _as_form_schema(STEP_USER_DATA_SCHEMA)
+    valid_data = user_schema(
+        {
+            CONF_USERNAME: "user@example.com",
+            CONF_PASSWORD: "secret-password",
+            "region": "us",
+        }
+    )
+    assert valid_data[CONF_USERNAME] == "user@example.com"
+    assert valid_data["region"] == "us"
+
+    with pytest.raises(vol.Invalid):
+        user_schema({CONF_USERNAME: "user@example.com"})
