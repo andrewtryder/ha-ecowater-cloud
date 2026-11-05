@@ -2,26 +2,67 @@ name: Refresh release lock
 
 on:
   workflow_dispatch:
+    inputs:
+      release_branch:
+        description: "Release Please branch to refresh (must start with release-please--)"
+        required: false
+        default: "release-please--branches--main"
+        type: string
 
 permissions: {}
 
 jobs:
   refresh-release-lock:
-    if: startsWith(github.ref_name, 'release-please--')
+    if: startsWith(github.ref_name, 'release-please--') || (github.ref_name == 'main' && startsWith(inputs.release_branch, 'release-please--'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Select and validate release branch
+        id: branch
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_BRANCH: ${{ inputs.release_branch }}
+        run: |
+          if [[ "$REF_NAME" == release-please--* ]]; then
+            target="$REF_NAME"
+          else
+            target="$INPUT_BRANCH"
+          fi
+          if [[ ! "$target" =~ ^release-please--[A-Za-z0-9._/-]+$ ]]; then
+            echo "Error: invalid release branch '$target' (must start with release-please--)" >&2
+            exit 1
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-      - run: uv lock
+        with:
+          ref: ${{ steps.branch.outputs.target }}
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.2"
+
+      - name: Refresh uv.lock
+        run: uv lock --no-build-package ha-ecowater-cloud
+
       - name: Commit refreshed lockfile
+        env:
+          PUSH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          TARGET_BRANCH: ${{ steps.branch.outputs.target }}
         run: |
           if git diff --quiet -- uv.lock; then
             exit 0
           fi
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "Error: RELEASE_PLEASE_TOKEN is required so refreshed release PR checks trigger" >&2
+            exit 1
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add uv.lock
+          git add -- uv.lock
           git commit -m "chore: refresh release lock"
-          git push
+          auth_header="$(printf 'x-access-token:%s' "$PUSH_TOKEN" | base64 | tr -d '\n')"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth_header}" push origin "HEAD:refs/heads/${TARGET_BRANCH}"
