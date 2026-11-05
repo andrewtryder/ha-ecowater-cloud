@@ -6,7 +6,7 @@
             "version": "3.14"
         }
     },
-    "postCreateCommand": "pip install -e '.[dev]'",
+    "postCreateCommand": "command -v uv >/dev/null 2>&1 || pip install uv && uv sync --locked --extra dev && uv run --locked --extra dev pre-commit install",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -16,7 +16,7 @@
                 "esbenp.prettier-vscode"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
                 "editor.formatOnSave": true,
                 "[python]": {
                     "editor.defaultFormatter": "charliermarsh.ruff",
