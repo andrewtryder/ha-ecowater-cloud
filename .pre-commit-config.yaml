@@ -5,6 +5,9 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        args: [--unsafe]
+      - id: check-json
+      - id: check-merge-conflict
       - id: check-added-large-files
 
   - repo: https://github.com/compilerla/conventional-pre-commit
@@ -18,25 +21,25 @@ repos:
     hooks:
       - id: ruff
         name: ruff
-        entry: uv run ruff check --fix
+        entry: uv run --locked --extra dev ruff check --fix
         language: system
         types: [python]
         require_serial: true
       - id: ruff-format
         name: ruff-format
-        entry: uv run ruff format
+        entry: uv run --locked --extra dev ruff format
         language: system
         types: [python]
         require_serial: true
       - id: mypy
         name: mypy
-        entry: uv run mypy custom_components/ecowater_cloud
+        entry: uv run --locked --extra dev mypy custom_components/ecowater_cloud
         language: system
         types: [python]
         pass_filenames: false
       - id: pytest
         name: pytest
-        entry: uv run pytest tests/ -q
+        entry: uv run --locked --extra dev pytest tests/ -q
         language: system
         types: [python]
         pass_filenames: false
