@@ -1,7 +1,6 @@
 .venv/
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
@@ -19,9 +18,14 @@ build/
 .env.*
 !.env.example
 .private/
+.storage/
+*config_entries*
+home-assistant.log*
+home-assistant_v2.db*
 
 # Coverage
 .coverage
 .coverage.*
 coverage.xml
+coverage.json
 htmlcov/
