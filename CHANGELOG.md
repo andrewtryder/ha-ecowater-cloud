@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.5...v0.8.0) (2026-11-05)
+
+
+### Features
+
+* restore complete salt capacity model mappings including model 104705 ([#93](https://github.com/andrewtryder/ha-ecowater-cloud/issues/93)) ([ea4048e](https://github.com/andrewtryder/ha-ecowater-cloud/commit/ea4048e4233b56ad853f5d48049665a4576c0b0b)), closes [#91](https://github.com/andrewtryder/ha-ecowater-cloud/issues/91)
+
 ## [0.7.5](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.4...v0.7.5) (2026-11-05)
 
 
