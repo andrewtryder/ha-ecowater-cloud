@@ -1124,7 +1124,7 @@ wheels = [
 
 [[package]]
 name = "ha-ecowater-cloud"
-version = "0.7.4"
+version = "0.7.5"
 source = { editable = "." }
 
 [package.optional-dependencies]

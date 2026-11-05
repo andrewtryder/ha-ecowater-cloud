@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.5](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.4...v0.7.5) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** synchronize root lockfile version with project metadata ([#79](https://github.com/andrewtryder/ha-ecowater-cloud/issues/79)) ([3bdc30e](https://github.com/andrewtryder/ha-ecowater-cloud/commit/3bdc30ed94cddd820a451a47a3e1b8cd56e1b36a))
+* **release:** omit package-name so release-please tracks v* tags and root release branch ([0c767b9](https://github.com/andrewtryder/ha-ecowater-cloud/commit/0c767b9ea47c4fb5d353cd806e1da6234c7b9c46))
+* **typing:** support Home Assistant 2026.10 schema and device class typing ([#92](https://github.com/andrewtryder/ha-ecowater-cloud/issues/92)) ([69d336e](https://github.com/andrewtryder/ha-ecowater-cloud/commit/69d336ef1ca276882f866a059ee1c9c2bd3d6ad0))
+
+
+### Documentation
+
+* clarify ecowater setup and compatibility ([#84](https://github.com/andrewtryder/ha-ecowater-cloud/issues/84)) ([78c8d1d](https://github.com/andrewtryder/ha-ecowater-cloud/commit/78c8d1df9fca7d4549202cca23af2de5cfd5a8d5))
+
 ## [0.7.4](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.3...v0.7.4) (2026-10-22)
 
 
