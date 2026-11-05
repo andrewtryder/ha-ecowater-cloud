@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, cast
 
 import voluptuous as vol
 from homeassistant.config_entries import (
@@ -117,7 +117,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title=info["title"], data=data)
 
         return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+            step_id="user", data_schema=cast(Any, STEP_USER_DATA_SCHEMA), errors=errors
         )
 
     async def async_step_reauth(
@@ -161,7 +161,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
+            data_schema=cast(Any, vol.Schema({vol.Required(CONF_PASSWORD): str})),
             errors=errors,
             description_placeholders={"username": reauth_entry.data[CONF_USERNAME]},
         )
@@ -240,7 +240,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=schema,
+            data_schema=cast(Any, schema),
             errors=errors,
         )
 
@@ -277,7 +277,7 @@ class EcoWaterCloudOptionsFlow(OptionsFlowWithReload):
             }
         )
 
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=cast(Any, schema))
 
 
 class NoDevicesError(Exception):

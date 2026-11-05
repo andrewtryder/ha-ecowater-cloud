@@ -5,8 +5,13 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+try:
+    from homeassistant.components.binary_sensor.const import BinarySensorDeviceClass
+except ImportError:
+    from homeassistant.components.binary_sensor import (
+        BinarySensorDeviceClass,
+    )
 from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
