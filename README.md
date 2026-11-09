@@ -21,16 +21,18 @@ Only the capabilities reported by your particular device appear. This integratio
 
 ## Requirements and compatibility
 
-- Home Assistant **2026.3.0 or newer**, HACS, an EcoWater Cloud account, and a compatible cloud-connected device.
+- Home Assistant **2026.3.0 or newer**, HACS (or the built-in Home Assistant Marketplace in **2026.11+**), an EcoWater Cloud account, and a compatible cloud-connected device.
 - The **Ayla** US EWS3500 / EWS ECR3700R30 has been tested. Other Ayla-connected EWS models may work; the EU endpoint is implemented but untested.
 - **HydroLink Home devices are not supported.** See [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink) for that system.
 
 > [!WARNING]
 > Do not run this integration and another integration polling the same EcoWater cloud account at the same time. Excessive polling can cause account lockouts or temporary IP bans.
 
-## Install with HACS
+## Install with HACS or Home Assistant Marketplace
 
-1. In HACS, add `https://github.com/andrewtryder/ha-ecowater-cloud` as a custom repository in the **Integration** category, or use the HACS badge above.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=andrewtryder&repository=ha-ecowater-cloud&category=integration)
+
+1. Click the **Open your Home Assistant instance** button above (backwards compatible: opens **HACS** on earlier versions and the built-in **Home Assistant Marketplace** on **2026.11+**), or manually add `https://github.com/andrewtryder/ha-ecowater-cloud` as a custom repository in the **Integration** category.
 2. Find and download **EcoWater Cloud**.
 3. Restart Home Assistant.
 
