@@ -1385,6 +1385,10 @@ TELEMETRY_PROPERTIES: set[str] = {
     "total_water_used_gals",
     "total_water_used_liters",
     "total_water_used_m3",
+    "avg_daily_gal_tenths",
+    "dispensed_gal",
+    "filter_life_remaining_days",
+    "tds_removal_percent",
 }
 
 REGEN_ENABLE_MAP: dict[int, bool] = {
@@ -1437,6 +1441,10 @@ def normalize_device(
         telemetry_newest_data_at=telemetry_newest_data_at,
     )
 
+    # RO monitors sleep between check-ins, so Ayla's connection status is not a
+    # health signal for them: a working device reads "Offline" most of the time.
+    reports_intermittently = device_raw.get("product_class") == "RO"
+
     # Descriptor
     model_id_val = _safe_str(props.get("model_id"))
     descriptor = DeviceDescriptor(
@@ -1451,11 +1459,13 @@ def normalize_device(
         ),
         oem_model=device_raw.get("oem_model"),
         model_id=model_id_val,
-        firmware_version=_safe_str(props.get("base_software_version")),
+        firmware_version=_safe_str(props.get("base_software_version"))
+        or _safe_str(props.get("host_software_version")),
         is_online=(device_raw.get("connection_status") == "Online")
-        if "connection_status" in device_raw
+        if "connection_status" in device_raw and not reports_intermittently
         else None,
         wifi_signal_strength_dbm=_safe_int(props.get("rf_signal_strength_dbm")),
+        reports_intermittently=reports_intermittently,
     )
 
     # Regeneration State
@@ -1507,7 +1517,9 @@ def normalize_device(
 
     # Capabilities
     has_water_usage_today = "gallons_used_today" in props
-    has_water_usage_daily_avg = "avg_daily_use_gals" in props
+    has_water_usage_daily_avg = (
+        "avg_daily_use_gals" in props or "avg_daily_gal_tenths" in props
+    )
     has_water_available = "treated_water_avail_gals" in props
 
     total_water_property, total_water_value = _first_present_property(
@@ -1593,7 +1605,20 @@ def normalize_device(
         has_fast_rinse_secs="fast_rinse_secs" in props,
         has_second_backwash_cycles="second_backwash_cycles" in props,
         has_second_backwash_secs="second_backwash_secs" in props,
+        has_water_dispensed="dispensed_gal" in props,
+        has_filter_life_remaining="filter_life_remaining_days" in props,
+        has_tds_removal="tds_removal_percent" in props,
+        has_supply_voltage="supply_voltage_tenths" in props,
+        has_wifi_signal_bars="rf_signal_bars" in props,
+        has_replace_filter_alert="replace_filter_alert" in props,
+        has_replace_membrane_alert="replace_membrane_alert" in props,
+        has_replace_batteries_alert="replace_batteries_alert" in props,
+        has_no_ro_system_found_alert="no_ro_system_found_alert" in props,
     )
+
+    avg_daily_use = _safe_float(props.get("avg_daily_use_gals"))
+    if avg_daily_use is None:
+        avg_daily_use = _safe_float(props.get("avg_daily_gal_tenths"), scale=10.0)
 
     return EcoWaterDeviceData(
         descriptor=descriptor,
@@ -1601,7 +1626,7 @@ def normalize_device(
         freshness=freshness,
         regeneration=regeneration,
         water_used_today_gallons=_safe_float(props.get("gallons_used_today")),
-        water_used_daily_avg_gallons=_safe_float(props.get("avg_daily_use_gals")),
+        water_used_daily_avg_gallons=avg_daily_use,
         water_available_gallons=_safe_float(props.get("treated_water_avail_gals")),
         total_water_used_gallons=_safe_float(total_water_value),
         total_water_source_property=total_water_property,
@@ -1669,4 +1694,15 @@ def normalize_device(
         fast_rinse_secs=_safe_int(props.get("fast_rinse_secs")),
         second_backwash_cycles=_safe_int(props.get("second_backwash_cycles")),
         second_backwash_secs=_safe_int(props.get("second_backwash_secs")),
+        water_dispensed_gallons=_safe_float(props.get("dispensed_gal")),
+        filter_life_remaining_days=_safe_int(props.get("filter_life_remaining_days")),
+        tds_removal_percent=_safe_float(props.get("tds_removal_percent")),
+        supply_voltage_volts=_safe_float(
+            props.get("supply_voltage_tenths"), scale=10.0
+        ),
+        wifi_signal_bars=_safe_int(props.get("rf_signal_bars")),
+        replace_filter_alert=_safe_bool(props.get("replace_filter_alert")),
+        replace_membrane_alert=_safe_bool(props.get("replace_membrane_alert")),
+        replace_batteries_alert=_safe_bool(props.get("replace_batteries_alert")),
+        no_ro_system_found_alert=_safe_bool(props.get("no_ro_system_found_alert")),
     )

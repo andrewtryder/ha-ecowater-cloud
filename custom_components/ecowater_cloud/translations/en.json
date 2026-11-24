@@ -261,6 +261,21 @@
       },
       "second_backwash_duration": {
         "name": "Second backwash duration"
+      },
+      "water_dispensed": {
+        "name": "Water dispensed"
+      },
+      "filter_life_remaining": {
+        "name": "Filter life remaining"
+      },
+      "tds_removal": {
+        "name": "TDS removal"
+      },
+      "supply_voltage": {
+        "name": "Supply voltage"
+      },
+      "wifi_signal_bars": {
+        "name": "Wi-Fi signal bars"
       }
     },
     "binary_sensor": {
@@ -290,6 +305,18 @@
       },
       "error_code_alert": {
         "name": "Error code alert"
+      },
+      "replace_filter_alert": {
+        "name": "Replace filter alert"
+      },
+      "replace_membrane_alert": {
+        "name": "Replace membrane alert"
+      },
+      "replace_batteries_alert": {
+        "name": "Replace batteries alert"
+      },
+      "no_ro_system_found_alert": {
+        "name": "No RO system found alert"
       },
       "data_stale": {
         "name": "Data stale"

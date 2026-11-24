@@ -36,6 +36,7 @@ class DeviceDescriptor:
     firmware_version: str | None = field(default=None)
     is_online: bool | None = field(default=None)
     wifi_signal_strength_dbm: int | None = field(default=None)
+    reports_intermittently: bool = field(default=False)
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,6 +99,16 @@ class DeviceCapabilities:
     has_fast_rinse_secs: bool
     has_second_backwash_cycles: bool
     has_second_backwash_secs: bool
+
+    has_water_dispensed: bool
+    has_filter_life_remaining: bool
+    has_tds_removal: bool
+    has_supply_voltage: bool
+    has_wifi_signal_bars: bool
+    has_replace_filter_alert: bool
+    has_replace_membrane_alert: bool
+    has_replace_batteries_alert: bool
+    has_no_ro_system_found_alert: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -201,6 +212,17 @@ class EcoWaterDeviceData:
     fast_rinse_secs: int | None = field(default=None)
     second_backwash_cycles: int | None = field(default=None)
     second_backwash_secs: int | None = field(default=None)
+
+    # --- Reverse Osmosis ---
+    water_dispensed_gallons: float | None = field(default=None)
+    filter_life_remaining_days: int | None = field(default=None)
+    tds_removal_percent: float | None = field(default=None)
+    supply_voltage_volts: float | None = field(default=None)
+    wifi_signal_bars: int | None = field(default=None)
+    replace_filter_alert: bool | None = field(default=None)
+    replace_membrane_alert: bool | None = field(default=None)
+    replace_batteries_alert: bool | None = field(default=None)
+    no_ro_system_found_alert: bool | None = field(default=None)
 
     def __post_init__(self) -> None:
         """Validate invariants after construction."""

@@ -103,7 +103,7 @@ A list of nested device objects.
   }
 ]
 ```
-*Note: EcoWater devices typically have an `oem_model` starting with `EWS`.*
+*Note: EcoWater softeners typically have an `oem_model` starting with `EWS`. Reverse osmosis monitors report `oem_model` `SHERO` and `product_class` `RO`.*
 
 ### 5. Get Device Properties
 
@@ -124,6 +124,22 @@ A list of nested property objects.
   }
 ]
 ```
+
+#### Reverse osmosis properties
+
+Observed on one `SHERO` / `HERO-385Plus` device. The device read `connection_status: Offline` with `connected_at` and telemetry timestamps from earlier the same day, and its properties share a single daily check-in time, so it appears to sleep between check-ins. That cadence comes from one capture.
+
+| Property | Interpretation | Basis |
+|----------|----------------|-------|
+| `avg_daily_gal_tenths` | Average gallons per day, in tenths | 10 (1.0 gal/day) matches 41 gal over 43 days |
+| `dispensed_gal` | Gallons dispensed | Unknown whether it resets on filter or membrane replacement |
+| `filter_life_remaining_days` | Days of filter life | Property name |
+| `tds_removal_percent` | TDS removal percentage | Property name |
+| `supply_voltage_tenths` | Supply voltage, in tenths of a volt | Property name; 51 read as 5.1 V |
+| `rf_signal_bars` | Wi-Fi signal bars | Property name; scale unknown |
+| `replace_filter_alert`, `replace_membrane_alert`, `replace_batteries_alert`, `no_ro_system_found_alert` | 0/1 alert flags | All observed as 0; active value is inferred |
+| `host_software_version` | Device firmware | Softeners use `base_software_version` |
+| `connection_details` | Comma-separated values that include the Wi-Fi SSID and MAC | Sensitive; not used |
 
 ### 6. Set Device Property
 

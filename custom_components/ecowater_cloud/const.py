@@ -34,3 +34,7 @@ MAX_SCAN_INTERVAL: Final = timedelta(hours=24)
 # Stale-data detection
 STALE_DATA_THRESHOLD: Final = timedelta(hours=24)
 STALE_DATA_REPAIR_THRESHOLD: Final = timedelta(hours=36)
+
+# Reverse osmosis monitors check in about once a day, so allow a missed check-in.
+INTERMITTENT_STALE_DATA_THRESHOLD: Final = timedelta(hours=48)
+INTERMITTENT_STALE_DATA_REPAIR_THRESHOLD: Final = timedelta(hours=72)

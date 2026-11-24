@@ -147,6 +147,30 @@ async def test_water_dashboard_eligibility(
     assert state.attributes.get("state_class") == SensorStateClass.TOTAL_INCREASING
 
 
+def test_ro_device_exposes_only_ro_sensors() -> None:
+    """Test an RO device gets RO sensors and none backed by missing softener data."""
+    from custom_components.ecowater_cloud.binary_sensor import BINARY_SENSORS
+    from custom_components.ecowater_cloud.sensor import SENSORS
+    from tests.test_normalization import load_ro_device
+
+    device = load_ro_device()
+    sensors = {d.key: d.value_fn(device) for d in SENSORS if d.supported_fn(device)}
+    binary_sensors = {d.key for d in BINARY_SENSORS if d.supported_fn(device)}
+
+    assert sensors["water_dispensed"] == 41.0
+    assert sensors["average_daily_water_use"] == 1.0
+    assert sensors["filter_life_remaining"] == 141
+    assert sensors["tds_removal"] == 95.0
+    assert sensors["supply_voltage"] == 5.1
+    assert sensors["wifi_signal_bars"] == 2
+    assert "wifi_signal_strength" not in sensors
+    assert "salt_level" not in sensors
+
+    assert "replace_filter_alert" in binary_sensors
+    assert "device_reported_online" not in binary_sensors
+    assert "regenerating" not in binary_sensors
+
+
 def test_volume_sensor_state_classes() -> None:
     """Verify that every sensor description using SensorDeviceClass.VOLUME has a valid state class."""
     from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass

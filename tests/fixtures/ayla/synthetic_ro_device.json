@@ -1,0 +1,27 @@
+{
+  "device": {
+    "dsn": "AC000W000654321",
+    "product_name": "EcoWater RO",
+    "oem_model": "SHERO",
+    "product_class": "RO",
+    "model": "AY001MIV1",
+    "connection_status": "Offline",
+    "connected_at": "2026-10-30T07:10:26Z"
+  },
+  "properties": [
+    {"property": {"name": "model_description", "value": "HERO-385Plus", "data_updated_at": "2026-09-18T07:10:16Z"}},
+    {"property": {"name": "system_type", "value": "ro filter", "data_updated_at": "2026-09-18T07:10:16Z"}},
+    {"property": {"name": "host_software_version", "value": "SH-1.1", "data_updated_at": "2026-09-18T07:10:21Z"}},
+    {"property": {"name": "avg_daily_gal_tenths", "value": 10, "data_updated_at": "2026-10-30T07:10:27Z"}},
+    {"property": {"name": "days_in_operation", "value": 43, "data_updated_at": "2026-10-30T07:10:26Z"}},
+    {"property": {"name": "dispensed_gal", "value": 41, "data_updated_at": "2026-10-30T07:10:27Z"}},
+    {"property": {"name": "filter_life_remaining_days", "value": 141, "data_updated_at": "2026-10-30T07:10:27Z"}},
+    {"property": {"name": "tds_removal_percent", "value": 95, "data_updated_at": "2026-10-30T07:10:27Z"}},
+    {"property": {"name": "supply_voltage_tenths", "value": 51, "data_updated_at": "2026-10-30T07:10:26Z"}},
+    {"property": {"name": "rf_signal_bars", "value": 2, "data_updated_at": "2026-10-30T07:10:29Z"}},
+    {"property": {"name": "replace_filter_alert", "value": 1, "data_updated_at": "2026-10-30T07:10:29Z"}},
+    {"property": {"name": "replace_membrane_alert", "value": 0, "data_updated_at": "2026-10-30T07:10:29Z"}},
+    {"property": {"name": "replace_batteries_alert", "value": 0, "data_updated_at": "2026-10-30T07:10:27Z"}},
+    {"property": {"name": "no_ro_system_found_alert", "value": 0, "data_updated_at": "2026-10-30T07:10:28Z"}}
+  ]
+}
