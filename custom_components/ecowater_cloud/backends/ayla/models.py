@@ -12,6 +12,7 @@ class AylaDeviceData(TypedDict, total=False):
     dsn: str
     product_name: str
     oem_model: str
+    product_class: str
     mac: str
     lan_ip: str
     connection_status: str

@@ -23,7 +23,10 @@ Only the capabilities reported by your particular device appear. This integratio
 
 - Home Assistant **2026.3.0 or newer**, HACS (or the built-in Home Assistant Marketplace in **2026.11+**), an EcoWater Cloud account, and a compatible cloud-connected device.
 - The **Ayla** US EWS3500 / EWS ECR3700R30 has been tested. Other Ayla-connected EWS models may work; the EU endpoint is implemented but untested.
+- The **Ayla** US SHERO / HERO-385Plus reverse osmosis monitor is community-contributed; see the note below.
 - **HydroLink Home devices are not supported.** See [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink) for that system.
+
+> **Community-contributed, unsupported:** Reverse osmosis monitor (HERO-385Plus) support was contributed by [@ranrotx](https://github.com/ranrotx) in [#104](https://github.com/andrewtryder/ha-ecowater-cloud/pull/104). The maintainer doesn't own this device and can't test or support it; please report RO issues with that in mind.
 
 > [!WARNING]
 > Do not run this integration and another integration polling the same EcoWater cloud account at the same time. Excessive polling can cause account lockouts or temporary IP bans.
@@ -46,7 +49,7 @@ For a manual installation, download the [latest release](https://github.com/andr
 
 ## What you'll see in Home Assistant
 
-Depending on your model, sensors and binary sensors can show salt level, estimated salt depletion, treated water, flow, regeneration, online status, Wi-Fi signal, and the last cloud update. Raw diagnostic values are not interpreted or scaled. Estimates depend on data from your device and should not replace checking the equipment.
+Depending on your model, sensors and binary sensors can show salt level, estimated salt depletion, treated water, flow, regeneration, online status, Wi-Fi signal, and the last cloud update. Reverse osmosis monitors show water dispensed, daily average, filter life remaining, TDS removal, and replace filter, membrane, and battery alerts. They check in with the cloud about once a day, so readings update daily and no online status entity is created; use the source last updated sensor to see the latest check-in. Raw diagnostic values are not interpreted or scaled. Estimates depend on data from your device and should not replace checking the equipment.
 
 ## Common problems and troubleshooting
 

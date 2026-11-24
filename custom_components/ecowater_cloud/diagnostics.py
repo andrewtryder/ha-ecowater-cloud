@@ -36,6 +36,7 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "firmware_version": data.descriptor.firmware_version,
         "is_online": data.descriptor.is_online,
         "wifi_signal_strength_dbm": data.descriptor.wifi_signal_strength_dbm,
+        "reports_intermittently": data.descriptor.reports_intermittently,
     }
 
     # Include capabilities and freshness for debugging polling issues
@@ -131,6 +132,15 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "has_second_backwash_secs": getattr(
             data.capabilities, "has_second_backwash_secs", None
         ),
+        "has_water_dispensed": data.capabilities.has_water_dispensed,
+        "has_filter_life_remaining": data.capabilities.has_filter_life_remaining,
+        "has_tds_removal": data.capabilities.has_tds_removal,
+        "has_supply_voltage": data.capabilities.has_supply_voltage,
+        "has_wifi_signal_bars": data.capabilities.has_wifi_signal_bars,
+        "has_replace_filter_alert": data.capabilities.has_replace_filter_alert,
+        "has_replace_membrane_alert": data.capabilities.has_replace_membrane_alert,
+        "has_replace_batteries_alert": data.capabilities.has_replace_batteries_alert,
+        "has_no_ro_system_found_alert": data.capabilities.has_no_ro_system_found_alert,
     }
 
     import datetime
@@ -222,6 +232,15 @@ def _redact_device_data(data: EcoWaterDeviceData) -> dict[str, Any]:
         "fast_rinse_secs": getattr(data, "fast_rinse_secs", None),
         "second_backwash_cycles": getattr(data, "second_backwash_cycles", None),
         "second_backwash_secs": getattr(data, "second_backwash_secs", None),
+        "water_dispensed_gallons": data.water_dispensed_gallons,
+        "filter_life_remaining_days": data.filter_life_remaining_days,
+        "tds_removal_percent": data.tds_removal_percent,
+        "supply_voltage_volts": data.supply_voltage_volts,
+        "wifi_signal_bars": data.wifi_signal_bars,
+        "replace_filter_alert": data.replace_filter_alert,
+        "replace_membrane_alert": data.replace_membrane_alert,
+        "replace_batteries_alert": data.replace_batteries_alert,
+        "no_ro_system_found_alert": data.no_ro_system_found_alert,
     }
 
 

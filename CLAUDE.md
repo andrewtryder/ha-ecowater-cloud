@@ -42,7 +42,7 @@ One config entry is one cloud account. One `AccountCoordinator` serves every dev
 Data flows one way, and each layer depends only on the contract below it:
 
 1. `backends/ayla/api.py` (`AylaApi`): HTTP, token handling, and refresh-then-retry on a 401. Maps HTTP failures to Ayla exceptions, which subclass the taxonomy in `exceptions.py`.
-2. `backends/ayla/backend.py` (`AylaBackend`): implements the `BackendAdapter` protocol from `backends/__init__.py`. Falls back to a full re-login when refresh fails, keeps only `EWS*` OEM models, and skips individual devices that raise `UnsupportedDeviceError`.
+2. `backends/ayla/backend.py` (`AylaBackend`): implements the `BackendAdapter` protocol from `backends/__init__.py`. Falls back to a full re-login when refresh fails, keeps only OEM models in `SUPPORTED_OEM_MODEL_PREFIXES` (`EWS` softeners, `SHERO` RO monitors), and skips individual devices that raise `UnsupportedDeviceError`.
 3. `backends/ayla/normalization.py` (`normalize_device`): the only place that interprets raw Ayla property names, scales, and enums. It builds frozen `EcoWaterDeviceData` (`models.py`), including `DeviceCapabilities` flags derived from which properties are present. `SALT_TENTHS_MAX` maps `model_id` to salt capacity; an unmapped model gets no salt percentage and raises a Repairs issue.
 4. `coordinator.py`: stores `dict[serial, EcoWaterDeviceData]` in `coordinator.data`. Converts exceptions to `ConfigEntryAuthFailed` / `UpdateFailed` and records `last_error_category`, which `repairs.py` reads.
 5. `sensor.py` / `binary_sensor.py`: tables of entity descriptions, each with `value_fn` and `supported_fn`. A coordinator listener re-runs discovery, so entities appear when a device or capability shows up later.

@@ -199,6 +199,7 @@ async def test_stale_data_repair(hass: HomeAssistant, mock_issue_registry) -> No
 
     dev = MagicMock()
     dev.descriptor.name = "Softener"
+    dev.descriptor.reports_intermittently = False
     dev.freshness.age = timedelta(hours=40)
 
     coord = AccountCoordinator(hass, entry, AsyncMock())
@@ -219,6 +220,43 @@ async def test_stale_data_repair(hass: HomeAssistant, mock_issue_registry) -> No
 
     issue = mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
     assert issue is None
+
+
+@pytest.mark.asyncio
+async def test_stale_data_repair_intermittent_device(
+    hass: HomeAssistant, mock_issue_registry
+) -> None:
+    """Test intermittent devices get a longer stale data repair threshold."""
+    from datetime import timedelta
+    from unittest.mock import MagicMock
+
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+
+    dev = MagicMock()
+    dev.descriptor.name = "RO"
+    dev.descriptor.reports_intermittently = True
+    dev.freshness.age = timedelta(hours=40)
+
+    coord = AccountCoordinator(hass, entry, AsyncMock())
+    coord.data = {"AC1": dev}
+
+    from custom_components.ecowater_cloud.repairs import _check_stale_data
+
+    _check_stale_data(hass, entry, coord)
+    await hass.async_block_till_done()
+    assert (
+        mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
+        is None
+    )
+
+    dev.freshness.age = timedelta(hours=80)
+    _check_stale_data(hass, entry, coord)
+    await hass.async_block_till_done()
+    assert (
+        mock_issue_registry.async_get_issue(DOMAIN, f"{entry.entry_id}_data_stale")
+        is not None
+    )
 
 
 @pytest.mark.asyncio

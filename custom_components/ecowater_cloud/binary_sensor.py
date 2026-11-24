@@ -24,7 +24,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import EcoWaterCloudConfigEntry
-from .const import STALE_DATA_THRESHOLD
+from .const import INTERMITTENT_STALE_DATA_THRESHOLD, STALE_DATA_THRESHOLD
 from .coordinator import AccountCoordinator
 from .entity import EcoWaterEntity
 from .models import EcoWaterDeviceData
@@ -38,21 +38,33 @@ class EcoWaterBinarySensorEntityDescription(BinarySensorEntityDescription):
     supported_fn: Callable[[EcoWaterDeviceData], bool] = lambda _: True
 
 
+def _is_stale(data: EcoWaterDeviceData) -> bool | None:
+    """Return whether device data is stale, or None if its age is unknown."""
+    if data.freshness.age is None:
+        return None
+    threshold = (
+        INTERMITTENT_STALE_DATA_THRESHOLD
+        if data.descriptor.reports_intermittently
+        else STALE_DATA_THRESHOLD
+    )
+    return data.freshness.age > threshold
+
+
 def _evaluate_system_problem(data: EcoWaterDeviceData) -> bool | None:
     """Evaluate system problem status, returning None if no signals are available."""
     signals = (
         None if data.descriptor.is_online is None else not data.descriptor.is_online,
-        (
-            None
-            if data.freshness.age is None
-            else data.freshness.age > STALE_DATA_THRESHOLD
-        ),
+        _is_stale(data),
         data.low_salt_alert,
         data.depletion_alert,
         data.service_reminder_alert,
         data.error_code_alert,
         data.excessive_water_use_alert,
         data.flow_monitor_alert,
+        data.replace_filter_alert,
+        data.replace_membrane_alert,
+        data.replace_batteries_alert,
+        data.no_ro_system_found_alert,
     )
 
     known = [signal for signal in signals if signal is not None]
@@ -135,6 +147,39 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         supported_fn=lambda d: d.capabilities.has_error_code_alert,
         is_on_fn=lambda d: d.error_code_alert,
     ),
+    # --- Reverse Osmosis ---
+    EcoWaterBinarySensorEntityDescription(
+        key="replace_filter_alert",
+        translation_key="replace_filter_alert",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_replace_filter_alert,
+        is_on_fn=lambda d: d.replace_filter_alert,
+    ),
+    EcoWaterBinarySensorEntityDescription(
+        key="replace_membrane_alert",
+        translation_key="replace_membrane_alert",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_replace_membrane_alert,
+        is_on_fn=lambda d: d.replace_membrane_alert,
+    ),
+    EcoWaterBinarySensorEntityDescription(
+        key="replace_batteries_alert",
+        translation_key="replace_batteries_alert",
+        device_class=BinarySensorDeviceClass.BATTERY,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_replace_batteries_alert,
+        is_on_fn=lambda d: d.replace_batteries_alert,
+    ),
+    EcoWaterBinarySensorEntityDescription(
+        key="no_ro_system_found_alert",
+        translation_key="no_ro_system_found_alert",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        supported_fn=lambda d: d.capabilities.has_no_ro_system_found_alert,
+        is_on_fn=lambda d: d.no_ro_system_found_alert,
+    ),
     # --- Stale data detection ---
     EcoWaterBinarySensorEntityDescription(
         key="data_stale",
@@ -142,11 +187,7 @@ BINARY_SENSORS: tuple[EcoWaterBinarySensorEntityDescription, ...] = (
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
         # No capability gate: always add if we have any data from this device.
-        is_on_fn=lambda d: (
-            d.freshness.age > STALE_DATA_THRESHOLD
-            if d.freshness.age is not None
-            else None
-        ),
+        is_on_fn=_is_stale,
     ),
     # --- System Problem Aggregated Alert ---
     EcoWaterBinarySensorEntityDescription(

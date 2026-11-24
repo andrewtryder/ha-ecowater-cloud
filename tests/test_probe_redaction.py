@@ -83,6 +83,21 @@ def test_redact_dsn_by_key():
     assert redacted["oem_model"] == "EWS123"
 
 
+def test_redact_ro_device_metadata():
+    """Location and numeric device key are redacted; template_id is kept."""
+    data = {"locality": "00000", "key": 12345678, "template_id": 549}
+    redacted = redact_data(data)
+    assert redacted["locality"] == "***REDACTED***"
+    assert redacted["key"] == "***REDACTED***"
+    assert redacted["template_id"] == 549
+
+
+def test_redact_connection_details_property():
+    """connection_details embeds the SSID and MAC, so the whole value is redacted."""
+    data = {"name": "connection_details", "value": "-69,0,MyNetwork,00:11:22:33:44:55"}
+    assert redact_data(data)["value"] == "***REDACTED***"
+
+
 def test_redact_serial_by_key():
     """serial / serial_number values are redacted."""
     data = {"serial_number": "SN-00012345", "serial": "SN-00012345"}

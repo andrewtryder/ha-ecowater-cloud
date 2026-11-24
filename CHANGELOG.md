@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.8.1...v0.9.0) (2026-11-24)
+
+
+### Features
+
+* add reverse osmosis monitor support ([#104](https://github.com/andrewtryder/ha-ecowater-cloud/issues/104)) ([87e7283](https://github.com/andrewtryder/ha-ecowater-cloud/commit/87e72830f5a3829a3c0de493f1ec955c77e5731d))
+
+
+### Bug Fixes
+
+* redact Wi-Fi SSID, ZIP code, and device key in probe output ([#103](https://github.com/andrewtryder/ha-ecowater-cloud/issues/103)) ([1826235](https://github.com/andrewtryder/ha-ecowater-cloud/commit/182623584ffeee176ccff58cf173404f4e9424ae))
+
+
+### Documentation
+
+* add CLAUDE.md and correct stale architecture docs ([#102](https://github.com/andrewtryder/ha-ecowater-cloud/issues/102)) ([0f88eb8](https://github.com/andrewtryder/ha-ecowater-cloud/commit/0f88eb8a70bb53f47f49f6de2553fdb795aac3b9))
+* mark RO monitor support as community-contributed ([b74bc14](https://github.com/andrewtryder/ha-ecowater-cloud/commit/b74bc14d2394cb7dd5e7dd98d21cac4c900317f2))
+
+## [0.8.1](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.8.0...v0.8.1) (2026-11-24)
+
+
+### Documentation
+
+* add HACS My Home Assistant button and document 2026.11+ Marketplace compatibility ([5875be9](https://github.com/andrewtryder/ha-ecowater-cloud/commit/5875be9322dbdbdb8f4eba45cd477fd23991b0c0))
+
 ## [0.8.0](https://github.com/andrewtryder/ha-ecowater-cloud/compare/v0.7.5...v0.8.0) (2026-11-05)
 
 
