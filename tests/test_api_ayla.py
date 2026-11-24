@@ -8,6 +8,7 @@ from pytest_homeassistant_custom_component.test_util.aiohttp import (
 
 from custom_components.ecowater_cloud.backends.ayla.api import AylaApi
 from custom_components.ecowater_cloud.backends.ayla.exceptions import (
+    AylaApplicationNotFoundError,
     AylaAuthenticationError,
     AylaConnectivityError,
     AylaProtocolError,
@@ -167,6 +168,33 @@ async def test_authentication_failure(hass, aioclient_mock):
         await api.async_authenticate("test@example.com", "wrong")
 
 
+async def test_sign_in_application_not_found(hass, aioclient_mock):
+    """A 404 "Could not find application" is not a credentials error."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json",
+        status=404,
+        json={"error": "Could not find application"},
+    )
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    with pytest.raises(AylaApplicationNotFoundError):
+        await api.async_authenticate("test@example.com", "secret")
+
+
+async def test_sign_in_other_404_is_authentication_error(hass, aioclient_mock):
+    """Any other sign-in 404 is still treated as rejected credentials."""
+    aioclient_mock.post(
+        f"{USER_URL}/users/sign_in.json", status=404, json={"error": "Not found"}
+    )
+
+    session = async_get_clientsession(hass)
+    api = AylaApi(session)
+    with pytest.raises(AylaAuthenticationError) as exc_info:
+        await api.async_authenticate("test@example.com", "secret")
+    assert not isinstance(exc_info.value, AylaApplicationNotFoundError)
+
+
 async def test_rate_limit(hass, aioclient_mock):
     """Test rate limit handling."""
     aioclient_mock.post(
@@ -288,9 +316,10 @@ async def test_region_url_selection(hass) -> None:
     assert api_us._user_url == "https://user-field.aylanetworks.com"
     assert api_us._ads_url == "https://ads-field.aylanetworks.com"
 
+    # The EU cloud has no EcoWater app registered, so "eu" falls back to US.
     api_eu = AylaApi(session, region="eu")
-    assert api_eu._user_url == "https://user-field-eu.aylanetworks.com"
-    assert api_eu._ads_url == "https://ads-eu.aylanetworks.com"
+    assert api_eu._user_url == "https://user-field.aylanetworks.com"
+    assert api_eu._ads_url == "https://ads-field.aylanetworks.com"
 
     # Fallback to US if unknown
     api_unknown = AylaApi(session, region="unknown")

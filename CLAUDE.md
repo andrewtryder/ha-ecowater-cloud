@@ -62,7 +62,7 @@ A single new value touches all of these:
 
 ### Config entries
 
-The current schema is `VERSION = 2`, `MINOR_VERSION = 3`, and entry data also includes `region` (`us` or `eu`). The entry unique ID is `ayla:{region}:{normalized_email}`. Schema changes go in `async_migrate_entry` and need matching version bumps in `config_flow.py`. Flow steps are `user`, `reauth`, and `reconfigure`, plus an options flow for the polling interval (default 30 minutes).
+The current schema is `VERSION = 2`, `MINOR_VERSION = 4`, and entry data also includes `region`, which is always `us`: Ayla's EU cloud has no EcoWater app registered, so EcoWater accounts in every country use the North America server, and migration 2.4 rewrites any legacy `eu` entry to `us`. The entry unique ID is `ayla:{region}:{normalized_email}`. Schema changes go in `async_migrate_entry` and need matching version bumps in `config_flow.py`. Flow steps are `user`, `reauth`, and `reconfigure`, plus an options flow for the polling interval (default 30 minutes).
 
 ## Commits and releases
 

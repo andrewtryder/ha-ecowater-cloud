@@ -133,7 +133,7 @@ from that update, so its entities become unavailable.
 
 ### `config_flow.py` — Configuration UI
 
-Schema version 2.3. Steps:
+Schema version 2.4. Steps:
 
 | Step | Trigger | Action |
 |------|---------|--------|
@@ -164,8 +164,10 @@ class EcoWaterCloudData:
 
 `async_unload_entry`: calls `async_unload_platforms`.
 
-`async_migrate_entry`: handles version upgrades to 2.3, stamping `backend` and
+`async_migrate_entry`: handles version upgrades to 2.4, stamping `backend` and
 `region` and rewriting the entry unique ID to `ayla:{region}:{normalized_email}`.
+Version 2.4 rewrites any legacy `eu` region to `us`, because Ayla's EU cloud has
+no EcoWater application registered.
 
 ---
 

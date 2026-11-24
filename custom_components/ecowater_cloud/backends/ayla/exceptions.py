@@ -11,6 +11,7 @@ appropriate base class from
 """
 
 from custom_components.ecowater_cloud.exceptions import (
+    ApplicationNotFoundError,
     AuthenticationError,
     ConnectivityError,
     ProtocolError,
@@ -18,6 +19,7 @@ from custom_components.ecowater_cloud.exceptions import (
 )
 
 __all__ = [
+    "AylaApplicationNotFoundError",
     "AylaAuthenticationError",
     "AylaConnectivityError",
     "AylaProtocolError",
@@ -27,6 +29,10 @@ __all__ = [
 
 class AylaAuthenticationError(AuthenticationError):
     """Raised when the Ayla user-service rejects the supplied credentials."""
+
+
+class AylaApplicationNotFoundError(ApplicationNotFoundError):
+    """Raised when an Ayla cloud has no EcoWater application registered."""
 
 
 class AylaConnectivityError(ConnectivityError):

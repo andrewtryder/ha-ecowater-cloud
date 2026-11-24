@@ -19,6 +19,7 @@ from .const import (
     CONF_POLLING_INTERVAL,
     CONF_REGION,
     DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
     PLATFORMS,
     REGION_US,
 )
@@ -116,6 +117,32 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         new_unique_id = f"{BACKEND_AYLA}:{region}:{username}"
         hass.config_entries.async_update_entry(
             entry, data=new_data, unique_id=new_unique_id, version=2, minor_version=3
+        )
+    if entry.version == 2 and entry.minor_version < 4:
+        # Only the North America Ayla cloud has the EcoWater app registered, so
+        # any stored non-US region (the former "eu" option) is rewritten to US.
+        new_data = {**entry.data}
+        migrated_unique_id: str | None = entry.unique_id
+        if new_data.get(CONF_REGION) != REGION_US:
+            new_data[CONF_REGION] = REGION_US
+            username = new_data.get(CONF_USERNAME, "").lower().strip()
+            candidate = f"{BACKEND_AYLA}:{REGION_US}:{username}"
+            existing = hass.config_entries.async_entry_for_domain_unique_id(
+                DOMAIN, candidate
+            )
+            if existing is None or existing.entry_id == entry.entry_id:
+                migrated_unique_id = candidate
+            else:
+                _LOGGER.warning(
+                    "Another EcoWater Cloud entry already uses this account on "
+                    "the North America server; keeping this entry's unique ID"
+                )
+        hass.config_entries.async_update_entry(
+            entry,
+            data=new_data,
+            unique_id=migrated_unique_id,
+            version=2,
+            minor_version=4,
         )
 
     _LOGGER.info("Migration to version %s successful", entry.version)

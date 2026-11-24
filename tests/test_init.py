@@ -104,9 +104,9 @@ async def test_migrate_entry(hass: HomeAssistant) -> None:
 
     assert await async_migrate_entry(hass, entry)
 
-    # Migration must bump version to 2.3 and stamp backend, region, and unique_id
+    # Migration must bump version to 2.4 and stamp backend, region, and unique_id
     assert entry.version == 2
-    assert entry.minor_version == 3
+    assert entry.minor_version == 4
     assert entry.data[CONF_BACKEND] == BACKEND_AYLA
     assert entry.data[CONF_REGION] == REGION_US
     assert entry.unique_id == "ayla:us:user@example.com"
@@ -144,9 +144,111 @@ async def test_migrate_entry_from_2_1(hass: HomeAssistant) -> None:
 
     assert await async_migrate_entry(hass, entry)
 
-    # Migration must bump version to 2.3 and stamp region and unique_id
+    # Migration must bump version to 2.4 and stamp region and unique_id
     assert entry.version == 2
-    assert entry.minor_version == 3
+    assert entry.minor_version == 4
     assert entry.data[CONF_BACKEND] == BACKEND_AYLA
     assert entry.data[CONF_REGION] == REGION_US
+    assert entry.unique_id == "ayla:us:user@example.com"
+
+
+@pytest.mark.asyncio
+async def test_migrate_eu_entry_to_us(hass: HomeAssistant) -> None:
+    """A stored EU entry is rewritten to the North America server."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.ecowater_cloud import async_migrate_entry
+
+    entry = MockConfigEntry(
+        version=2,
+        minor_version=3,
+        domain=DOMAIN,
+        title="EcoWater Cloud",
+        data={
+            "backend": "ayla",
+            "username": "user@example.com",
+            "password": "password",
+            "region": "eu",
+        },
+        source="user",
+        unique_id="ayla:eu:user@example.com",
+    )
+    entry.add_to_hass(hass)
+
+    assert await async_migrate_entry(hass, entry)
+
+    assert entry.version == 2
+    assert entry.minor_version == 4
+    assert entry.data["region"] == "us"
+    assert entry.unique_id == "ayla:us:user@example.com"
+
+
+@pytest.mark.asyncio
+async def test_migrate_eu_entry_keeps_unique_id_on_conflict(
+    hass: HomeAssistant,
+) -> None:
+    """An EU entry keeps its unique ID if a US entry already owns the account."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.ecowater_cloud import async_migrate_entry
+
+    us_entry = MockConfigEntry(
+        version=2,
+        minor_version=4,
+        domain=DOMAIN,
+        data={
+            "backend": "ayla",
+            "username": "user@example.com",
+            "password": "password",
+            "region": "us",
+        },
+        unique_id="ayla:us:user@example.com",
+    )
+    us_entry.add_to_hass(hass)
+    eu_entry = MockConfigEntry(
+        version=2,
+        minor_version=3,
+        domain=DOMAIN,
+        data={
+            "backend": "ayla",
+            "username": "user@example.com",
+            "password": "password",
+            "region": "eu",
+        },
+        unique_id="ayla:eu:user@example.com",
+    )
+    eu_entry.add_to_hass(hass)
+
+    assert await async_migrate_entry(hass, eu_entry)
+
+    assert eu_entry.minor_version == 4
+    assert eu_entry.data["region"] == "us"
+    assert eu_entry.unique_id == "ayla:eu:user@example.com"
+
+
+@pytest.mark.asyncio
+async def test_migrate_us_entry_to_2_4_is_unchanged(hass: HomeAssistant) -> None:
+    """A 2.3 US entry only gets its minor version bumped."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.ecowater_cloud import async_migrate_entry
+
+    entry = MockConfigEntry(
+        version=2,
+        minor_version=3,
+        domain=DOMAIN,
+        data={
+            "backend": "ayla",
+            "username": "user@example.com",
+            "password": "password",
+            "region": "us",
+        },
+        unique_id="ayla:us:user@example.com",
+    )
+    entry.add_to_hass(hass)
+
+    assert await async_migrate_entry(hass, entry)
+
+    assert entry.minor_version == 4
+    assert entry.data["region"] == "us"
     assert entry.unique_id == "ayla:us:user@example.com"

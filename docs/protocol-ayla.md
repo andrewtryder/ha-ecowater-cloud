@@ -17,11 +17,11 @@ There are also regional deployments.
 - User: `https://user-field.aylanetworks.com`
 - ADS: `https://ads-field.aylanetworks.com`
 
-**EU Region:**
+**EU Region (not used):**
 - User: `https://user-field-eu.aylanetworks.com`
 - ADS: `https://ads-eu.aylanetworks.com`
 
-EcoWater mobile apps appear to use the US region by default, but EU devices may be pinned to the EU endpoints. The App ID and Secret appear to be global constants:
+EcoWater only registers its app on the US region. Signing in to the EU user service with the EcoWater App ID returns HTTP 404 `{"error":"Could not find application"}` (checked November 2026), while the US service returns 401 for bad credentials. A Belgian EcoWater account works on the US region ([#99](https://github.com/andrewtryder/ha-ecowater-cloud/issues/99)), so EcoWater accounts in every country use the US endpoints. The integration does not offer an EU option and maps that 404 to a dedicated `application_not_found` error. The App ID and Secret are:
 - **App ID**: `ecowater-mobile-id`
 - **App Secret**: `ecowater-mobile-9026832`
 

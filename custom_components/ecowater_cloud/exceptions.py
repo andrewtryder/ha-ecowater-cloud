@@ -12,6 +12,7 @@ EcoWaterError
 ├── ConnectivityError          — network unreachable, timeout, DNS failure
 ├── RateLimitError             — 429 Too Many Requests
 ├── ProtocolError              — unexpected response shape / parse failure
+│   └── ApplicationNotFoundError — cloud has no EcoWater application registered
 ├── UnsupportedDeviceError     — device type cannot be mapped to EcoWaterDeviceData
 └── CommandError               — cloud rejected a write/command request
 """
@@ -57,6 +58,15 @@ class ProtocolError(EcoWaterError):
 
     The raw error message is stored in ``args[0]``. Sensitive values (tokens,
     email addresses) must be stripped from the message before raising.
+    """
+
+
+class ApplicationNotFoundError(ProtocolError):
+    """Raised when the cloud does not recognise the EcoWater application.
+
+    Ayla's EU cloud answers sign-in with HTTP 404 "Could not find application"
+    because EcoWater only registers its app on the North America cloud. This
+    is not a credentials problem, so it must not trigger reauthentication.
     """
 
 

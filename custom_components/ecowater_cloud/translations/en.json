@@ -8,6 +8,9 @@
           "username": "Email",
           "password": "Password",
           "region": "Region"
+        },
+        "data_description": {
+          "region": "EcoWater accounts in every country, including Europe, use the North America server."
         }
       },
       "reauth_confirm": {
@@ -24,7 +27,10 @@
           "region": "Region"
         },
         "description": "Update your EcoWater credentials or region.",
-        "title": "Reconfigure EcoWater Cloud"
+        "title": "Reconfigure EcoWater Cloud",
+        "data_description": {
+          "region": "EcoWater accounts in every country, including Europe, use the North America server."
+        }
       }
     },
     "error": {
@@ -32,7 +38,8 @@
       "cannot_connect": "Failed to connect",
       "rate_limit": "Too many requests to the cloud. Please try again later.",
       "no_devices": "No supported devices found on this account.",
-      "unknown": "Unexpected error"
+      "unknown": "Unexpected error",
+      "application_not_found": "This EcoWater cloud server does not recognise the EcoWater app. EcoWater accounts in every country, including Europe, use the North America server."
     },
     "abort": {
       "already_configured": "This EcoWater Cloud account is already configured.",
@@ -329,8 +336,7 @@
   "selector": {
     "region": {
       "options": {
-        "us": "North America",
-        "eu": "Europe (Untested)"
+        "us": "North America (all countries)"
       }
     }
   }

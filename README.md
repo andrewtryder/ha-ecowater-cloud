@@ -22,7 +22,7 @@ Only the capabilities reported by your particular device appear. This integratio
 ## Requirements and compatibility
 
 - Home Assistant **2026.3.0 or newer**, HACS (or the built-in Home Assistant Marketplace in **2026.11+**), an EcoWater Cloud account, and a compatible cloud-connected device.
-- The **Ayla** US EWS3500 / EWS ECR3700R30 has been tested. Other Ayla-connected EWS models may work; the EU endpoint is implemented but untested.
+- The **Ayla** US EWS3500 / EWS ECR3700R30 has been tested. Other Ayla-connected EWS models may work. EcoWater accounts in every country, including Europe, use the North America server; Ayla's EU cloud has no EcoWater app, so there is no Europe option.
 - The **Ayla** US SHERO / HERO-385Plus reverse osmosis monitor is community-contributed; see the note below.
 - **HydroLink Home devices are not supported.** See [ha-ecowater-hydrolink](https://github.com/Roeli1996/ha-ecowater-hydrolink) for that system.
 
