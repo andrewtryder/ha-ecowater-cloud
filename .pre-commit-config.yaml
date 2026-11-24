@@ -7,6 +7,8 @@ repos:
       - id: check-yaml
         args: [--unsafe]
       - id: check-json
+        # VS Code and devcontainer files are JSONC (JSON with comments).
+        exclude: ^(\.devcontainer/devcontainer\.json|\.vscode/.*\.json)$
       - id: check-merge-conflict
       - id: check-added-large-files
 
