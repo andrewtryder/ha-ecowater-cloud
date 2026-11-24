@@ -22,20 +22,23 @@ ha-ecowater-cloud/
 │       ├── models.py              # Typed normalized device snapshot (frozen dataclass)
 │       ├── coordinator.py         # AccountCoordinator (one per account)
 │       ├── config_flow.py         # UI config flow + reauth flow
-│       ├── strings.json           # UI string keys
+│       ├── diagnostics.py         # Diagnostics download handler
+│       ├── repairs.py             # HA Repairs issue tracking
 │       ├── translations/
 │       │   └── en.json            # English UI strings
+│       ├── entity.py              # Base entity
+│       ├── sensor.py              # Sensor entity platform
+│       ├── binary_sensor.py       # Binary sensor entity platform
 │       └── backends/
 │           ├── __init__.py        # BackendAdapter abstract protocol
 │           └── ayla/
-│               ├── __init__.py    # AylaBackend (async Ayla HTTP client)
+│               ├── __init__.py    # Re-exports AylaBackend
+│               ├── api.py         # Async Ayla HTTP client (AylaApi)
+│               ├── backend.py     # AylaBackend (BackendAdapter implementation)
+│               ├── models.py      # Raw Ayla payload types
+│               ├── normalization.py # Raw Ayla payloads → EcoWaterDeviceData
 │               └── exceptions.py  # Ayla-specific exceptions → base taxonomy
 ├── tests/
-│   ├── conftest.py
-│   ├── test_exceptions.py
-│   ├── test_models.py
-│   ├── test_config_flow.py
-│   └── test_coordinator.py
 ├── docs/
 │   ├── requirements.md
 │   └── architecture.md            # (this file)
@@ -54,12 +57,17 @@ ha-ecowater-cloud/
 
 ## Layer responsibilities
 
+### `backends/ayla/` — Ayla backend
+
+Authenticates with:
+
 - `app_id = "ecowater-mobile-id"`
 - `app_secret = "ecowater-mobile-9026832"`
 - user-supplied email + password
 
-Retrieves device list from `https://ads.aylanetworks.com/apiv1/devices.json`.
-Retrieves per-device properties from `https://ads.aylanetworks.com/apiv1/dsns/<dsn>/properties.json`.
+Retrieves device list from `{ads_url}/apiv1/devices.json`.
+Retrieves per-device properties from `{ads_url}/apiv1/dsns/<dsn>/properties.json`.
+`{ads_url}` depends on the region; see [protocol-ayla.md](protocol-ayla.md).
 
 Token refresh is handled transparently inside the backend. If the refresh token
 expires or is rejected, the backend automatically attempts full reauthentication
@@ -99,7 +107,7 @@ EcoWaterError                  # base
 ├── ConnectivityError          # network, timeout, DNS
 ├── RateLimitError             # 429
 ├── ProtocolError              # unexpected response shape
-├── UnsupportedDeviceError     # device not mappable to DeviceSnapshot
+├── UnsupportedDeviceError     # device not mappable to EcoWaterDeviceData
 └── CommandError               # write rejected by cloud
 ```
 
@@ -108,26 +116,33 @@ leaking token values.
 
 ### `coordinator.py` — AccountCoordinator
 
-`AccountCoordinator(DataUpdateCoordinator[AccountInfo])` is
+`AccountCoordinator(DataUpdateCoordinator[dict[str, EcoWaterDeviceData]])` is
 instantiated once per config entry (= once per account). Its `data` attribute
-is an `AccountInfo` containing a `devices` dict keyed by serial number.
+is a dict keyed by serial number.
 
 - `_async_update_data` calls the backend adapter.
-- On `AuthenticationError` → raises `ConfigEntryAuthFailed` (triggers HA reauth).
-- On `ConnectivityError` → raises `UpdateFailed`.
-- On `UnsupportedDeviceError` for a single device → logs a warning and continues
-  updating remaining devices; that device's previous snapshot is preserved.
+- On `AuthenticationError` or `ReauthenticationRequired` → raises
+  `ConfigEntryAuthFailed` (triggers HA reauth).
+- On `ConnectivityError`, `RateLimitError`, or `ProtocolError` → raises
+  `UpdateFailed`.
+- The failure type is recorded in `last_error_category`, which `repairs.py` reads.
+
+`UnsupportedDeviceError` for a single device is handled in the backend, which logs
+a warning and continues with the remaining devices. The skipped device is absent
+from that update, so its entities become unavailable.
 
 ### `config_flow.py` — Configuration UI
 
-Schema version 1. Steps:
+Schema version 2.3. Steps:
 
 | Step | Trigger | Action |
 |------|---------|--------|
-| `user` | New setup | Collect username + password; create entry |
+| `user` | New setup | Collect username + password + region; create entry |
 | `reauth_confirm` | `async_step_reauth` | Collect new password; update entry |
+| `reconfigure` | `async_step_reconfigure` | Update password or region; a different email aborts with `account_mismatch` |
 
-Credentials are stored in `entry.data` (encrypted by HA).
+The options flow sets the polling interval. Credentials are stored in `entry.data`
+(encrypted by HA).
 
 ### `__init__.py` — Entry-point
 
@@ -149,7 +164,8 @@ class EcoWaterCloudData:
 
 `async_unload_entry`: calls `async_unload_platforms`.
 
-`async_migrate_entry`: handles version upgrades; version 1 → stub (no-op).
+`async_migrate_entry`: handles version upgrades to 2.3, stamping `backend` and
+`region` and rewriting the entry unique ID to `ayla:{region}:{normalized_email}`.
 
 ---
 

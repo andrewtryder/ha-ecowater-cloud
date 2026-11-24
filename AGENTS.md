@@ -20,8 +20,8 @@ This file contains binding rules for any AI coding agent working in this reposit
 4. **Async only.** No `requests`, `time.sleep`, background threads, or `websocket-client`. All HTTP uses injected `aiohttp.ClientSession`.
 5. **HA session.** Home Assistant runtime HTTP must use the HA-managed client session (`async_get_clientsession`).
 5. **One coordinator per account.** A single `AccountCoordinator` supports multiple physical devices.
-6. **Normalized models.** Backend adapters convert raw cloud responses into frozen `DeviceSnapshot` dataclasses. Entities never access backend-specific dicts.
-7. **Capability-driven entities.** Only create a sensor/entity if the corresponding `DeviceSnapshot` field is not `None`. Never convert missing values into fabricated zeros.
+6. **Normalized models.** Backend adapters convert raw cloud responses into frozen `EcoWaterDeviceData` dataclasses. Entities never access backend-specific dicts.
+7. **Capability-driven entities.** Only create a sensor/entity if the corresponding `EcoWaterDeviceData` field is not `None`. Never convert missing values into fabricated zeros.
 8. **Specific exceptions only.** No broad `except Exception`. Use the taxonomy in `exceptions.py`.
 9. **Typed runtime data.** Use `entry.runtime_data` with a typed `ConfigEntry` alias. Never use `hass.data`.
 10. **Schema versions from v1.** `async_migrate_entry` must exist from the first release.
@@ -46,11 +46,12 @@ f"{backend}_{serial_number}_{entity_key}".lower()
 
 Never include email, password, token, or mutable display name in an identifier.
 
-## Config entry schema (version 1)
+## Config entry schema (version 2.3)
 
 ```python
 {
     "backend": "ayla",  # str — backend identifier
+    "region": "us",  # str — "us" or "eu"
     "username": "<email>",  # str — stored encrypted by HA
     "password": "<password>",  # str — stored encrypted by HA
 }

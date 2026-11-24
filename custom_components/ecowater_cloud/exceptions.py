@@ -12,7 +12,7 @@ EcoWaterError
 ├── ConnectivityError          — network unreachable, timeout, DNS failure
 ├── RateLimitError             — 429 Too Many Requests
 ├── ProtocolError              — unexpected response shape / parse failure
-├── UnsupportedDeviceError     — device type cannot be mapped to DeviceSnapshot
+├── UnsupportedDeviceError     — device type cannot be mapped to EcoWaterDeviceData
 └── CommandError               — cloud rejected a write/command request
 """
 
@@ -61,9 +61,9 @@ class ProtocolError(EcoWaterError):
 
 
 class UnsupportedDeviceError(EcoWaterError):
-    """Raised when a device cannot be mapped to a :class:`~.models.DeviceSnapshot`.
+    """Raised when a device cannot be mapped to :class:`~.models.EcoWaterDeviceData`.
 
-    The coordinator skips the device and continues loading all other devices
+    The backend skips the device and continues loading all other devices
     rather than failing the whole account update.
 
     Attributes
