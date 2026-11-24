@@ -25,7 +25,13 @@ uv run pytest tests/test_version.py::test_versions_match_and_are_stable -v
 uv run pytest --cov=custom_components/ecowater_cloud --cov-branch --cov-report=term-missing --cov-fail-under=90 tests/
 ```
 
-Pytest runs with `filterwarnings = error` and `asyncio_mode = auto`, so any new warning fails the suite. Hassfest and HACS validation run only in CI.
+Pytest runs with `filterwarnings = error` and `asyncio_mode = auto`, so any new warning fails the suite. HACS validation runs only in CI. Hassfest runs in CI or from the host with Docker; the image is amd64-only, so Apple Silicon needs the `--platform` flag:
+
+```bash
+docker run --rm --platform linux/amd64 -v "$PWD/custom_components:/github/workspace/custom_components:ro" ghcr.io/home-assistant/hassfest
+```
+
+`./script/develop` starts a test Home Assistant instance on port 8123, loading `custom_components/` from the repository and configuration from `config/`. The VS Code **Home Assistant** launch configuration does the same under the debugger, and `./script/stop` stops either. `config/.storage/` holds real credentials in plain text and is gitignored, along with everything else in `config/` except `configuration.yaml`.
 
 `scripts/probe_ayla.py` hits the live Ayla API using `ECOWATER_USERNAME` / `ECOWATER_PASSWORD` and writes a redacted fixture. Live captures belong in `.private/`, which is gitignored.
 
@@ -36,7 +42,7 @@ One config entry is one cloud account. One `AccountCoordinator` serves every dev
 Data flows one way, and each layer depends only on the contract below it:
 
 1. `backends/ayla/api.py` (`AylaApi`): HTTP, token handling, and refresh-then-retry on a 401. Maps HTTP failures to Ayla exceptions, which subclass the taxonomy in `exceptions.py`.
-2. `backends/ayla/backend.py` (`AylaBackend`): implements the `BackendAdapter` protocol from `backends/__init__.py`. Falls back to a full re-login when refresh fails, keeps only `EWS*` OEM models, and skips individual devices that raise `UnsupportedDeviceError`.
+2. `backends/ayla/backend.py` (`AylaBackend`): implements the `BackendAdapter` protocol from `backends/__init__.py`. Falls back to a full re-login when refresh fails, keeps only OEM models in `SUPPORTED_OEM_MODEL_PREFIXES` (`EWS` softeners, `SHERO` RO monitors), and skips individual devices that raise `UnsupportedDeviceError`.
 3. `backends/ayla/normalization.py` (`normalize_device`): the only place that interprets raw Ayla property names, scales, and enums. It builds frozen `EcoWaterDeviceData` (`models.py`), including `DeviceCapabilities` flags derived from which properties are present. `SALT_TENTHS_MAX` maps `model_id` to salt capacity; an unmapped model gets no salt percentage and raises a Repairs issue.
 4. `coordinator.py`: stores `dict[serial, EcoWaterDeviceData]` in `coordinator.data`. Converts exceptions to `ConfigEntryAuthFailed` / `UpdateFailed` and records `last_error_category`, which `repairs.py` reads.
 5. `sensor.py` / `binary_sensor.py`: tables of entity descriptions, each with `value_fn` and `supported_fn`. A coordinator listener re-runs discovery, so entities appear when a device or capability shows up later.

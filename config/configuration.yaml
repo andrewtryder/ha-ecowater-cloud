@@ -1,0 +1,17 @@
+# Minimal Home Assistant configuration for local integration testing.
+# Started by script/develop. Everything else in this directory is gitignored.
+#
+# default_config is left out because it pulls in integrations that need system
+# libraries this devcontainer does not install.
+
+homeassistant:
+  debug: true
+
+config:
+
+frontend:
+
+logger:
+  default: info
+  logs:
+    custom_components.ecowater_cloud: debug

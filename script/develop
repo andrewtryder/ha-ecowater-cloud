@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Start a local Home Assistant instance that loads this repository's
+# custom_components/ directory, using config/ for its configuration.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+config_dir="$PWD/config"
+
+# Stop an instance left running from an earlier session.
+./script/stop
+
+export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+
+exec uv run --frozen hass --config "$config_dir" --debug

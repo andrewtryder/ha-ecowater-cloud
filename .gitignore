@@ -29,3 +29,7 @@ home-assistant_v2.db*
 coverage.xml
 coverage.json
 htmlcov/
+
+# Local Home Assistant test instance
+config/*
+!config/configuration.yaml
