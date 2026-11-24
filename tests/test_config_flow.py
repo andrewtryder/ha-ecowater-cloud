@@ -14,6 +14,7 @@ from custom_components.ecowater_cloud.const import (
     DOMAIN,
 )
 from custom_components.ecowater_cloud.exceptions import (
+    ApplicationNotFoundError,
     AuthenticationError,
     ConnectivityError,
     RateLimitError,
@@ -66,6 +67,7 @@ async def test_form_user(hass: HomeAssistant, mock_ayla_backend) -> None:
 @pytest.mark.parametrize(
     ("exception", "expected_error"),
     [
+        (ApplicationNotFoundError("no app"), "application_not_found"),
         (AuthenticationError("auth failed"), "invalid_auth"),
         (ConnectivityError("connect failed"), "cannot_connect"),
         (RateLimitError("too many requests"), "rate_limit"),
@@ -292,6 +294,7 @@ async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
     )
 
     exceptions = [
+        (ApplicationNotFoundError("no app"), "application_not_found"),
         (AuthenticationError("auth"), "invalid_auth"),
         (ConnectivityError("conn"), "cannot_connect"),
         (RateLimitError("rate"), "rate_limit"),
@@ -312,23 +315,16 @@ async def test_reauth_confirm_exceptions(hass: HomeAssistant) -> None:
 
 
 @pytest.mark.asyncio
-async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> None:
-    """Test creating an entry with EU region."""
+async def test_form_user_rejects_eu_region(hass: HomeAssistant) -> None:
+    """The removed EU region is no longer accepted by the user step."""
+    from homeassistant.data_entry_flow import InvalidData
+
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
 
-    with (
-        patch(
-            "custom_components.ecowater_cloud.config_flow.AylaBackend",
-            return_value=mock_ayla_backend,
-        ),
-        patch(
-            "custom_components.ecowater_cloud.async_setup_entry",
-            return_value=True,
-        ) as mock_setup_entry,
-    ):
-        result2 = await hass.config_entries.flow.async_configure(
+    with pytest.raises(InvalidData):
+        await hass.config_entries.flow.async_configure(
             result["flow_id"],
             {
                 "username": MOCK_USERNAME,
@@ -336,21 +332,11 @@ async def test_form_user_eu_region(hass: HomeAssistant, mock_ayla_backend) -> No
                 "region": "eu",
             },
         )
-        await hass.async_block_till_done()
-
-    assert result2["type"] is FlowResultType.CREATE_ENTRY
-    assert result2["data"] == {
-        "backend": BACKEND_AYLA,
-        "username": MOCK_USERNAME,
-        "password": MOCK_PASSWORD,
-        "region": "eu",
-    }
-    mock_setup_entry.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
-    """Test the reconfigure flow updates the entry when region changes."""
+    """Test reconfigure moves a legacy EU entry to the North America server."""
     from homeassistant.config_entries import SOURCE_RECONFIGURE
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -363,10 +349,10 @@ async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
             "backend": BACKEND_AYLA,
             "username": MOCK_USERNAME,
             "password": MOCK_PASSWORD,
-            "region": "us",
+            "region": "eu",
         },
         source="user",
-        unique_id=f"ayla:us:{MOCK_USERNAME}",
+        unique_id=f"ayla:eu:{MOCK_USERNAME}",
     )
     entry.add_to_hass(hass)
 
@@ -395,7 +381,7 @@ async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
             {
                 "username": MOCK_USERNAME,
                 "password": "new-password",
-                "region": "eu",
+                "region": "us",
             },
         )
         await hass.async_block_till_done()
@@ -404,8 +390,8 @@ async def test_reconfigure_flow(hass: HomeAssistant, mock_ayla_backend) -> None:
     assert result2["reason"] == "reconfigure_successful"
     assert entry.data["username"] == MOCK_USERNAME
     assert entry.data["password"] == "new-password"
-    assert entry.data["region"] == "eu"
-    assert entry.unique_id == f"ayla:eu:{MOCK_USERNAME}"
+    assert entry.data["region"] == "us"
+    assert entry.unique_id == f"ayla:us:{MOCK_USERNAME}"
 
 
 @pytest.mark.asyncio
@@ -554,15 +540,16 @@ async def test_reconfigure_duplicate(hass: HomeAssistant, mock_ayla_backend) -> 
 
     entry1 = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "eu"},
-        unique_id=f"ayla:eu:{MOCK_USERNAME}",
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "us"},
+        unique_id=f"ayla:us:{MOCK_USERNAME}",
     )
     entry1.add_to_hass(hass)
 
+    # A legacy EU entry for the same account cannot move onto entry1's server.
     entry2 = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "us"},
-        unique_id=f"ayla:us:{MOCK_USERNAME}",
+        data={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "pw", "region": "eu"},
+        unique_id=f"ayla:eu:{MOCK_USERNAME}",
     )
     entry2.add_to_hass(hass)
 
@@ -583,7 +570,7 @@ async def test_reconfigure_duplicate(hass: HomeAssistant, mock_ayla_backend) -> 
             {
                 "username": MOCK_USERNAME,
                 "password": "new-password",
-                "region": "eu",
+                "region": "us",
             },
         )
 

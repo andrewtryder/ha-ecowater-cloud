@@ -183,7 +183,7 @@ Callers catch **specific** exceptions. `ProtocolError` wraps the raw message wit
 
 #### Config Flow (`config_flow.py`)
 
-Schema version 2.3:
+Schema version 2.4:
 
 | Step | Trigger | Action |
 |------|---------|--------|
@@ -223,12 +223,12 @@ f"{backend}_{serial_number}_{entity_key}".lower()
 
 No email, password, token, or mutable display name is ever used in an identifier.
 
-### Config Entry Schema (version 2.3)
+### Config Entry Schema (version 2.4)
 
 ```python
 {
     "backend": "ayla",  # str — backend identifier
-    "region": "us",  # str — "us" or "eu"
+    "region": "us",  # str — always "us"; legacy "eu" entries migrate to "us"
     "username": "<email>",  # str — stored encrypted by HA
     "password": "<password>",  # str — stored encrypted by HA
 }

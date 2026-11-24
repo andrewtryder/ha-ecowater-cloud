@@ -13,6 +13,7 @@ from typing import Any
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from .exceptions import (
+    AylaApplicationNotFoundError,
     AylaAuthenticationError,
     AylaConnectivityError,
     AylaProtocolError,
@@ -25,18 +26,20 @@ AYLA_APP_ID = "ecowater-mobile-id"
 AYLA_APP_SECRET = "ecowater-mobile-9026832"  # noqa: S105
 
 REGION_US = "us"
-REGION_EU = "eu"
 
+# Only the North America (US) Ayla cloud has the EcoWater application
+# registered. The EU cloud answers sign-in with HTTP 404 "Could not find
+# application", so it is intentionally not listed; unknown regions fall back
+# to US.
 URL_BASES = {
     REGION_US: {
         "user": "https://user-field.aylanetworks.com",
         "ads": "https://ads-field.aylanetworks.com",
     },
-    REGION_EU: {
-        "user": "https://user-field-eu.aylanetworks.com",
-        "ads": "https://ads-eu.aylanetworks.com",
-    },
 }
+
+# Ayla's sign-in error body when the app_id is not registered on that cloud.
+APPLICATION_NOT_FOUND_MESSAGE = "could not find application"
 
 DEFAULT_TIMEOUT = 10.0
 
@@ -103,6 +106,12 @@ class AylaApi:
                         )
                 elif response.status == 404:
                     if url.endswith("sign_in.json"):
+                        body = await response.text()
+                        if APPLICATION_NOT_FOUND_MESSAGE in body.lower():
+                            raise AylaApplicationNotFoundError(
+                                "Ayla cloud does not recognise the EcoWater "
+                                "application (HTTP 404)"
+                            )
                         raise AylaAuthenticationError(
                             "Authentication rejected by Ayla API (HTTP 404)"
                         )

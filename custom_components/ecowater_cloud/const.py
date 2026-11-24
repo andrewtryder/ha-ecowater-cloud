@@ -23,8 +23,11 @@ SUPPORTED_BACKENDS: Final = [BACKEND_AYLA]
 
 # Regions
 REGION_US: Final = "us"
+# Legacy value only. Ayla's EU cloud has no EcoWater application registered,
+# so EU sign-in always fails; EcoWater accounts in every country, including
+# Europe, use the North America server. Stored "eu" entries are migrated to "us".
 REGION_EU: Final = "eu"
-SUPPORTED_REGIONS: Final = [REGION_US, REGION_EU]
+SUPPORTED_REGIONS: Final = [REGION_US]
 
 # Polling defaults
 DEFAULT_SCAN_INTERVAL: Final = timedelta(minutes=30)

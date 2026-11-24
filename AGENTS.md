@@ -46,12 +46,12 @@ f"{backend}_{serial_number}_{entity_key}".lower()
 
 Never include email, password, token, or mutable display name in an identifier.
 
-## Config entry schema (version 2.3)
+## Config entry schema (version 2.4)
 
 ```python
 {
     "backend": "ayla",  # str — backend identifier
-    "region": "us",  # str — "us" or "eu"
+    "region": "us",  # str — always "us"; legacy "eu" entries migrate to "us"
     "username": "<email>",  # str — stored encrypted by HA
     "password": "<password>",  # str — stored encrypted by HA
 }

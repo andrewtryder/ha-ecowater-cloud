@@ -35,7 +35,12 @@ from .const import (
     REGION_US,
     SUPPORTED_REGIONS,
 )
-from .exceptions import AuthenticationError, ConnectivityError, RateLimitError
+from .exceptions import (
+    ApplicationNotFoundError,
+    AuthenticationError,
+    ConnectivityError,
+    RateLimitError,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,7 +98,7 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle the EcoWater Cloud config flow."""
 
     VERSION = 2
-    MINOR_VERSION = 3
+    MINOR_VERSION = 4
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -109,6 +114,8 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
 
             try:
                 info = await validate_input(self.hass, user_input)
+            except ApplicationNotFoundError:
+                errors["base"] = "application_not_found"
             except AuthenticationError:
                 errors["base"] = "invalid_auth"
             except ConnectivityError:
@@ -156,6 +163,8 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_REGION: reauth_entry.data.get(CONF_REGION, REGION_US),
                 }
                 await validate_input(self.hass, test_data)
+            except ApplicationNotFoundError:
+                errors["base"] = "application_not_found"
             except AuthenticationError:
                 errors["base"] = "invalid_auth"
             except ConnectivityError:
@@ -213,6 +222,8 @@ class EcoWaterCloudConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_REGION: user_input.get(CONF_REGION, REGION_US),
                 }
                 await validate_input(self.hass, test_data)
+            except ApplicationNotFoundError:
+                errors["base"] = "application_not_found"
             except AuthenticationError:
                 errors["base"] = "invalid_auth"
             except ConnectivityError:
